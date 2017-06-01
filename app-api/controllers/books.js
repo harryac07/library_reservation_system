@@ -40,10 +40,68 @@ module.exports.listBook = (req,res)=>{
 	return;
 };
 
+/* GET list of books by categories selected */
+module.exports.listByCategory = (req,res)=>{
+	const category = req.params.name.replace(/\s/g, '');
+	if(!category){
+		sendJSONresponse(res,404,{'message':'category name is required'});
+		return;
+	}
+	/* if category selected is all, display list of books */
+	if(category==='all'){
+		this.listBooks(req,res);
+	}else{
+		Book
+			.find({"category": new RegExp(category, 'i')},(err,book)=>{
+			if(!book){
+				sendJSONresponse(res,404,{'message':'books not found on this category'});
+			}else if(err){
+				sendJSONresponse(res,400,err);
+			}else{
+				sendJSONresponse(res,200,book);
+			}
+		});
+	}
+};
+
+/* GET books by search input */
+module.exports.listBySearch = (req,res)=>{
+	const search = req.params.search;
+	if(!search){
+		sendJSONresponse(res,404,{'message':'books not found with the given keyword'});
+	}
+	Book
+		.find({
+			$or : [{
+				'title' : new RegExp(search,'i')
+			},{
+				'category' : new RegExp(search,'i')
+			},{
+				'keywords' : new RegExp(search,'i')
+			}]
+		},(err,book)=>{
+			if(!book){
+				sendJSONresponse(res,404,{',message':'book not found'});
+			}else if(err){
+				sendJSONresponse(res,400,err);
+			}else{
+				sendJSONresponse(res,200,book);
+			}
+		});
+};
+
 /* POST book */
 module.exports.postBook = (req,res)=>{
+	let categories = "";
+	let keywords = "";
+
+	keywords=req.body.keywords.replace(/\s/g, '').split(',');
+	categories=req.body.category.replace(/\s/g, '').split(',');
+
 	Book.create({
 		title : req.body.title,
+		category : categories,
+		keywords : keywords,
 		available : req.body.available,
 		author : req.body.author,
 		published_date : req.body.published_date,
@@ -71,7 +129,15 @@ module.exports.updateBook = (req,res)=>{
 		}else if(err){
 			sendJSONresponse(res,400,err);
 		}else{
+			let categories = "";
+			let keywords = "";
+
+			keywords=req.body.keywords.replace(/\s/g, '').split(',');
+			categories=req.body.category.replace(/\s/g, '').split(',');
+
 			book.title = req.body.title,
+			book.category = categories,
+			book.keywords = keywords,
 			book.available = req.body.available,
 			book.author = req.body.author,
 			book.published_date = req.body.published_date,

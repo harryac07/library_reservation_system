@@ -17,6 +17,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 app.use('/api',routesApi); //to be built
 
+// Handles all routes so you do not get a not found error
+app.get('*', function (request, response){
+    response.sendFile(path.resolve(__dirname, 'public', 'index.html'))
+});
+
 app.use((req, res, next)=>{
     // console.log(`${req.method} request for '${req.url}' - ${JSON.stringify(req.body)}`);
     next();
@@ -27,3 +32,6 @@ app.listen(3000,()=>{
 });
 
 module.exports = app;
+
+//    "prestart": "webpack",
+    // "start": "nodemon app "
