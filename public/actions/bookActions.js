@@ -4,12 +4,13 @@ export const FETCH_BOOKS="FETCH_BOOKS";
 export const FETCH_BOOK="FETCH_BOOK";
 export const FETCH_BOOK_BY_CATEGORY="FETCH_BOOK_BY_CATEGORY";
 export const FETCH_BOOK_BY_SEARCH="FETCH_BOOK_BY_SEARCH";
+export const SORT_BOOKLIST = "SORT_BOOKLIST";
 
 const ROOT_URL = "http://localhost:3000/api";
 
 // Fetch Books 
 export function fetchBooks(){
-	const request = axios.get(ROOT_URL+"/books");
+	const request = axios.get(ROOT_URL+"/books?sort=rating");
 	return{
 		type : FETCH_BOOKS,
 		payload : request // returns promise as a payload
@@ -40,3 +41,16 @@ export function fetchBySearch(searchTerm){
 		payload : request
 	};
 }
+//Sort book by user choice
+export function sortBookList(keyword){
+	return{
+		type : SORT_BOOKLIST,
+		payload : keyword
+	}
+}
+
+
+
+
+
+

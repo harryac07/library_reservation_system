@@ -1,20 +1,23 @@
-import {FETCH_BOOKS,FETCH_BOOK,FETCH_BOOK_BY_CATEGORY,FETCH_BOOK_BY_SEARCH} from '../actions/bookActions';
+import {FETCH_BOOKS,FETCH_BOOK,FETCH_BOOK_BY_CATEGORY,FETCH_BOOK_BY_SEARCH,SORT_BOOKLIST} from '../actions/bookActions';
 import _ from 'lodash';
 
 export default function(state=[],action){
 	switch(action.type){
 		case FETCH_BOOKS:
-			// console.log(action.payload.data); //[book1, book2, ....]
-			return action.payload.data;
+			//add prev sate and payload and return uniq
+	      	return _.uniqWith([...action.payload.data,...state], _.isEqual);
 		case FETCH_BOOK:
-			const book = action.payload.data;
-			// console.log(book);
-			return book;
+			const newState =_.uniqWith(_.concat(state,action.payload.data), _.isEqual);
+			return _.filter(newState,(obj)=>obj._id === action.payload.data._id);
 		case FETCH_BOOK_BY_CATEGORY:
-			const books = action.payload.data;
-			return books;
+			const categoryState = _.uniqWith([...action.payload.data,...state], _.isEqual);
+			return _.intersectionWith(categoryState,action.payload.data, _.isEqual);
 		case FETCH_BOOK_BY_SEARCH:
-			return action.payload.data;
+			const searchedState = _.uniqWith([...action.payload.data,...state], _.isEqual);
+			return _.intersectionWith(searchedState,action.payload.data, _.isEqual);
+		case SORT_BOOKLIST:
+			const sortedList = _.orderBy(state,'title', action.payload);
+			return sortedList;
 		default:
 			return state;
 	}

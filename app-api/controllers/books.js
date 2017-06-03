@@ -8,8 +8,20 @@ const sendJSONresponse = (res, status, content)=>{
 
 /* GET all books */
 module.exports.listBooks = (req,res)=>{
-	Book
-		.find((err,book)=>{
+	const queryParams = req.query.sort;
+	if(queryParams==='rating'){
+		//sort by rating(desc) to get popular books
+		Book.find().sort({'rating':-1}).exec((err,book)=>{
+			if(err){
+				sendJSONresponse(res,400,err);
+			}else if(!book){
+				sendJSONresponse(res,404,{'message':'Book not found'});
+			}else{
+				sendJSONresponse(res,200,book);
+			}
+		});
+	}else{
+		Book.find((err,book)=>{
 			if(!book || book.length<=0){
 				sendJSONresponse(res,404,{'message':'Book Not Found'});
 			}else if(err){
@@ -18,7 +30,8 @@ module.exports.listBooks = (req,res)=>{
 				sendJSONresponse(res,200,book);
 			}
 		});
-		return;
+	}
+	return;
 };
 
 /* GET a single book */

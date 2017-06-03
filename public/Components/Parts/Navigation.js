@@ -1,4 +1,5 @@
 import React,{ Component } from 'react';
+import { Link } from 'react-router-dom';
 
 class Navigation extends Component {
 	render(){
@@ -11,19 +12,19 @@ class Navigation extends Component {
 			        <span className="icon-bar"></span>
 			        <span className="icon-bar"></span>                        
 			      </button>
-			      <a className="navbar-brand active" href="/"><span className="glyphicon glyphicon-home"></span></a>
+			      <Link className="navbar-brand active" to="/"><span className="glyphicon glyphicon-home"></span></Link>
 			    </div>
 			    <div className="collapse navbar-collapse" id="top-nav">
 			      <ul className="nav navbar-nav">
-			        <li><a href="#">ABOUT</a></li>
-			        <li><a href="#">CONTACT</a></li>
-			       	<li><a href="#"><i className="fa fa-facebook" aria-hidden="true"></i></a></li>
-			       	<li><a href="#"><i className="fa fa-google-plus" aria-hidden="true"></i></a></li>
-			       	<li><a href="#"><i className="fa fa-twitter" aria-hidden="true"></i></a></li>
+			        <li><Link to="#">ABOUT</Link></li>
+			        <li><Link to="#">CONTACT</Link></li>
+			       	<li><Link to="#"><i className="fa fa-facebook" aria-hidden="true"></i></Link></li>
+			       	<li><Link to="#"><i className="fa fa-google-plus" aria-hidden="true"></i></Link></li>
+			       	<li><Link to="#"><i className="fa fa-twitter" aria-hidden="true"></i></Link></li>
 			      </ul>
 			      <ul className="nav navbar-nav navbar-right">
-			        <li><a href="#"><span className="glyphicon glyphicon-user"></span> Sign Up</a></li>
-			        <li><a href="#"><span className="glyphicon glyphicon-log-in"></span> Login</a></li>
+			        <li><Link to="#"><span className="glyphicon glyphicon-user"></span> Sign Up</Link></li>
+			        <li><Link to="#"><span className="glyphicon glyphicon-log-in"></span> Login</Link></li>
 			      </ul>
 			    </div>
 			  </div>

@@ -12,20 +12,30 @@ import Footer from './Parts/Footer';
 
 
 class App extends Component{
+	constructor(props){
+		super(props);
+		this.state={
+			popularBooks :[]
+		}
+	}
 	componentDidMount(){
 		this.props.fetchBooks();
 	}
 	render(){
+		const {books}=this.props;
+		if(!books){
+			return <div>Loading...</div>
+		}
 		return(
 			<div>
 				<Navigation />
 				<Home />
-				<Book />
+				{ (this.props.books.length>0)?<Book books={books}/> : null }
 				<Support />
 				<Carousel />
 				<Footer />
 			</div>
-		);
+		)
 	}
 }
 

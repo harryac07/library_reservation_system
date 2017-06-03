@@ -1,4 +1,5 @@
 import React,{Component} from 'react';
+import { Link } from 'react-router-dom';
 
 class CategoryNav extends Component{
 
@@ -6,13 +7,13 @@ class CategoryNav extends Component{
 		return(
 		    <div className="book_navigation container-fluid">
 		      	<ul className="nav navbar-nav">
-			      	<li><a href="/books/category/software">Software</a></li>
-			      	<li><a href="/books/category/nature">Nature</a></li>
-			      	<li><a href="/books/category/literature">Literature</a></li>
-			      	<li><a href="/books/category/romance">Romance</a></li>
-			      	<li><a href="/books/category/story">Story</a></li>
-			      	<li><a href="/books/category/history">History</a></li>
-			      	<li className="active"><a href="/books/category/all">All</a></li>
+			      	<li><Link to="/books/category/software">Software</Link></li>
+			      	<li><Link to="/books/category/nature">Nature</Link></li>
+			      	<li><Link to="/books/category/literature">Literature</Link></li>
+			      	<li><Link to="/books/category/romance">Romance</Link></li>
+			      	<li><Link to="/books/category/story">Story</Link></li>
+			      	<li><Link to="/books/category/history">History</Link></li>
+			      	<li className="active"><Link to="/books/category/all">All</Link></li>
 		      	</ul>
 		      	<ul className="nav navbar-nav navbar-right">
 		      		<li>
