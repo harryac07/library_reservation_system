@@ -3433,13 +3433,14 @@ module.exports = React;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.FETCH_CART_ITEMS = exports.SORT_BOOKLIST = exports.FETCH_BOOK_BY_SEARCH = exports.FETCH_BOOK_BY_CATEGORY = exports.FETCH_BOOK = exports.FETCH_BOOKS = undefined;
+exports.RESERVE_BOOKS = exports.FETCH_CART_ITEMS = exports.SORT_BOOKLIST = exports.FETCH_BOOK_BY_SEARCH = exports.FETCH_BOOK_BY_CATEGORY = exports.FETCH_BOOK = exports.FETCH_BOOKS = undefined;
 exports.fetchBooks = fetchBooks;
 exports.fetchBook = fetchBook;
 exports.fetchByCategory = fetchByCategory;
 exports.fetchBySearch = fetchBySearch;
 exports.sortBookList = sortBookList;
 exports.fetchCartBooks = fetchCartBooks;
+exports.makeReservation = makeReservation;
 
 var _axios = __webpack_require__(123);
 
@@ -3453,6 +3454,7 @@ var FETCH_BOOK_BY_CATEGORY = exports.FETCH_BOOK_BY_CATEGORY = "FETCH_BOOK_BY_CAT
 var FETCH_BOOK_BY_SEARCH = exports.FETCH_BOOK_BY_SEARCH = "FETCH_BOOK_BY_SEARCH";
 var SORT_BOOKLIST = exports.SORT_BOOKLIST = "SORT_BOOKLIST";
 var FETCH_CART_ITEMS = exports.FETCH_CART_ITEMS = "FETCH_CART_ITEMS";
+var RESERVE_BOOKS = exports.RESERVE_BOOKS = "RESERVE_BOOKS";
 
 var ROOT_URL = "http://localhost:3000/api";
 
@@ -3501,6 +3503,14 @@ function fetchCartBooks(books) {
 	var request = _axios2.default.post(ROOT_URL + "/book/cart", books);
 	return {
 		type: FETCH_CART_ITEMS,
+		payload: request
+	};
+}
+// Reserve Books in cart and send notification to client
+function makeReservation(books) {
+	var request = _axios2.default.post(ROOT_URL + "/book/cart/reserve", books);
+	return {
+		type: RESERVE_BOOKS,
 		payload: request
 	};
 }

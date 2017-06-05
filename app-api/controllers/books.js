@@ -128,6 +128,9 @@ module.exports.getCartItems=(req,res)=>{
 }
 
 /* POST reserve book and send notification to client */
+module.exports.makeReservation = (req,res)=>{
+			
+}
 
 /* POST book */
 module.exports.postBook = (req,res)=>{

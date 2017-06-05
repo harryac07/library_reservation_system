@@ -41,12 +41,9 @@ module.exports.listUser = (req,res)=>{
 module.exports.postUser = (req,res)=>{
 	User.create({
 		name : req.body.name,
+		email : req.body.email,
 		address : req.body.address,
-		phone : req.body.phone,
-		penalty_fee : req.body.penalty_fee,
-		unpaid_penalty : req.body.unpaid_penalty,
-		paid_penalty : req.body.paid_penalty,
-		donate : req.body.donate
+		phone : req.body.phone
 	},(err,user)=>{
 		if(err){
 			sendJSONresponse(res,400,err);
@@ -69,12 +66,9 @@ module.exports.updateUser = (req,res)=>{
 			sendJSONresponse(res,400,err);
 		}else{
 			user.name = req.body.name,
+			user.email = req.body.email,
 			user.address = req.body.address,
-			user.phone = req.body.phone,
-			user.penalty_fee = req.body.penalty_fee,
-			user.unpaid_penalty = req.body.unpaid_penalty,
-			user.paid_penalty = req.body.paid_penalty,
-			user.donate = req.body.donate
+			user.phone = req.body.phone
 
 			user.save((err,user)=>{
 				err
