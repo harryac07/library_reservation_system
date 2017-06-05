@@ -11,6 +11,7 @@ import promise from 'redux-promise';
 import App from './Components/App';
 import Book_detail from './Components/Book_detail';
 import Book_lists from './Components/Book_lists';
+import Cart from './Components/Cart';
 
 
 const createStoreWithMiddleware = applyMiddleware(promise)(createStore);
@@ -20,6 +21,7 @@ ReactDom.render(
 	    <BrowserRouter>
 	    	<div>
 	    		<Switch> 
+	    			<Route path="/books/cart" component={Cart} />
 	    			<Route path="/book/:id" component={Book_detail} />
 	    			<Route path="/books/category/:name" component={Book_lists} />
 	    			<Route exact path="/" component={App} />

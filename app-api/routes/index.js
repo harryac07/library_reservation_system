@@ -10,6 +10,8 @@ router.get('/book/:id',BookCtrl.listBook);
 router.get('/book/category/:name',BookCtrl.listByCategory);
 router.get('/book/search/:search',BookCtrl.listBySearch);
 router.post('/book',BookCtrl.postBook);
+router.post('/book/cart',BookCtrl.getCartItems); // get cart items to filter
+router.post('/book/cart/reserve',BookCtrl.makeReservation); // reserve books and send notification
 router.put('/book/:id',BookCtrl.updateBook);
 router.delete('/book/:id',BookCtrl.deleteBook);
 

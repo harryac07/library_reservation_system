@@ -27,5 +27,6 @@ $(document).ready(function() {
 	$('.carousel-control').click(function(e) {
 		e.preventDefault();
 	});
+
 });
 

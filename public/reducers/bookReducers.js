@@ -1,4 +1,5 @@
-import {FETCH_BOOKS,FETCH_BOOK,FETCH_BOOK_BY_CATEGORY,FETCH_BOOK_BY_SEARCH,SORT_BOOKLIST} from '../actions/bookActions';
+import {FETCH_BOOKS,FETCH_BOOK,FETCH_BOOK_BY_CATEGORY,FETCH_BOOK_BY_SEARCH,SORT_BOOKLIST,FETCH_CART_ITEMS,RESERVE_BOOKS}
+	from '../actions/bookActions';
 import _ from 'lodash';
 
 export default function(state=[],action){
@@ -18,6 +19,10 @@ export default function(state=[],action){
 		case SORT_BOOKLIST:
 			const sortedList = _.orderBy(state,'title', action.payload);
 			return sortedList;
+		case FETCH_CART_ITEMS:
+			const cartState = _.uniqWith([...action.payload.data,...state], _.isEqual);
+			return _.intersectionWith(action.payload.data,cartState, _.isEqual);
+
 		default:
 			return state;
 	}

@@ -20,11 +20,7 @@ class Book_lists extends Component{
 			? props.fetchBySearch(searchTerm) 
 			: props.fetchByCategory(categoryName)
 	}
-	componentWillMount(){
-
-	}
 	componentDidMount(){
-		console.log('i am didmounting');
 			this.fetchBooks(this.props);
 	}
 	componentWillReceiveProps(nextProps) {
@@ -39,7 +35,6 @@ class Book_lists extends Component{
 
 	sortBookList=(keyword)=>{
 		//dispatch action to reducer
-		console.log(keyword);
 		this.props.sortBookList(keyword);
 	}
 
@@ -48,7 +43,6 @@ class Book_lists extends Component{
 		if(!books){
 			return <div>Loading Books...</div>
 		}
-		console.log('i am rendering');
 		return _.map(books,(book,i)=>{
 			return(
 				<div key={book._id} className="col-sm-3 col-md-3 col-xs-12" onClick={()=>this.renderBookDetail(book._id)}>

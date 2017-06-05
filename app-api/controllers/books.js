@@ -103,6 +103,32 @@ module.exports.listBySearch = (req,res)=>{
 		});
 };
 
+/* getCartItems POST*/
+module.exports.getCartItems=(req,res)=>{
+	Book
+		.find((err,book)=>{
+			if(err){
+				sendJSONresponse(res,400,err);
+			}else if(!book){
+				sendJSONresponse(res,404,{'message':'book not found'});
+			}else{
+				var itemsArray=[]; // contains objects for cart
+				var dbBook = book;
+				for(var i=0;i<dbBook.length;i++){
+					for(var j=0;j<req.body.length;j++){
+						if(dbBook[i]._id == req.body[j]){
+							itemsArray.push(dbBook[i]);
+						}
+					}
+				}
+				//sending back the filtered response
+				sendJSONresponse(res,200,itemsArray);			
+			}
+		});
+}
+
+/* POST reserve book and send notification to client */
+
 /* POST book */
 module.exports.postBook = (req,res)=>{
 	let categories = "";

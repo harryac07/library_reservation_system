@@ -44,6 +44,11 @@ input,.btn{
 	color: #fff !important;
 	border: 0 !important;
 }
+.alert-success, .alert-danger{
+	margin-bottom: 0!important;
+	border-radius: 0 !important;
+	border: none !important;
+}
 /*front page */
 
 
@@ -321,6 +326,21 @@ div.category_nav{
 	text-align: left !important;
 }
 
+/* Cart */
+div> .btn.btn-danger.remove{
+    float: right !important;
+    padding: 8px 15px;
+    margin: 20px auto;
+}
+
+/*media*/
+@media (max-width: 768px) {
+    div> .btn.btn-danger.remove{
+	    float: left !important;
+	    padding: 8px 20px;
+	    margin: 20px 20px;
+    }
+}
 
 
 

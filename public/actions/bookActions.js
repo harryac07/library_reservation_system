@@ -5,6 +5,8 @@ export const FETCH_BOOK="FETCH_BOOK";
 export const FETCH_BOOK_BY_CATEGORY="FETCH_BOOK_BY_CATEGORY";
 export const FETCH_BOOK_BY_SEARCH="FETCH_BOOK_BY_SEARCH";
 export const SORT_BOOKLIST = "SORT_BOOKLIST";
+export const FETCH_CART_ITEMS ="FETCH_CART_ITEMS";
+export const RESERVE_BOOKS = "RESERVE_BOOKS";
 
 const ROOT_URL = "http://localhost:3000/api";
 
@@ -47,6 +49,24 @@ export function sortBookList(keyword){
 		type : SORT_BOOKLIST,
 		payload : keyword
 	}
+}
+// Fetch Books in Cart
+export function fetchCartBooks(books){
+	const request = axios.post(`${ROOT_URL}/book/cart`,books);
+		return{
+			type : FETCH_CART_ITEMS,
+			payload:request
+		}
+	
+}
+// Reserve Books in cart and send notification to client
+export function makeReservation(books){
+	const request = axios.post(`${ROOT_URL}/book/cart/reserve`,books);
+		return{
+			type : RESERVE_BOOKS,
+			payload:request
+		}
+	
 }
 
 

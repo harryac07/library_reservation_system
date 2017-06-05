@@ -1,5 +1,6 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
+import _ from 'lodash';
 import {fetchBook} from '../actions/bookActions'; // import actions here
 import Navigation from './Parts/Navigation';
 import CategoryFrame from './Parts/CategoryFrame';
@@ -8,15 +9,59 @@ class Book_detail extends Component{
 	constructor(props){
 		super(props);
 		this.state={
-			addToCart : false
+			itemInCart : false,
+			cartMessage : false // true only when cart is triggered
 		};
+	}
+	componentWillMount(){
+		let cart = localStorage.getItem('cartItems');
+		if(cart && typeof cart!==null){
+			let addedBooks = cart.split(',');
+			if(_.indexOf(addedBooks, this.props.match.params.id)!==-1){
+				this.setState({
+					itemInCart : true
+				});
+			}else{
+				this.setState({itemInCart : false});
+			}
+		}else{
+			this.setState({itemInCart : false});
+		}
 	}
 	componentDidMount(){
 		this.props.fetchBook(this.props.match.params.id);
 	}
 	addToCart=(bookId)=>{
-		console.log('cart book : '+bookId);
-		this.setState(addToCart : true);
+		let cart = localStorage.getItem('cartItems');
+		if(!cart ){
+			localStorage.setItem('cartItems',bookId);
+			this.setState({
+				itemInCart : true,
+				cartMessage : true
+			});
+		}else{
+			let addedBooks = cart.split(',');
+			if(_.indexOf(addedBooks, bookId) ===-1){
+				localStorage.setItem('cartItems',addedBooks+','+bookId);
+				this.setState({
+					itemInCart : true,
+					cartMessage : true
+				});
+			}			
+		}
+	}
+	removeFromCart=(bookId)=>{
+		let bookToRemove = localStorage.getItem('cartItems').split(',');
+		let booksAfterRemove = _.pull(bookToRemove, bookId);
+		localStorage.removeItem('cartItems');
+		if(booksAfterRemove.length>0){
+			localStorage.setItem('cartItems',booksAfterRemove);
+		}
+		this.setState({
+			itemInCart : false,
+			cartMessage : true
+		});
+		
 	}
 	renderBook=()=>{
 		const book  = this.props.book[0];
@@ -38,7 +83,16 @@ class Book_detail extends Component{
 					<p>Quantity Available : {book.available}</p>
 					<h4>By {book.author}</h4>
 					<br />
-					<button className="btn btn-danger" onClick={()=>this.addToCart(book._id)}>Add to cart</button>
+					<span>
+						
+						{ this.state.itemInCart
+							?
+								<button className="btn btn-danger cart_button" onClick={()=>this.removeFromCart(book._id)}>
+									Remove from cart
+								</button>
+							: 	<button className="btn btn-primary cart_button" onClick={()=>this.addToCart(book._id)}>Add to cart</button>
+						}
+					</span>
 					<div className="well">
 						<p>
 							Express One Eleven is created from super-soft fabrics for effortless layering and styling your way. 
@@ -59,7 +113,7 @@ class Book_detail extends Component{
 
 		return(
 			<div>
-				<Navigation />
+				<Navigation cartMessage={this.state.cartMessage} itemInCart={this.state.itemInCart} currentBook={title} />
 				<div className="container category_nav">
 					<div className="row">
 						<CategoryFrame />
