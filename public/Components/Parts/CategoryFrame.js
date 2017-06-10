@@ -20,7 +20,7 @@ class CategoryFrame extends Component{
 			      	<ul className="category">
 			      		<li>
 			      			<a>
-			      				<form className="form-horizontal" method="get" action="/books/category/all">
+			      				<form className="form-horizontal" method="get" action="/books/category/search">
 									<div className="input-group">
 									   <input type="text" name="search" className="form-control" />
 									   <span className="input-group-btn">

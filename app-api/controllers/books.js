@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Book = mongoose.model('Book');
+const User = mongoose.model('User');
+const _ = require('lodash');
 
 const sendJSONresponse = (res, status, content)=>{
 	res.status(status);
@@ -129,7 +131,59 @@ module.exports.getCartItems=(req,res)=>{
 
 /* POST reserve book and send notification to client */
 module.exports.makeReservation = (req,res)=>{
-			
+	const queryParams = req.query.user;
+	if(!queryParams){
+		sendJSONresponse(res,404,{'message':'user email/id is required'});
+	}
+	User.findOne({email : queryParams},(err,user)=>{
+		if(err){
+			sendJSONresponse(res,400,err);
+		}else if(!user){
+			sendJSONresponse(res,404,{'message':'user not found'});
+		}else{
+			const books = req.body;
+			for(var i=0;i<books.length;i++){
+				if(user.reserved_books.indexOf(books[i])<0){
+					user.reserved_books.push(books[i]);
+				}
+			}
+			user.save((err,user)=>{
+				if(err){
+					console.log(err);
+				}else{
+					console.log(user);
+				}
+			});
+		}
+	});
+
+}
+/* DELETE Remove reservation ,each book */
+module.exports.removeReservation=(req,res)=>{
+	const query = req.query.user;
+	const id = req.params.id;
+	if(!query){
+		sendJSONresponse(res,404,{'message':'user email/id is required'});
+	}
+	User.findOne({email : query},(err,user)=>{
+		if(err){
+			sendJSONresponse(res,400,err);
+		}else if(!user){
+			sendJSONresponse(res,404,{'message':'user not found'});
+		}else{
+			console.log(user.reserved_books);
+			const index = user.reserved_books.indexOf(id);
+			user.reserved_books.splice(index,1);
+			console.log(user.reserved_books+' after delete');
+			user.save((err,user)=>{
+				if(err){
+					console.log(err);
+				}else{
+					console.log(user);
+				}
+			});
+		}
+	});
 }
 
 /* POST book */

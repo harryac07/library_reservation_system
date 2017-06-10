@@ -1,22 +1,41 @@
 import React,{ Component } from 'react';
 import { Link } from 'react-router-dom';
+import _ from 'lodash';
 
 class Navigation extends Component {
 	constructor(props){
 		super(props);
 		this.state={
-			cartItemsNumber : 0 // for hiding cart message
+			cartItemsNumber : 0, // for hiding cart message
+			loggedIn : false,
+			currentUser : {}
 		};
+	}
+	getCurrentUser=(token)=>{
+		const payload = JSON.parse(window.atob(token.split('.')[1]));
+		const userdata = {
+			_id:payload._id,
+			email: payload.email,
+			name: payload.name,
+			admin: payload.admin
+		};
+		this.setState({currentUser : userdata});
 	}
 	componentWillMount(){
 		let cart = localStorage.getItem('cartItems');
+		let login = localStorage.getItem('user-token');
 		if(cart){
 			let cartBooks = cart.split(',');
 			this.setState({
 				cartItemsNumber : cartBooks.length
-			})
+			});
 		}
-		console.log('will mount');
+		if(login){
+			this.setState({
+				loggedIn : true
+			});
+			this.getCurrentUser(login);
+		}
 	}
 	componentDidUpdate(){
 		/* cart manage */
@@ -26,12 +45,18 @@ class Navigation extends Component {
 			setTimeout(() => {
 			  	document.querySelector(".alert").style.display="none";
 			}, 2000);
-			console.log('i am here running');
 		}
 
 		/* update number of cartitems in every cart update in navigation */
 		if(!localStorage.getItem('cartItems') && this.state.cartItemsNumber!==0){
 			this.setState({cartItemsNumber : 0});
+			console.log('i am updated');
+		}
+		/* user loggedin status */
+		if(localStorage.getItem('user-token') && this.state.loggedIn===false){
+			this.setState({loggedIn : true});
+			this.getCurrentUser(localStorage.getItem('user-token'));
+			console.log('i am updated');
 		}
 
 		if(localStorage.getItem('cartItems')){
@@ -40,13 +65,14 @@ class Navigation extends Component {
 				this.setState({
 					cartItemsNumber : localStorage.getItem('cartItems').split(',').length
 				});
+				console.log('i am updated');
 			}	
 		}
 
 	}
-	cartMessage=()=>{		
+	cartMessage=()=>{
+	
 		/* this is triggered from detail page for cart */
-		console.log('current book : '+this.props.cartMessage+' '+this.props.itemInCart);
 		if(this.props.cartMessage===true){
 			if(this.props.itemInCart){
 				return(
@@ -63,8 +89,13 @@ class Navigation extends Component {
 			}			
 		}
 	}
+	logout=()=>{
+		localStorage.removeItem('user-token');
+		localStorage.removeItem('cartItems');
+		window.location.reload();
+	}
 	render(){
-		const login = true; // static login for now
+
 		return(
 			<nav className="navbar navbar-inverse navbar-fixed-top">
 			  <div className="container-fluid">
@@ -85,21 +116,26 @@ class Navigation extends Component {
 			       	<li><Link to="#"><i className="fa fa-twitter" aria-hidden="true"></i></Link></li>
 			      </ul>
 			      <ul className="nav navbar-nav navbar-right">
-			      	<li>
-			      		{this.cartMessage()}
-			      	</li>
-			      	{ login 
+			      	{ this.state.loggedIn 
 				      	?
-					      	<li>
-						      	<Link to="/books/cart">
-						        	<span className="glyphicon glyphicon-shopping-cart"></span>
-						        	&nbsp;My Cart:{this.state.cartItemsNumber}
-						        </Link>
-					      	</li>
-					    : null
+					      	(
+					      		[<li key={0}>
+						      		{this.cartMessage()}
+						      	</li>,
+					      		<li key={1}>
+							      	<Link to="/books/cart">
+							        	<span className="glyphicon glyphicon-shopping-cart"></span>
+							        	&nbsp;My Cart:{this.state.cartItemsNumber}
+							        </Link>
+						      	</li>,
+						      	<li key={3}><a>USER : {this.state.currentUser.name.toUpperCase()}</a></li>,
+						      	<li key={4} onClick={()=>this.logout()}><a>Logout</a></li>]
+					      	)
+					    : 	(
+						        [<li key={5}><Link to="/register"><span className="glyphicon glyphicon-user"></span> Sign Up</Link></li>,
+						        <li key={6}><Link to="/login"><span className="glyphicon glyphicon-log-in"></span> Login</Link></li>]
+					    	)
 			      	}
-			        <li><Link to="#"><span className="glyphicon glyphicon-user"></span> Sign Up</Link></li>
-			        <li><Link to="#"><span className="glyphicon glyphicon-log-in"></span> Login</Link></li>
 			      </ul>
 			    </div>
 			  </div>
@@ -107,5 +143,6 @@ class Navigation extends Component {
 		);
 	}
 }
+
 
 export default Navigation;

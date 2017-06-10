@@ -40,17 +40,17 @@ var userSchema = new mongoose.Schema({
 });
 
 //set password
-userSchema.methods.setPassword = (password)=>{
+userSchema.methods.setPassword = function(password){
 	this.salt = crypto.randomBytes(16).toString('hex'); // creating a random string for salt
 	this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64).toString('hex'); // create encryted hash
 };
 //validate password
-userSchema.methods.validPassword = (password)=>{ // validating submitted password
+userSchema.methods.validPassword = function(password){ // validating submitted password
 	var hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64).toString('hex');
 	return this.hash === hash;
 };
 //generate Json Web Token
-userSchema.methods.generateJwt = ()=>{
+userSchema.methods.generateJwt = function(){
 	var expiry = new Date();
 	expiry.setDate(expiry.getDate() + 7); // create expiry date obj and set expiry for 7 days
 

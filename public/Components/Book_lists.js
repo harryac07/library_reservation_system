@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
-import {fetchByCategory,fetchBySearch,sortBookList} from '../actions/bookActions'; // import actions here
+import {fetchByCategory,fetchBySearch,sortBookList,reset} from '../actions/bookActions'; // import actions here
 import Navigation from './Parts/Navigation';
 import CategoryFrame from './Parts/CategoryFrame';
 import _ from 'lodash';
@@ -21,10 +21,11 @@ class Book_lists extends Component{
 			: props.fetchByCategory(categoryName)
 	}
 	componentDidMount(){
-			this.fetchBooks(this.props);
+		this.fetchBooks(this.props);
 	}
 	componentWillReceiveProps(nextProps) {
 		//checking the route pathname and fetching the books
+
 	    if (nextProps.location.pathname !== this.props.location.pathname) {
 	    	this.fetchBooks(nextProps);
 	    }
@@ -37,12 +38,16 @@ class Book_lists extends Component{
 		//dispatch action to reducer
 		this.props.sortBookList(keyword);
 	}
-
+	componentWillUnmount(){
+		this.props.reset();
+	}
 	renderBooks=()=>{
+		console.log('book : '+this.props.books);
 		const books=this.props.books;
 		if(!books){
 			return <div>Loading Books...</div>
 		}
+
 		return _.map(books,(book,i)=>{
 			return(
 				<div key={book._id} className="col-sm-3 col-md-3 col-xs-12" onClick={()=>this.renderBookDetail(book._id)}>
@@ -86,13 +91,13 @@ class Book_lists extends Component{
 	}
 }
 
-function mapStateToProps(state){
+function mapStateToProps(state,ownProps){
 	return{
 		books : state.books
 	};
 }
 
-export default connect(mapStateToProps,{fetchByCategory,fetchBySearch,sortBookList})(Book_lists);
+export default connect(mapStateToProps,{fetchByCategory,fetchBySearch,sortBookList,reset})(Book_lists);
 
 
 

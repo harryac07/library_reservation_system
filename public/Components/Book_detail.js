@@ -1,7 +1,7 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import {fetchBook} from '../actions/bookActions'; // import actions here
+import {fetchBook,reset} from '../actions/bookActions'; // import actions here
 import Navigation from './Parts/Navigation';
 import CategoryFrame from './Parts/CategoryFrame';
 
@@ -10,44 +10,56 @@ class Book_detail extends Component{
 		super(props);
 		this.state={
 			itemInCart : false,
-			cartMessage : false // true only when cart is triggered
+			cartMessage : false, // true only when cart is triggered
+			loggedIn : false
 		};
 	}
 	componentWillMount(){
-		let cart = localStorage.getItem('cartItems');
+		/* cart handling */
+		const cart = localStorage.getItem('cartItems');
+		const login = localStorage.getItem('user-token');
 		if(cart && typeof cart!==null){
 			let addedBooks = cart.split(',');
 			if(_.indexOf(addedBooks, this.props.match.params.id)!==-1){
 				this.setState({
 					itemInCart : true
 				});
-			}else{
-				this.setState({itemInCart : false});
 			}
-		}else{
-			this.setState({itemInCart : false});
+		}
+		/* user handling */
+		if(login){
+			this.setState({loggedIn:true});
 		}
 	}
 	componentDidMount(){
-		this.props.fetchBook(this.props.match.params.id);
+		const bookId = this.props.match.params.id;
+		this.props.fetchBook(bookId);
+	}
+	componentWillUnmount(){
+		this.props.reset();
 	}
 	addToCart=(bookId)=>{
-		let cart = localStorage.getItem('cartItems');
-		if(!cart ){
-			localStorage.setItem('cartItems',bookId);
-			this.setState({
-				itemInCart : true,
-				cartMessage : true
-			});
-		}else{
-			let addedBooks = cart.split(',');
-			if(_.indexOf(addedBooks, bookId) ===-1){
-				localStorage.setItem('cartItems',addedBooks+','+bookId);
+		const cart = localStorage.getItem('cartItems');
+		// if user logged in
+		if(this.state.loggedIn){
+			if(!cart ){
+				localStorage.setItem('cartItems',bookId);
 				this.setState({
 					itemInCart : true,
 					cartMessage : true
 				});
-			}			
+			}else{
+				let addedBooks = cart.split(',');
+				if(_.indexOf(addedBooks, bookId) ===-1){
+					localStorage.setItem('cartItems',addedBooks+','+bookId);
+					this.setState({
+						itemInCart : true,
+						cartMessage : true
+					});
+				}			
+			}
+		}else{ //  user not loggedin -> /login
+			this.props.history.push('/login');
 		}
 	}
 	removeFromCart=(bookId)=>{
@@ -64,6 +76,7 @@ class Book_detail extends Component{
 		
 	}
 	renderBook=()=>{
+		console.log('books :'+this.props.book);
 		const book  = this.props.book[0];
 		if(!book){
 			return <div>Loading...</div>;
@@ -141,4 +154,4 @@ function mapStateToProps(state){
 	};
 }
 
-export default connect(mapStateToProps,{fetchBook})(Book_detail);
+export default connect(mapStateToProps,{fetchBook,reset})(Book_detail);

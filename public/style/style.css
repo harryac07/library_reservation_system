@@ -333,6 +333,42 @@ div> .btn.btn-danger.remove{
     margin: 20px auto;
 }
 
+/* Register */
+
+.register-form>div>input{
+	float: left;
+	width: 75%;
+	padding: 20px;
+	margin-bottom: 20px;
+}
+.register-form>div label[for="name"]:before,
+.register-form>div label[for="password"]:before,
+.register-form>div label[for="email"]:before{
+	content: "\2731" !important;
+	font-size: 15px;
+	font-weight: normal;
+	/*float: left;*/
+	padding: 10px 10px;
+}
+.register-form>div label[for="phone"]:before,
+.register-form>div label[for="address"]:before{
+	content: "\00A0" !important;
+	font-size: 15px;
+	font-weight: normal;
+	/*float: left;*/
+	padding: 10px 12px;
+}
+.register-form>div>label{
+	float: left;
+	width: 25%;
+}
+.register-form>button{
+	float: left;
+	border-radius: 5px !important;
+	width: 100px;
+}
+
+
 /*media*/
 @media (max-width: 768px) {
     div> .btn.btn-danger.remove{
@@ -340,6 +376,12 @@ div> .btn.btn-danger.remove{
 	    padding: 8px 20px;
 	    margin: 20px 20px;
     }
+	/* Register */
+	.register-form>div>input,.register-form>div>label{
+		width: 100%;
+		display: block;
+	}
+
 }
 
 

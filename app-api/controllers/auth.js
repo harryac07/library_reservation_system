@@ -9,6 +9,7 @@ var sendJSONresponse = (res, status, content)=>{
 
 /* register */
 module.exports.register = (req, res)=>{
+	console.log(req.body.name);
 	if (!req.body.name || !req.body.email || !req.body.password) {
 		sendJSONresponse(res, 400, {
 			"message": "All fields are required"
@@ -67,7 +68,7 @@ module.exports.login = (req, res)=>{
 		});
 		return;
 	}
-
+	console.log(req.body.email+' : '+req.body.password);
 	passport.authenticate('local', function(err, user, info) {
 		var token;
 		if (err) {

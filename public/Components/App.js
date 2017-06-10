@@ -1,8 +1,9 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
-import {fetchBooks} from '../actions/bookActions'; // import actions here
+import {fetchBooks,reset} from '../actions/bookActions'; // import actions here
 
 import Navigation from './Parts/Navigation';
+import HomeCategoryNav from './Parts/HomeCategoryNav';
 import Home from './Parts/Home';
 import Book from './Parts/Book';
 import Support from './Parts/Support';
@@ -21,6 +22,9 @@ class App extends Component{
 	componentDidMount(){
 		this.props.fetchBooks();
 	}
+	componentWillUnmount(){
+		this.props.reset();
+	}
 	render(){
 		const {books}=this.props;
 		if(!books){
@@ -30,6 +34,7 @@ class App extends Component{
 			<div>
 				<Navigation />
 				<Home />
+				<HomeCategoryNav />
 				{ (this.props.books.length>0)?<Book books={books}/> : null }
 				<Support />
 				<Carousel />
@@ -43,4 +48,4 @@ function mapStateToProps(state){
 	return {books : state.books};
 }
 
-export default connect(mapStateToProps,{fetchBooks:fetchBooks})(App);
+export default connect(mapStateToProps,{fetchBooks,reset})(App);

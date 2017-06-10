@@ -26,7 +26,9 @@ module.exports.listUser = (req,res)=>{
 		sendJSONresponse(res,404,{'message':'user id is required'});	
 	}
 	
-	User.findById(userId,(err,user)=>{
+	User.findById(userId)
+		.populate('reserved_books', '_id title author rating') // comes more if needed
+		.exec((err,user)=>{
 		if(!user){
 			sendJSONresponse(res,404,{'message':'users not found with that id'});
 		}else if(err){
@@ -78,7 +80,6 @@ module.exports.updateUser = (req,res)=>{
 		}
 	});
 };
-
 
 /* DELETE a user */
 module.exports.deleteUser = (req,res)=>{

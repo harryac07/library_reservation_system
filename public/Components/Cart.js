@@ -2,7 +2,7 @@ import React , { Component } from 'react';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 
-import {fetchCartBooks} from '../actions/bookActions'; // import actions here
+import {fetchCartBooks,makeReservation,reset} from '../actions/bookActions'; // import actions here
 import Navigation from './Parts/Navigation';
 import CategoryFrame from './Parts/CategoryFrame';
 
@@ -17,12 +17,15 @@ class Cart extends Component{
 		this.setCartItems();
 	}
 	componentDidMount(){
-		let cart = localStorage.getItem('cartItems');
+		const cart = localStorage.getItem('cartItems');
 		if(cart && typeof cart!==null){
 			let cartBooks = cart.split(',');
 			this.props.fetchCartBooks(cartBooks); // action 
 		}
 	}
+	shouldComponentUpdate(nextProp, nextState) {
+        return !(_.isEqual(nextProp, this.props) && _.isEqual(nextState, this.state));
+    }
 	componentDidUpdate(){
 		/* update number of cartitems in every cart update in navigation */
 		if(!localStorage.getItem('cartItems') && this.state.totalItems!==0){
@@ -38,6 +41,9 @@ class Cart extends Component{
 				this.props.fetchCartBooks(localStorage.getItem('cartItems').split(',')); // action 
 			}	
 		}
+	}
+	componentWillUnmount(){
+		this.props.reset();
 	}
 	setCartItems=()=>{
 		let cart = localStorage.getItem('cartItems');
@@ -60,6 +66,7 @@ class Cart extends Component{
 		}else{
 			this.setState({totalItems : 0});
 		}
+
 	}
 	removeFromCart=(e,bookId)=>{
 		this.deleteCartItems(bookId);
@@ -72,11 +79,15 @@ class Cart extends Component{
 	}
 	makeReservation=()=>{
 		let cart = localStorage.getItem('cartItems');
+		let token = localStorage.getItem('user-token');
+		const payload = JSON.parse(window.atob(token.split('.')[1]));
+		const user =  payload.email;
 		if(cart && typeof cart!==null){
 			let cartBooks = cart.split(',');
-			console.log(cartBooks.length);
-			// this.props.fetchCartBooks(cartBooks); // action 
+			this.props.makeReservation(cartBooks,user); // action 
 		}
+		this.setState({totalItems : 0});
+		window.location.href="/reservation";
 	}
 	renderBook=(e,bookId)=>{
 		this.props.history.push(`/book/${bookId}`);
@@ -149,7 +160,7 @@ function mapStateToProps(state){
 	};
 }
 
-export default connect(mapStateToProps,{fetchCartBooks})(Cart);
+export default connect(mapStateToProps,{fetchCartBooks,makeReservation,reset})(Cart);
 
 
 

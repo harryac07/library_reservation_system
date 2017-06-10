@@ -1,5 +1,4 @@
 import React,{Component} from 'react';
-import HomeCategoryNav from './HomeCategoryNav';
 import { Route , withRouter} from 'react-router-dom';
 
 class Book extends Component{
@@ -33,7 +32,6 @@ class Book extends Component{
 	render(){
 		return(
 			<div className="book">
-				<HomeCategoryNav />
 			    <div className="container">
 					<h2>Most Popular</h2>
 					<hr />

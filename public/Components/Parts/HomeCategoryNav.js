@@ -18,7 +18,7 @@ class CategoryNav extends Component{
 		      	<ul className="nav navbar-nav navbar-right">
 		      		<li>
 		      			<a>
-		      				<form className="form-inline" method="get" action="/books/category/all">
+		      				<form className="form-inline" method="get" action="/books/category/search">
 		                        <input type="text" name="search" ref="search" className="form-control" placeholder="search..." />
 		                        <input type="submit" className="btn btn-danger" />
 	                        </form>
