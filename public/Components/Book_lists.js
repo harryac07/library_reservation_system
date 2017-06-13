@@ -8,9 +8,6 @@ import _ from 'lodash';
 class Book_lists extends Component{
 	constructor(props){
 		super(props);
-		this.state={
-			sorting : ''
-		}
 	}
 	fetchBooks=(props)=>{
 		const categoryName=props.match.params.name;
@@ -42,13 +39,12 @@ class Book_lists extends Component{
 		this.props.reset();
 	}
 	renderBooks=()=>{
-		console.log('book : '+this.props.books);
 		const books=this.props.books;
 		if(!books){
 			return <div>Loading Books...</div>
 		}
-
-		return _.map(books,(book,i)=>{
+		console.log('book : ',books);
+		return _.map(this.props.books,(book,i)=>{
 			return(
 				<div key={book._id} className="col-sm-3 col-md-3 col-xs-12" onClick={()=>this.renderBookDetail(book._id)}>
 					<img src = "/images/books.jpg" className="img-img-thumbnail" />
@@ -91,7 +87,7 @@ class Book_lists extends Component{
 	}
 }
 
-function mapStateToProps(state,ownProps){
+function mapStateToProps(state){
 	return{
 		books : state.books
 	};

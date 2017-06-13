@@ -76,7 +76,6 @@ class Book_detail extends Component{
 		
 	}
 	renderBook=()=>{
-		console.log('books :'+this.props.book);
 		const book  = this.props.book[0];
 		if(!book){
 			return <div>Loading...</div>;
@@ -119,9 +118,10 @@ class Book_detail extends Component{
 	}
 	render(){
 		let title, category ='';
-		if(this.props.book[0]){
-			category = this.props.book[0].category
-			title = this.props.book[0].title
+		const book = this.props.book[0];
+		if(book){
+			category = book.category
+			title = book.title
 		}
 
 		return(
@@ -148,7 +148,7 @@ class Book_detail extends Component{
 	}
 }
 
-function mapStateToProps(state){
+function mapStateToProps(state,ownProps){
 	return{
 		book : state.books
 	};

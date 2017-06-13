@@ -6,37 +6,25 @@ export const REMOVE_RESERVE_BOOKS = "REMOVE_RESERVE_BOOKS";
 
 const ROOT_URL = "http://localhost:3000/api";
 
-export function returnUser(user){
-	return{
-		type : FETCH_USER,
-		payload : user
-	}
-}
+//fetch user
 export function fetchUser(userId){
 	return (dispatch)=>{
-		axios.get(`${ROOT_URL}/user/${userId}`)
+		return axios.get(`${ROOT_URL}/user/${userId}`)
 			.then((response)=>{
-				dispatch(returnUser(response));
+				dispatch({type : FETCH_USER, payload : response});
 			}).catch((err)=>{
-				dispatch(returnUser(err.response));
+				dispatch({type : FETCH_USER, payload : err.response});
 			});
-	}
-}
-//return removeReservation
-export function returnRemoveReservation(user){
-	return{
-		type : REMOVE_RESERVE_BOOKS,
-		payload:user
 	}
 }
 //Remove reservation Put method
 export function removeReservation(bookId,user){
 	return(dispatch)=>{
-		axios.put(`${ROOT_URL}/book/remove-reservation/${bookId}?user=${user}`)
+		return axios.put(`${ROOT_URL}/book/remove-reservation/${bookId}?user=${user}`)
 			.then((response)=>{
-				dispatch(returnRemoveReservation(response));
+				// console.log('book removed!')
 			}).catch((err)=>{
-				dispatch(returnRemoveReservation(err.response));
+				// dispatch({type : REMOVE_RESERVE_BOOKS, payload : err.response});
 			});
 	}
 }

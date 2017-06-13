@@ -84,10 +84,13 @@ class Cart extends Component{
 		const user =  payload.email;
 		if(cart && typeof cart!==null){
 			let cartBooks = cart.split(',');
-			this.props.makeReservation(cartBooks,user); // action 
+			this.props.makeReservation(cartBooks,user).then(()=>{ // action 
+				localStorage.removeItem('cartItems');
+				console.log('done');
+				this.setState({totalItems : 0});
+				this.props.history.push('/reservation');
+			}); 
 		}
-		this.setState({totalItems : 0});
-		window.location.href="/reservation";
 	}
 	renderBook=(e,bookId)=>{
 		this.props.history.push(`/book/${bookId}`);
@@ -100,6 +103,7 @@ class Cart extends Component{
 		}else if(!localStorage.getItem('cartItems')){
 			return (<div className="well" style={{textAlign:'center'}}><h3>Your Cart is Empty!</h3></div>);
 		}
+		
 		return books.map((book,i)=>{
 			return(
 				<div className="col-sm-12 col-md-12 col-xs-12" key={book._id}>

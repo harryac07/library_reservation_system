@@ -18,31 +18,17 @@ export function getToken(){
 	return window.localStorage['user-token'];
 }
 //register
-export function registerResult(data){
-  	return {
-    	type: REGISTER,
-    	payload : data
-  	}
-}
-//register
 export function register(user){
 	return (dispatch)=>{
 		axios.post(`${ROOT_URL}/register`,user)
 			.then((response)=>{
 				console.log(response);
-				dispatch(registerResult(response));
+				dispatch({type : REGISTER, payload : response});
 			}).catch((err)=>{
 				console.log(err.response);
-				dispatch(registerResult(err.response));
+				dispatch({type : REGISTER, payload : err.response});
 			});
 	}
-}
-//login
-export function loginResult(response){
-  	return {
-    	type: LOGIN,
-    	payload : response
-  	}
 }
 //login
 export function login(user){
@@ -50,10 +36,9 @@ export function login(user){
 		axios.post(`${ROOT_URL}/login`,user)
 			.then((response)=>{
 				saveToken(response.data.token);
-				dispatch(loginResult(response));
+				dispatch({type : LOGIN, payload : response});
 			}).catch((err)=>{
-				dispatch(loginResult(err.response));
-			  	// console.log(err.response.data);
+				dispatch({type : LOGIN, payload : err.response});
 			});
 	}
 

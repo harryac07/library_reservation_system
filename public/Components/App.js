@@ -35,7 +35,7 @@ class App extends Component{
 				<Navigation />
 				<Home />
 				<HomeCategoryNav />
-				{ (this.props.books.length>0)?<Book books={books}/> : null }
+				{ (this.props.books)?<Book books={books}/> : null }
 				<Support />
 				<Carousel />
 				<Footer />

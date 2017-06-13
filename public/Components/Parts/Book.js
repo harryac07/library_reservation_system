@@ -1,5 +1,6 @@
 import React,{Component} from 'react';
 import { Route , withRouter} from 'react-router-dom';
+import _ from 'lodash';
 
 class Book extends Component{
 	constructor(props){
@@ -9,7 +10,7 @@ class Book extends Component{
 		this.props.history.push(`/book/${bookId}`);
 	}
 	renderPopularBooks=()=>{
-		const books = _.take(this.props.books, 4);
+		const books= _.take(this.props.books, 4);
 		return _.map(books,(book)=>{
 			return( 			
 				<div className="col-sm-3 col-md-3" key={book._id} onClick={()=>this.renderSingle(book._id)}>

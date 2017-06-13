@@ -149,9 +149,9 @@ module.exports.makeReservation = (req,res)=>{
 			}
 			user.save((err,user)=>{
 				if(err){
-					console.log(err);
+					sendJSONresponse(res,400,err);
 				}else{
-					console.log(user);
+					sendJSONresponse(res,201,user);
 				}
 			});
 		}
@@ -177,9 +177,9 @@ module.exports.removeReservation=(req,res)=>{
 			console.log(user.reserved_books+' after delete');
 			user.save((err,user)=>{
 				if(err){
-					console.log(err);
+					sendJSONresponse(res,201,err);
 				}else{
-					console.log(user);
+					sendJSONresponse(res,200,user);
 				}
 			});
 		}

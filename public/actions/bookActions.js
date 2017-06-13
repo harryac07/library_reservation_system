@@ -20,49 +20,28 @@ export function returnErrors(data){
 	}
 }
 
-//return all books
-export function returnFetchBooks(data){
-	return{
-		type : FETCH_BOOKS,
-		payload : data
-	}
-}
+
 // Fetch Books 
 export function fetchBooks(){
 	return (dispatch) =>{
 		axios.get(ROOT_URL+"/books?sort=rating")
 			.then((response)=>{
-				dispatch(returnFetchBooks(response));
-
+				dispatch({type : FETCH_BOOKS, payload : response});
 			}).catch((err)=>{
 				dispatch(returnErrors(err));
 			});
-	}
-}
-//return each book
-export function returnFetchBook(data){
-	return{
-		type : FETCH_BOOK,
-		payload : data
 	}
 }
 // Fetch a book
 export function fetchBook(bookId){
 	return (dispatch) =>{
-		axios.get(`${ROOT_URL}/book/${bookId}`)
+		return axios.get(`${ROOT_URL}/book/${bookId}`)
 			.then((response)=>{
-				dispatch(returnFetchBook(response));
-
+				console.log('action ',response.data);
+				dispatch({type : FETCH_BOOK, payload : response});
 			}).catch((err)=>{
 				dispatch(returnErrors(err));
 			});
-	}
-}
-//return category
-export function returnCategory(data){
-	return{
-		type : FETCH_BOOK_BY_CATEGORY,
-		payload : data
 	}
 }
 // Fetch by category
@@ -70,20 +49,10 @@ export function fetchByCategory(categoryName){
 	return (dispatch)=>{
 		axios.get(`${ROOT_URL}/book/category/${categoryName}`)
 			.then((response)=>{
-				dispatch(returnCategory(response));
-
+				dispatch({type : FETCH_BOOK_BY_CATEGORY, payload : response});
 			}).catch((err)=>{
 				dispatch(returnErrors(err));
 			});
-	}
-
-
-}
-//return books by search 
-export function returnFetchBySearch(data){
-	return{
-		type : FETCH_BOOK_BY_SEARCH,
-		payload : data
 	}
 }
 // Fetch by search input
@@ -91,8 +60,7 @@ export function fetchBySearch(searchTerm){
 	return (dispatch)=>{
 		axios.get(`${ROOT_URL}/book/search/${searchTerm}`)
 			.then((response)=>{
-				dispatch(returnFetchBySearch(response));
-
+				dispatch({type : FETCH_BOOK_BY_SEARCH, payload : response});
 			}).catch((err)=>{
 				dispatch(returnErrors(err));
 			});
@@ -105,42 +73,26 @@ export function sortBookList(keyword){
 		payload : keyword
 	}
 }
-
-//return fetchCartBooks
-export function returnFetchCartBooks(books){
-	return{
-		type : FETCH_CART_ITEMS,
-		payload:books
-	}
-}
 // Fetch Books in Cart
 export function fetchCartBooks(books){
 	return (dispatch)=>{
-		axios.post(`${ROOT_URL}/book/cart`,books)
+		return axios.post(`${ROOT_URL}/book/cart`,books)
 			.then((response)=>{
-				dispatch(returnFetchCartBooks(response));
-
+				dispatch({type : FETCH_CART_ITEMS, payload : response});
 			}).catch((err)=>{
 				dispatch(returnErrors(err));
 			});
 	}	
 }
-//return makeReservation
-export function returnMakeReservation(request){
-	return{
-		type : RESERVE_BOOKS,
-		payload:request
-	}
-}
 // Reserve Books in cart and send notification to client
 export function makeReservation(books,user){
 	return (dispatch)=>{
-		axios.post(`${ROOT_URL}/book/cart/reserve?user=${user}`,books)
+		return axios.post(`${ROOT_URL}/book/cart/reserve?user=${user}`,books)
 			.then((response)=>{
-				dispatch(returnMakeReservation(response));
-
+				console.log('action ',response.data);
+				// dispatch({type : RESERVE_BOOKS, payload : response});
 			}).catch((err)=>{
-				dispatch(returnErrors(err));
+				// dispatch(returnErrors(err));
 			});
 	}
 	
@@ -155,18 +107,6 @@ export function reset(){
 		type : RESET
 	}
 }
-
-// export function register(user){
-// 	return (dispatch)=>{
-// 		axios.post(`${ROOT_URL}/register`,user)
-// 			.then((response)=>{
-// 				console.log(response.status);
-// 				dispatch(registerSuccess(response.data));
-// 			}).catch((err)=>{
-// 				dispatch(returnErrors(err));
-// 			});
-// 	}
-// }
 
 
 

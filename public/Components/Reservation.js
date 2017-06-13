@@ -11,27 +11,19 @@ class Reservation extends Component{
 	constructor(props){
 		super(props);
 		this.state={
-			totalItems : 0,
-			reservedBooks:[]
+			totalItems : 0
 		}
 	}
 	componentDidMount(){
 		let token = localStorage.getItem('user-token');
 		if(token){
 			const payload = JSON.parse(window.atob(token.split('.')[1]));
-			this.props.fetchUser(payload._id); // action
+			this.props.fetchUser(payload._id).then(()=>{
+				const bookCount = this.props.user.data.reserved_books.length;
+				this.setState({totalItems : bookCount})
+			}); // action
 		}
 	}
-	setReservedBooks=()=>{
-		const books = localStorage.setItem('reserved_books')
-	}
-    componentDidUpdate(){
-    	console.log('ok');
-    	const totalBooks = this.props.user.data.reserved_books.length;
-    	if(totalBooks>0 && this.state.totalItems!==totalBooks){
-    		this.setState({totalItems : totalBooks,reservedBooks : this.props.user.data.reserved_books});
-    	}
-    }
     componentWillUnmount(){
     	this.props.reset();
     }
@@ -43,20 +35,30 @@ class Reservation extends Component{
 		let token = localStorage.getItem('user-token');
 		if(token){
 			const payload = JSON.parse(window.atob(token.split('.')[1]));
-			this.props.removeReservation(bookId,payload.email); // action 
+			this.props.removeReservation(bookId,payload.email).then(()=>{ // action cancel reservation
+		    	this.props.fetchUser(payload._id).then(()=>{
+		    		const bookCount = this.props.user.data.reserved_books.length;
+		    		this.setState({totalItems : bookCount})
+		    	}); // action fetch user detail again		
+			}); 
 		}
-		window.location.reload();
 	}
 	renderReservedBooks=()=>{
-		console.log(this.state.reservedBooks+', count :'+this.state.totalItems);
 		if(!this.props.user || this.props.user.length<=0){
 			return(
 				<div className="text-center">
-					<p>The list is empty</p>
+					<h3>Nothing to show...</h3>
 				</div>
 			);
 		}else{
 			const books = this.props.user.data.reserved_books;
+			if(!books || books.length<=0){
+				return(
+					<div className="text-center">
+						<h3>You don`t have reserved books!</h3>
+					</div>
+				);
+			}
 			// console.log(books);
 			return books.map((book,i)=>{
 				return(
@@ -94,6 +96,20 @@ class Reservation extends Component{
 							<div className="row">
 								{this.renderReservedBooks()}
 							</div>	
+							<br /><br />
+							{
+								this.state.totalItems
+									? 
+										(
+											<div className="jumbotron text-center" style={{padding:10,margin:'0 auto'}}>
+												<p className="text-primary"> 
+													Your Items have been reserved. Please visit your nearby Library and get your reserved books!<br />
+												</p>
+												<p className="text-danger">Identify yourself with valid ID!</p>
+											</div>
+										)
+									: 	null
+							}
 						</div>
 					</div>
 				</div>
@@ -103,7 +119,7 @@ class Reservation extends Component{
 }
 function mapStateToProps(state){
 	return{
-		user : state.users // returning only books from the current user
+		user : state.users // take only books from the current user
 	}
 }
 

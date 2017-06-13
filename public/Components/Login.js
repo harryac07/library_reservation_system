@@ -42,9 +42,9 @@ class Login extends Component{
 							<section style={{textAlign:'center'}}>
 							 	<h2>Login</h2>
 							 	<hr />
-							 	{this.state.error ? <p style={{color:'#4B77BE'}} className="error">&#x2731; {this.state.error}</p> : null}
+							 	{this.state.error ? <p className="error text-danger">&#x2731; {this.state.error}</p> : null}
 						 	</section>
-						 	<LoginForm formSubmit={this.submitForm} />
+						 	<LoginForm formSubmit={this.submitForm} error={this.state.error} />
 						</div>
 					</div>
 				</div>

@@ -841,7 +841,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 var _prodInvariant = __webpack_require__(23);
 
-var ReactCurrentOwner = __webpack_require__(15);
+var ReactCurrentOwner = __webpack_require__(16);
 
 var invariant = __webpack_require__(1);
 var warning = __webpack_require__(2);
@@ -1599,299 +1599,6 @@ module.exports = { debugTool: debugTool };
 
 /***/ }),
 /* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
-
-
-var _prodInvariant = __webpack_require__(4),
-    _assign = __webpack_require__(5);
-
-var CallbackQueue = __webpack_require__(90);
-var PooledClass = __webpack_require__(21);
-var ReactFeatureFlags = __webpack_require__(95);
-var ReactReconciler = __webpack_require__(27);
-var Transaction = __webpack_require__(41);
-
-var invariant = __webpack_require__(1);
-
-var dirtyComponents = [];
-var updateBatchNumber = 0;
-var asapCallbackQueue = CallbackQueue.getPooled();
-var asapEnqueued = false;
-
-var batchingStrategy = null;
-
-function ensureInjected() {
-  !(ReactUpdates.ReactReconcileTransaction && batchingStrategy) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must inject a reconcile transaction class and batching strategy') : _prodInvariant('123') : void 0;
-}
-
-var NESTED_UPDATES = {
-  initialize: function () {
-    this.dirtyComponentsLength = dirtyComponents.length;
-  },
-  close: function () {
-    if (this.dirtyComponentsLength !== dirtyComponents.length) {
-      // Additional updates were enqueued by componentDidUpdate handlers or
-      // similar; before our own UPDATE_QUEUEING wrapper closes, we want to run
-      // these new updates so that if A's componentDidUpdate calls setState on
-      // B, B will update before the callback A's updater provided when calling
-      // setState.
-      dirtyComponents.splice(0, this.dirtyComponentsLength);
-      flushBatchedUpdates();
-    } else {
-      dirtyComponents.length = 0;
-    }
-  }
-};
-
-var UPDATE_QUEUEING = {
-  initialize: function () {
-    this.callbackQueue.reset();
-  },
-  close: function () {
-    this.callbackQueue.notifyAll();
-  }
-};
-
-var TRANSACTION_WRAPPERS = [NESTED_UPDATES, UPDATE_QUEUEING];
-
-function ReactUpdatesFlushTransaction() {
-  this.reinitializeTransaction();
-  this.dirtyComponentsLength = null;
-  this.callbackQueue = CallbackQueue.getPooled();
-  this.reconcileTransaction = ReactUpdates.ReactReconcileTransaction.getPooled(
-  /* useCreateElement */true);
-}
-
-_assign(ReactUpdatesFlushTransaction.prototype, Transaction, {
-  getTransactionWrappers: function () {
-    return TRANSACTION_WRAPPERS;
-  },
-
-  destructor: function () {
-    this.dirtyComponentsLength = null;
-    CallbackQueue.release(this.callbackQueue);
-    this.callbackQueue = null;
-    ReactUpdates.ReactReconcileTransaction.release(this.reconcileTransaction);
-    this.reconcileTransaction = null;
-  },
-
-  perform: function (method, scope, a) {
-    // Essentially calls `this.reconcileTransaction.perform(method, scope, a)`
-    // with this transaction's wrappers around it.
-    return Transaction.perform.call(this, this.reconcileTransaction.perform, this.reconcileTransaction, method, scope, a);
-  }
-});
-
-PooledClass.addPoolingTo(ReactUpdatesFlushTransaction);
-
-function batchedUpdates(callback, a, b, c, d, e) {
-  ensureInjected();
-  return batchingStrategy.batchedUpdates(callback, a, b, c, d, e);
-}
-
-/**
- * Array comparator for ReactComponents by mount ordering.
- *
- * @param {ReactComponent} c1 first component you're comparing
- * @param {ReactComponent} c2 second component you're comparing
- * @return {number} Return value usable by Array.prototype.sort().
- */
-function mountOrderComparator(c1, c2) {
-  return c1._mountOrder - c2._mountOrder;
-}
-
-function runBatchedUpdates(transaction) {
-  var len = transaction.dirtyComponentsLength;
-  !(len === dirtyComponents.length) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Expected flush transaction\'s stored dirty-components length (%s) to match dirty-components array length (%s).', len, dirtyComponents.length) : _prodInvariant('124', len, dirtyComponents.length) : void 0;
-
-  // Since reconciling a component higher in the owner hierarchy usually (not
-  // always -- see shouldComponentUpdate()) will reconcile children, reconcile
-  // them before their children by sorting the array.
-  dirtyComponents.sort(mountOrderComparator);
-
-  // Any updates enqueued while reconciling must be performed after this entire
-  // batch. Otherwise, if dirtyComponents is [A, B] where A has children B and
-  // C, B could update twice in a single batch if C's render enqueues an update
-  // to B (since B would have already updated, we should skip it, and the only
-  // way we can know to do so is by checking the batch counter).
-  updateBatchNumber++;
-
-  for (var i = 0; i < len; i++) {
-    // If a component is unmounted before pending changes apply, it will still
-    // be here, but we assume that it has cleared its _pendingCallbacks and
-    // that performUpdateIfNecessary is a noop.
-    var component = dirtyComponents[i];
-
-    // If performUpdateIfNecessary happens to enqueue any new updates, we
-    // shouldn't execute the callbacks until the next render happens, so
-    // stash the callbacks first
-    var callbacks = component._pendingCallbacks;
-    component._pendingCallbacks = null;
-
-    var markerName;
-    if (ReactFeatureFlags.logTopLevelRenders) {
-      var namedComponent = component;
-      // Duck type TopLevelWrapper. This is probably always true.
-      if (component._currentElement.type.isReactTopLevelWrapper) {
-        namedComponent = component._renderedComponent;
-      }
-      markerName = 'React update: ' + namedComponent.getName();
-      console.time(markerName);
-    }
-
-    ReactReconciler.performUpdateIfNecessary(component, transaction.reconcileTransaction, updateBatchNumber);
-
-    if (markerName) {
-      console.timeEnd(markerName);
-    }
-
-    if (callbacks) {
-      for (var j = 0; j < callbacks.length; j++) {
-        transaction.callbackQueue.enqueue(callbacks[j], component.getPublicInstance());
-      }
-    }
-  }
-}
-
-var flushBatchedUpdates = function () {
-  // ReactUpdatesFlushTransaction's wrappers will clear the dirtyComponents
-  // array and perform any updates enqueued by mount-ready handlers (i.e.,
-  // componentDidUpdate) but we need to check here too in order to catch
-  // updates enqueued by setState callbacks and asap calls.
-  while (dirtyComponents.length || asapEnqueued) {
-    if (dirtyComponents.length) {
-      var transaction = ReactUpdatesFlushTransaction.getPooled();
-      transaction.perform(runBatchedUpdates, null, transaction);
-      ReactUpdatesFlushTransaction.release(transaction);
-    }
-
-    if (asapEnqueued) {
-      asapEnqueued = false;
-      var queue = asapCallbackQueue;
-      asapCallbackQueue = CallbackQueue.getPooled();
-      queue.notifyAll();
-      CallbackQueue.release(queue);
-    }
-  }
-};
-
-/**
- * Mark a component as needing a rerender, adding an optional callback to a
- * list of functions which will be executed once the rerender occurs.
- */
-function enqueueUpdate(component) {
-  ensureInjected();
-
-  // Various parts of our code (such as ReactCompositeComponent's
-  // _renderValidatedComponent) assume that calls to render aren't nested;
-  // verify that that's the case. (This is called by each top-level update
-  // function, like setState, forceUpdate, etc.; creation and
-  // destruction of top-level components is guarded in ReactMount.)
-
-  if (!batchingStrategy.isBatchingUpdates) {
-    batchingStrategy.batchedUpdates(enqueueUpdate, component);
-    return;
-  }
-
-  dirtyComponents.push(component);
-  if (component._updateBatchNumber == null) {
-    component._updateBatchNumber = updateBatchNumber + 1;
-  }
-}
-
-/**
- * Enqueue a callback to be run at the end of the current batching cycle. Throws
- * if no updates are currently being performed.
- */
-function asap(callback, context) {
-  !batchingStrategy.isBatchingUpdates ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates.asap: Can\'t enqueue an asap callback in a context whereupdates are not being batched.') : _prodInvariant('125') : void 0;
-  asapCallbackQueue.enqueue(callback, context);
-  asapEnqueued = true;
-}
-
-var ReactUpdatesInjection = {
-  injectReconcileTransaction: function (ReconcileTransaction) {
-    !ReconcileTransaction ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide a reconcile transaction class') : _prodInvariant('126') : void 0;
-    ReactUpdates.ReactReconcileTransaction = ReconcileTransaction;
-  },
-
-  injectBatchingStrategy: function (_batchingStrategy) {
-    !_batchingStrategy ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide a batching strategy') : _prodInvariant('127') : void 0;
-    !(typeof _batchingStrategy.batchedUpdates === 'function') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide a batchedUpdates() function') : _prodInvariant('128') : void 0;
-    !(typeof _batchingStrategy.isBatchingUpdates === 'boolean') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide an isBatchingUpdates boolean attribute') : _prodInvariant('129') : void 0;
-    batchingStrategy = _batchingStrategy;
-  }
-};
-
-var ReactUpdates = {
-  /**
-   * React references `ReactReconcileTransaction` using this property in order
-   * to allow dependency injection.
-   *
-   * @internal
-   */
-  ReactReconcileTransaction: null,
-
-  batchedUpdates: batchedUpdates,
-  enqueueUpdate: enqueueUpdate,
-  flushBatchedUpdates: flushBatchedUpdates,
-  injection: ReactUpdatesInjection,
-  asap: asap
-};
-
-module.exports = ReactUpdates;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * 
- */
-
-
-
-/**
- * Keeps track of the current owner.
- *
- * The current owner is the component who should own any components that are
- * currently being constructed.
- */
-var ReactCurrentOwner = {
-
-  /**
-   * @internal
-   * @type {ReactComponent}
-   */
-  current: null
-
-};
-
-module.exports = ReactCurrentOwner;
-
-/***/ }),
-/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -18983,6 +18690,299 @@ module.exports = ReactCurrentOwner;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(45), __webpack_require__(123)(module)))
 
 /***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ */
+
+
+
+var _prodInvariant = __webpack_require__(4),
+    _assign = __webpack_require__(5);
+
+var CallbackQueue = __webpack_require__(90);
+var PooledClass = __webpack_require__(21);
+var ReactFeatureFlags = __webpack_require__(95);
+var ReactReconciler = __webpack_require__(27);
+var Transaction = __webpack_require__(41);
+
+var invariant = __webpack_require__(1);
+
+var dirtyComponents = [];
+var updateBatchNumber = 0;
+var asapCallbackQueue = CallbackQueue.getPooled();
+var asapEnqueued = false;
+
+var batchingStrategy = null;
+
+function ensureInjected() {
+  !(ReactUpdates.ReactReconcileTransaction && batchingStrategy) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must inject a reconcile transaction class and batching strategy') : _prodInvariant('123') : void 0;
+}
+
+var NESTED_UPDATES = {
+  initialize: function () {
+    this.dirtyComponentsLength = dirtyComponents.length;
+  },
+  close: function () {
+    if (this.dirtyComponentsLength !== dirtyComponents.length) {
+      // Additional updates were enqueued by componentDidUpdate handlers or
+      // similar; before our own UPDATE_QUEUEING wrapper closes, we want to run
+      // these new updates so that if A's componentDidUpdate calls setState on
+      // B, B will update before the callback A's updater provided when calling
+      // setState.
+      dirtyComponents.splice(0, this.dirtyComponentsLength);
+      flushBatchedUpdates();
+    } else {
+      dirtyComponents.length = 0;
+    }
+  }
+};
+
+var UPDATE_QUEUEING = {
+  initialize: function () {
+    this.callbackQueue.reset();
+  },
+  close: function () {
+    this.callbackQueue.notifyAll();
+  }
+};
+
+var TRANSACTION_WRAPPERS = [NESTED_UPDATES, UPDATE_QUEUEING];
+
+function ReactUpdatesFlushTransaction() {
+  this.reinitializeTransaction();
+  this.dirtyComponentsLength = null;
+  this.callbackQueue = CallbackQueue.getPooled();
+  this.reconcileTransaction = ReactUpdates.ReactReconcileTransaction.getPooled(
+  /* useCreateElement */true);
+}
+
+_assign(ReactUpdatesFlushTransaction.prototype, Transaction, {
+  getTransactionWrappers: function () {
+    return TRANSACTION_WRAPPERS;
+  },
+
+  destructor: function () {
+    this.dirtyComponentsLength = null;
+    CallbackQueue.release(this.callbackQueue);
+    this.callbackQueue = null;
+    ReactUpdates.ReactReconcileTransaction.release(this.reconcileTransaction);
+    this.reconcileTransaction = null;
+  },
+
+  perform: function (method, scope, a) {
+    // Essentially calls `this.reconcileTransaction.perform(method, scope, a)`
+    // with this transaction's wrappers around it.
+    return Transaction.perform.call(this, this.reconcileTransaction.perform, this.reconcileTransaction, method, scope, a);
+  }
+});
+
+PooledClass.addPoolingTo(ReactUpdatesFlushTransaction);
+
+function batchedUpdates(callback, a, b, c, d, e) {
+  ensureInjected();
+  return batchingStrategy.batchedUpdates(callback, a, b, c, d, e);
+}
+
+/**
+ * Array comparator for ReactComponents by mount ordering.
+ *
+ * @param {ReactComponent} c1 first component you're comparing
+ * @param {ReactComponent} c2 second component you're comparing
+ * @return {number} Return value usable by Array.prototype.sort().
+ */
+function mountOrderComparator(c1, c2) {
+  return c1._mountOrder - c2._mountOrder;
+}
+
+function runBatchedUpdates(transaction) {
+  var len = transaction.dirtyComponentsLength;
+  !(len === dirtyComponents.length) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Expected flush transaction\'s stored dirty-components length (%s) to match dirty-components array length (%s).', len, dirtyComponents.length) : _prodInvariant('124', len, dirtyComponents.length) : void 0;
+
+  // Since reconciling a component higher in the owner hierarchy usually (not
+  // always -- see shouldComponentUpdate()) will reconcile children, reconcile
+  // them before their children by sorting the array.
+  dirtyComponents.sort(mountOrderComparator);
+
+  // Any updates enqueued while reconciling must be performed after this entire
+  // batch. Otherwise, if dirtyComponents is [A, B] where A has children B and
+  // C, B could update twice in a single batch if C's render enqueues an update
+  // to B (since B would have already updated, we should skip it, and the only
+  // way we can know to do so is by checking the batch counter).
+  updateBatchNumber++;
+
+  for (var i = 0; i < len; i++) {
+    // If a component is unmounted before pending changes apply, it will still
+    // be here, but we assume that it has cleared its _pendingCallbacks and
+    // that performUpdateIfNecessary is a noop.
+    var component = dirtyComponents[i];
+
+    // If performUpdateIfNecessary happens to enqueue any new updates, we
+    // shouldn't execute the callbacks until the next render happens, so
+    // stash the callbacks first
+    var callbacks = component._pendingCallbacks;
+    component._pendingCallbacks = null;
+
+    var markerName;
+    if (ReactFeatureFlags.logTopLevelRenders) {
+      var namedComponent = component;
+      // Duck type TopLevelWrapper. This is probably always true.
+      if (component._currentElement.type.isReactTopLevelWrapper) {
+        namedComponent = component._renderedComponent;
+      }
+      markerName = 'React update: ' + namedComponent.getName();
+      console.time(markerName);
+    }
+
+    ReactReconciler.performUpdateIfNecessary(component, transaction.reconcileTransaction, updateBatchNumber);
+
+    if (markerName) {
+      console.timeEnd(markerName);
+    }
+
+    if (callbacks) {
+      for (var j = 0; j < callbacks.length; j++) {
+        transaction.callbackQueue.enqueue(callbacks[j], component.getPublicInstance());
+      }
+    }
+  }
+}
+
+var flushBatchedUpdates = function () {
+  // ReactUpdatesFlushTransaction's wrappers will clear the dirtyComponents
+  // array and perform any updates enqueued by mount-ready handlers (i.e.,
+  // componentDidUpdate) but we need to check here too in order to catch
+  // updates enqueued by setState callbacks and asap calls.
+  while (dirtyComponents.length || asapEnqueued) {
+    if (dirtyComponents.length) {
+      var transaction = ReactUpdatesFlushTransaction.getPooled();
+      transaction.perform(runBatchedUpdates, null, transaction);
+      ReactUpdatesFlushTransaction.release(transaction);
+    }
+
+    if (asapEnqueued) {
+      asapEnqueued = false;
+      var queue = asapCallbackQueue;
+      asapCallbackQueue = CallbackQueue.getPooled();
+      queue.notifyAll();
+      CallbackQueue.release(queue);
+    }
+  }
+};
+
+/**
+ * Mark a component as needing a rerender, adding an optional callback to a
+ * list of functions which will be executed once the rerender occurs.
+ */
+function enqueueUpdate(component) {
+  ensureInjected();
+
+  // Various parts of our code (such as ReactCompositeComponent's
+  // _renderValidatedComponent) assume that calls to render aren't nested;
+  // verify that that's the case. (This is called by each top-level update
+  // function, like setState, forceUpdate, etc.; creation and
+  // destruction of top-level components is guarded in ReactMount.)
+
+  if (!batchingStrategy.isBatchingUpdates) {
+    batchingStrategy.batchedUpdates(enqueueUpdate, component);
+    return;
+  }
+
+  dirtyComponents.push(component);
+  if (component._updateBatchNumber == null) {
+    component._updateBatchNumber = updateBatchNumber + 1;
+  }
+}
+
+/**
+ * Enqueue a callback to be run at the end of the current batching cycle. Throws
+ * if no updates are currently being performed.
+ */
+function asap(callback, context) {
+  !batchingStrategy.isBatchingUpdates ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates.asap: Can\'t enqueue an asap callback in a context whereupdates are not being batched.') : _prodInvariant('125') : void 0;
+  asapCallbackQueue.enqueue(callback, context);
+  asapEnqueued = true;
+}
+
+var ReactUpdatesInjection = {
+  injectReconcileTransaction: function (ReconcileTransaction) {
+    !ReconcileTransaction ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide a reconcile transaction class') : _prodInvariant('126') : void 0;
+    ReactUpdates.ReactReconcileTransaction = ReconcileTransaction;
+  },
+
+  injectBatchingStrategy: function (_batchingStrategy) {
+    !_batchingStrategy ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide a batching strategy') : _prodInvariant('127') : void 0;
+    !(typeof _batchingStrategy.batchedUpdates === 'function') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide a batchedUpdates() function') : _prodInvariant('128') : void 0;
+    !(typeof _batchingStrategy.isBatchingUpdates === 'boolean') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide an isBatchingUpdates boolean attribute') : _prodInvariant('129') : void 0;
+    batchingStrategy = _batchingStrategy;
+  }
+};
+
+var ReactUpdates = {
+  /**
+   * React references `ReactReconcileTransaction` using this property in order
+   * to allow dependency injection.
+   *
+   * @internal
+   */
+  ReactReconcileTransaction: null,
+
+  batchedUpdates: batchedUpdates,
+  enqueueUpdate: enqueueUpdate,
+  flushBatchedUpdates: flushBatchedUpdates,
+  injection: ReactUpdatesInjection,
+  asap: asap
+};
+
+module.exports = ReactUpdates;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Copyright 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * 
+ */
+
+
+
+/**
+ * Keeps track of the current owner.
+ *
+ * The current owner is the component who should own any components that are
+ * currently being constructed.
+ */
+var ReactCurrentOwner = {
+
+  /**
+   * @internal
+   * @type {ReactComponent}
+   */
+  current: null
+
+};
+
+module.exports = ReactCurrentOwner;
+
+/***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19510,7 +19510,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouterDom = __webpack_require__(28);
 
-var _lodash = __webpack_require__(16);
+var _lodash = __webpack_require__(14);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
@@ -19920,7 +19920,7 @@ module.exports = PooledClass;
 
 var _assign = __webpack_require__(5);
 
-var ReactCurrentOwner = __webpack_require__(15);
+var ReactCurrentOwner = __webpack_require__(16);
 
 var warning = __webpack_require__(2);
 var canDefineProperty = __webpack_require__(44);
@@ -21042,18 +21042,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ERRORS = exports.RESET = exports.RESERVE_BOOKS = exports.FETCH_CART_ITEMS = exports.SORT_BOOKLIST = exports.FETCH_BOOK_BY_SEARCH = exports.FETCH_BOOK_BY_CATEGORY = exports.FETCH_BOOK = exports.FETCH_BOOKS = undefined;
 exports.returnErrors = returnErrors;
-exports.returnFetchBooks = returnFetchBooks;
 exports.fetchBooks = fetchBooks;
-exports.returnFetchBook = returnFetchBook;
 exports.fetchBook = fetchBook;
-exports.returnCategory = returnCategory;
 exports.fetchByCategory = fetchByCategory;
-exports.returnFetchBySearch = returnFetchBySearch;
 exports.fetchBySearch = fetchBySearch;
 exports.sortBookList = sortBookList;
-exports.returnFetchCartBooks = returnFetchCartBooks;
 exports.fetchCartBooks = fetchCartBooks;
-exports.returnMakeReservation = returnMakeReservation;
 exports.makeReservation = makeReservation;
 exports.reset = reset;
 
@@ -21083,69 +21077,42 @@ function returnErrors(data) {
 	};
 }
 
-//return all books
-function returnFetchBooks(data) {
-	return {
-		type: FETCH_BOOKS,
-		payload: data
-	};
-}
 // Fetch Books 
 function fetchBooks() {
 	return function (dispatch) {
 		_axios2.default.get(ROOT_URL + "/books?sort=rating").then(function (response) {
-			dispatch(returnFetchBooks(response));
+			dispatch({ type: FETCH_BOOKS, payload: response });
 		}).catch(function (err) {
 			dispatch(returnErrors(err));
 		});
-	};
-}
-//return each book
-function returnFetchBook(data) {
-	return {
-		type: FETCH_BOOK,
-		payload: data
 	};
 }
 // Fetch a book
 function fetchBook(bookId) {
 	return function (dispatch) {
-		_axios2.default.get(ROOT_URL + "/book/" + bookId).then(function (response) {
-			dispatch(returnFetchBook(response));
+		return _axios2.default.get(ROOT_URL + "/book/" + bookId).then(function (response) {
+			console.log('action ', response.data);
+			dispatch({ type: FETCH_BOOK, payload: response });
 		}).catch(function (err) {
 			dispatch(returnErrors(err));
 		});
-	};
-}
-//return category
-function returnCategory(data) {
-	return {
-		type: FETCH_BOOK_BY_CATEGORY,
-		payload: data
 	};
 }
 // Fetch by category
 function fetchByCategory(categoryName) {
 	return function (dispatch) {
 		_axios2.default.get(ROOT_URL + "/book/category/" + categoryName).then(function (response) {
-			dispatch(returnCategory(response));
+			dispatch({ type: FETCH_BOOK_BY_CATEGORY, payload: response });
 		}).catch(function (err) {
 			dispatch(returnErrors(err));
 		});
-	};
-}
-//return books by search 
-function returnFetchBySearch(data) {
-	return {
-		type: FETCH_BOOK_BY_SEARCH,
-		payload: data
 	};
 }
 // Fetch by search input
 function fetchBySearch(searchTerm) {
 	return function (dispatch) {
 		_axios2.default.get(ROOT_URL + "/book/search/" + searchTerm).then(function (response) {
-			dispatch(returnFetchBySearch(response));
+			dispatch({ type: FETCH_BOOK_BY_SEARCH, payload: response });
 		}).catch(function (err) {
 			dispatch(returnErrors(err));
 		});
@@ -21158,38 +21125,24 @@ function sortBookList(keyword) {
 		payload: keyword
 	};
 }
-
-//return fetchCartBooks
-function returnFetchCartBooks(books) {
-	return {
-		type: FETCH_CART_ITEMS,
-		payload: books
-	};
-}
 // Fetch Books in Cart
 function fetchCartBooks(books) {
 	return function (dispatch) {
-		_axios2.default.post(ROOT_URL + "/book/cart", books).then(function (response) {
-			dispatch(returnFetchCartBooks(response));
+		return _axios2.default.post(ROOT_URL + "/book/cart", books).then(function (response) {
+			dispatch({ type: FETCH_CART_ITEMS, payload: response });
 		}).catch(function (err) {
 			dispatch(returnErrors(err));
 		});
 	};
 }
-//return makeReservation
-function returnMakeReservation(request) {
-	return {
-		type: RESERVE_BOOKS,
-		payload: request
-	};
-}
 // Reserve Books in cart and send notification to client
 function makeReservation(books, user) {
 	return function (dispatch) {
-		_axios2.default.post(ROOT_URL + "/book/cart/reserve?user=" + user, books).then(function (response) {
-			dispatch(returnMakeReservation(response));
+		return _axios2.default.post(ROOT_URL + "/book/cart/reserve?user=" + user, books).then(function (response) {
+			console.log('action ', response.data);
+			// dispatch({type : RESERVE_BOOKS, payload : response});
 		}).catch(function (err) {
-			dispatch(returnErrors(err));
+			// dispatch(returnErrors(err));
 		});
 	};
 }
@@ -21203,18 +21156,6 @@ function reset() {
 		type: RESET
 	};
 }
-
-// export function register(user){
-// 	return (dispatch)=>{
-// 		axios.post(`${ROOT_URL}/register`,user)
-// 			.then((response)=>{
-// 				console.log(response.status);
-// 				dispatch(registerSuccess(response.data));
-// 			}).catch((err)=>{
-// 				dispatch(returnErrors(err));
-// 			});
-// 	}
-// }
 
 /***/ }),
 /* 31 */
@@ -23218,9 +23159,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.RESET = exports.LOGOUT = exports.LOGIN = exports.REGISTER = exports.FETCH_USERS = undefined;
 exports.saveToken = saveToken;
 exports.getToken = getToken;
-exports.registerResult = registerResult;
 exports.register = register;
-exports.loginResult = loginResult;
 exports.login = login;
 exports.logout = logout;
 exports.reset = reset;
@@ -23249,29 +23188,15 @@ function getToken() {
 	return window.localStorage['user-token'];
 }
 //register
-function registerResult(data) {
-	return {
-		type: REGISTER,
-		payload: data
-	};
-}
-//register
 function register(user) {
 	return function (dispatch) {
 		_axios2.default.post(ROOT_URL + '/register', user).then(function (response) {
 			console.log(response);
-			dispatch(registerResult(response));
+			dispatch({ type: REGISTER, payload: response });
 		}).catch(function (err) {
 			console.log(err.response);
-			dispatch(registerResult(err.response));
+			dispatch({ type: REGISTER, payload: err.response });
 		});
-	};
-}
-//login
-function loginResult(response) {
-	return {
-		type: LOGIN,
-		payload: response
 	};
 }
 //login
@@ -23279,10 +23204,9 @@ function login(user) {
 	return function (dispatch) {
 		_axios2.default.post(ROOT_URL + '/login', user).then(function (response) {
 			saveToken(response.data.token);
-			dispatch(loginResult(response));
+			dispatch({ type: LOGIN, payload: response });
 		}).catch(function (err) {
-			dispatch(loginResult(err.response));
-			// console.log(err.response.data);
+			dispatch({ type: LOGIN, payload: err.response });
 		});
 	};
 }
@@ -24475,10 +24399,10 @@ module.exports = ReactErrorUtils;
 
 var _prodInvariant = __webpack_require__(4);
 
-var ReactCurrentOwner = __webpack_require__(15);
+var ReactCurrentOwner = __webpack_require__(16);
 var ReactInstanceMap = __webpack_require__(36);
 var ReactInstrumentation = __webpack_require__(12);
-var ReactUpdates = __webpack_require__(14);
+var ReactUpdates = __webpack_require__(15);
 
 var invariant = __webpack_require__(1);
 var warning = __webpack_require__(2);
@@ -26136,9 +26060,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 exports.REMOVE_RESERVE_BOOKS = exports.RESET = exports.FETCH_USER = undefined;
-exports.returnUser = returnUser;
 exports.fetchUser = fetchUser;
-exports.returnRemoveReservation = returnRemoveReservation;
 exports.removeReservation = removeReservation;
 exports.reset = reset;
 
@@ -26154,35 +26076,23 @@ var REMOVE_RESERVE_BOOKS = exports.REMOVE_RESERVE_BOOKS = "REMOVE_RESERVE_BOOKS"
 
 var ROOT_URL = "http://localhost:3000/api";
 
-function returnUser(user) {
-	return {
-		type: FETCH_USER,
-		payload: user
-	};
-}
+//fetch user
 function fetchUser(userId) {
 	return function (dispatch) {
-		_axios2.default.get(ROOT_URL + "/user/" + userId).then(function (response) {
-			dispatch(returnUser(response));
+		return _axios2.default.get(ROOT_URL + "/user/" + userId).then(function (response) {
+			dispatch({ type: FETCH_USER, payload: response });
 		}).catch(function (err) {
-			dispatch(returnUser(err.response));
+			dispatch({ type: FETCH_USER, payload: err.response });
 		});
-	};
-}
-//return removeReservation
-function returnRemoveReservation(user) {
-	return {
-		type: REMOVE_RESERVE_BOOKS,
-		payload: user
 	};
 }
 //Remove reservation Put method
 function removeReservation(bookId, user) {
 	return function (dispatch) {
-		_axios2.default.put(ROOT_URL + "/book/remove-reservation/" + bookId + "?user=" + user).then(function (response) {
-			dispatch(returnRemoveReservation(response));
+		return _axios2.default.put(ROOT_URL + "/book/remove-reservation/" + bookId + "?user=" + user).then(function (response) {
+			// console.log('book removed!')
 		}).catch(function (err) {
-			dispatch(returnRemoveReservation(err.response));
+			// dispatch({type : REMOVE_RESERVE_BOOKS, payload : err.response});
 		});
 	};
 }
@@ -27604,7 +27514,7 @@ var _assign = __webpack_require__(5);
 
 var LinkedValueUtils = __webpack_require__(58);
 var ReactDOMComponentTree = __webpack_require__(6);
-var ReactUpdates = __webpack_require__(14);
+var ReactUpdates = __webpack_require__(15);
 
 var warning = __webpack_require__(2);
 
@@ -28077,7 +27987,7 @@ var DOMLazyTree = __webpack_require__(26);
 var DOMProperty = __webpack_require__(18);
 var React = __webpack_require__(29);
 var ReactBrowserEventEmitter = __webpack_require__(39);
-var ReactCurrentOwner = __webpack_require__(15);
+var ReactCurrentOwner = __webpack_require__(16);
 var ReactDOMComponentTree = __webpack_require__(6);
 var ReactDOMContainerInfo = __webpack_require__(207);
 var ReactDOMFeatureFlags = __webpack_require__(209);
@@ -28087,7 +27997,7 @@ var ReactInstrumentation = __webpack_require__(12);
 var ReactMarkupChecksum = __webpack_require__(229);
 var ReactReconciler = __webpack_require__(27);
 var ReactUpdateQueue = __webpack_require__(61);
-var ReactUpdates = __webpack_require__(14);
+var ReactUpdates = __webpack_require__(15);
 
 var emptyObject = __webpack_require__(31);
 var instantiateReactComponent = __webpack_require__(106);
@@ -29138,7 +29048,7 @@ module.exports = setTextContent;
 
 var _prodInvariant = __webpack_require__(4);
 
-var ReactCurrentOwner = __webpack_require__(15);
+var ReactCurrentOwner = __webpack_require__(16);
 var REACT_ELEMENT_TYPE = __webpack_require__(223);
 
 var getIteratorFn = __webpack_require__(257);
@@ -30004,7 +29914,7 @@ module.exports = REACT_ELEMENT_TYPE;
 
 
 
-var ReactCurrentOwner = __webpack_require__(15);
+var ReactCurrentOwner = __webpack_require__(16);
 var ReactComponentTreeHook = __webpack_require__(9);
 var ReactElement = __webpack_require__(22);
 
@@ -31694,7 +31604,7 @@ var App = function (_Component) {
 				_react2.default.createElement(_Navigation2.default, null),
 				_react2.default.createElement(_Home2.default, null),
 				_react2.default.createElement(_HomeCategoryNav2.default, null),
-				this.props.books.length > 0 ? _react2.default.createElement(_Book2.default, { books: books }) : null,
+				this.props.books ? _react2.default.createElement(_Book2.default, { books: books }) : null,
 				_react2.default.createElement(_Support2.default, null),
 				_react2.default.createElement(_Carousel2.default, null),
 				_react2.default.createElement(_Footer2.default, null)
@@ -31730,7 +31640,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(19);
 
-var _lodash = __webpack_require__(16);
+var _lodash = __webpack_require__(14);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
@@ -31801,7 +31711,6 @@ var Book_detail = function (_Component) {
 		};
 
 		_this.renderBook = function () {
-			console.log('books :' + _this.props.book);
 			var book = _this.props.book[0];
 			if (!book) {
 				return _react2.default.createElement(
@@ -31917,9 +31826,10 @@ var Book_detail = function (_Component) {
 		value: function render() {
 			var title = void 0,
 			    category = '';
-			if (this.props.book[0]) {
-				category = this.props.book[0].category;
-				title = this.props.book[0].title;
+			var book = this.props.book[0];
+			if (book) {
+				category = book.category;
+				title = book.title;
 			}
 
 			return _react2.default.createElement(
@@ -31967,7 +31877,7 @@ var Book_detail = function (_Component) {
 	return Book_detail;
 }(_react.Component);
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
 	return {
 		book: state.books
 	};
@@ -32004,7 +31914,7 @@ var _CategoryFrame = __webpack_require__(25);
 
 var _CategoryFrame2 = _interopRequireDefault(_CategoryFrame);
 
-var _lodash = __webpack_require__(16);
+var _lodash = __webpack_require__(14);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
@@ -32027,9 +31937,6 @@ var Book_lists = function (_Component) {
 
 		_initialiseProps.call(_this);
 
-		_this.state = {
-			sorting: ''
-		};
 		return _this;
 	}
 
@@ -32116,7 +32023,6 @@ var _initialiseProps = function _initialiseProps() {
 	};
 
 	this.renderBooks = function () {
-		console.log('book : ' + _this2.props.books);
 		var books = _this2.props.books;
 		if (!books) {
 			return _react2.default.createElement(
@@ -32125,8 +32031,8 @@ var _initialiseProps = function _initialiseProps() {
 				'Loading Books...'
 			);
 		}
-
-		return _lodash2.default.map(books, function (book, i) {
+		console.log('book : ', books);
+		return _lodash2.default.map(_this2.props.books, function (book, i) {
 			return _react2.default.createElement(
 				'div',
 				{ key: book._id, className: 'col-sm-3 col-md-3 col-xs-12', onClick: function onClick() {
@@ -32162,7 +32068,7 @@ var _initialiseProps = function _initialiseProps() {
 	};
 };
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
 	return {
 		books: state.books
 	};
@@ -32189,7 +32095,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(19);
 
-var _lodash = __webpack_require__(16);
+var _lodash = __webpack_require__(14);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
@@ -32261,10 +32167,14 @@ var Cart = function (_Component) {
 			var user = payload.email;
 			if (cart && typeof cart !== null) {
 				var cartBooks = cart.split(',');
-				_this.props.makeReservation(cartBooks, user); // action 
+				_this.props.makeReservation(cartBooks, user).then(function () {
+					// action 
+					localStorage.removeItem('cartItems');
+					console.log('done');
+					_this.setState({ totalItems: 0 });
+					_this.props.history.push('/reservation');
+				});
 			}
-			_this.setState({ totalItems: 0 });
-			window.location.href = "/reservation";
 		};
 
 		_this.renderBook = function (e, bookId) {
@@ -32295,6 +32205,7 @@ var Cart = function (_Component) {
 					)
 				);
 			}
+
 			return books.map(function (book, i) {
 				return _react2.default.createElement(
 					'div',
@@ -32508,7 +32419,7 @@ var _reactRedux = __webpack_require__(19);
 
 var _authActions = __webpack_require__(48);
 
-var _lodash = __webpack_require__(16);
+var _lodash = __webpack_require__(14);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
@@ -32600,12 +32511,12 @@ var Login = function (_Component) {
 								_react2.default.createElement('hr', null),
 								this.state.error ? _react2.default.createElement(
 									'p',
-									{ style: { color: '#4B77BE' }, className: 'error' },
+									{ className: 'error text-danger' },
 									'\u2731 ',
 									this.state.error
 								) : null
 							),
-							_react2.default.createElement(_LoginForm2.default, { formSubmit: this.submitForm })
+							_react2.default.createElement(_LoginForm2.default, { formSubmit: this.submitForm, error: this.state.error })
 						)
 					)
 				)
@@ -32643,6 +32554,10 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouterDom = __webpack_require__(28);
 
+var _lodash = __webpack_require__(14);
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -32664,8 +32579,8 @@ var Book = function (_Component) {
 		};
 
 		_this.renderPopularBooks = function () {
-			var books = _.take(_this.props.books, 4);
-			return _.map(books, function (book) {
+			var books = _lodash2.default.take(_this.props.books, 4);
+			return _lodash2.default.map(books, function (book) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'col-sm-3 col-md-3', key: book._id, onClick: function onClick() {
@@ -33614,7 +33529,7 @@ var _reactRedux = __webpack_require__(19);
 
 var _authActions = __webpack_require__(48);
 
-var _lodash = __webpack_require__(16);
+var _lodash = __webpack_require__(14);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
@@ -33747,7 +33662,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(19);
 
-var _lodash = __webpack_require__(16);
+var _lodash = __webpack_require__(14);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
@@ -33777,10 +33692,6 @@ var Reservation = function (_Component) {
 
 		var _this = _possibleConstructorReturn(this, (Reservation.__proto__ || Object.getPrototypeOf(Reservation)).call(this, props));
 
-		_this.setReservedBooks = function () {
-			var books = localStorage.setItem('reserved_books');
-		};
-
 		_this.renderBook = function (e, bookId) {
 			_this.props.history.push('/book/' + bookId);
 			e.preventDefault();
@@ -33790,25 +33701,40 @@ var Reservation = function (_Component) {
 			var token = localStorage.getItem('user-token');
 			if (token) {
 				var payload = JSON.parse(window.atob(token.split('.')[1]));
-				_this.props.removeReservation(bookId, payload.email); // action 
+				_this.props.removeReservation(bookId, payload.email).then(function () {
+					// action cancel reservation
+					_this.props.fetchUser(payload._id).then(function () {
+						var bookCount = _this.props.user.data.reserved_books.length;
+						_this.setState({ totalItems: bookCount });
+					}); // action fetch user detail again		
+				});
 			}
-			window.location.reload();
 		};
 
 		_this.renderReservedBooks = function () {
-			console.log(_this.state.reservedBooks + ', count :' + _this.state.totalItems);
 			if (!_this.props.user || _this.props.user.length <= 0) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'text-center' },
 					_react2.default.createElement(
-						'p',
+						'h3',
 						null,
-						'The list is empty'
+						'Nothing to show...'
 					)
 				);
 			} else {
 				var books = _this.props.user.data.reserved_books;
+				if (!books || books.length <= 0) {
+					return _react2.default.createElement(
+						'div',
+						{ className: 'text-center' },
+						_react2.default.createElement(
+							'h3',
+							null,
+							'You don`t have reserved books!'
+						)
+					);
+				}
 				// console.log(books);
 				return books.map(function (book, i) {
 					return _react2.default.createElement(
@@ -33863,8 +33789,7 @@ var Reservation = function (_Component) {
 		};
 
 		_this.state = {
-			totalItems: 0,
-			reservedBooks: []
+			totalItems: 0
 		};
 		return _this;
 	}
@@ -33872,19 +33797,15 @@ var Reservation = function (_Component) {
 	_createClass(Reservation, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
+			var _this2 = this;
+
 			var token = localStorage.getItem('user-token');
 			if (token) {
 				var payload = JSON.parse(window.atob(token.split('.')[1]));
-				this.props.fetchUser(payload._id); // action
-			}
-		}
-	}, {
-		key: 'componentDidUpdate',
-		value: function componentDidUpdate() {
-			console.log('ok');
-			var totalBooks = this.props.user.data.reserved_books.length;
-			if (totalBooks > 0 && this.state.totalItems !== totalBooks) {
-				this.setState({ totalItems: totalBooks, reservedBooks: this.props.user.data.reserved_books });
+				this.props.fetchUser(payload._id).then(function () {
+					var bookCount = _this2.props.user.data.reserved_books.length;
+					_this2.setState({ totalItems: bookCount });
+				}); // action
 			}
 		}
 	}, {
@@ -33944,7 +33865,24 @@ var Reservation = function (_Component) {
 								'div',
 								{ className: 'row' },
 								this.renderReservedBooks()
-							)
+							),
+							_react2.default.createElement('br', null),
+							_react2.default.createElement('br', null),
+							this.state.totalItems ? _react2.default.createElement(
+								'div',
+								{ className: 'jumbotron text-center', style: { padding: 10, margin: '0 auto' } },
+								_react2.default.createElement(
+									'p',
+									{ className: 'text-primary' },
+									'Your Items have been reserved. Please visit your nearby Library and get your reserved books!',
+									_react2.default.createElement('br', null)
+								),
+								_react2.default.createElement(
+									'p',
+									{ className: 'text-danger' },
+									'Identify yourself with valid ID!'
+								)
+							) : null
 						)
 					)
 				)
@@ -33957,7 +33895,7 @@ var Reservation = function (_Component) {
 
 function mapStateToProps(state) {
 	return {
-		user: state.users // returning only books from the current user
+		user: state.users // take only books from the current user
 	};
 }
 
@@ -33989,7 +33927,6 @@ exports.default = function () {
 			});
 		case _bookActions.FETCH_BOOK_BY_CATEGORY:
 			var categoryState = _lodash2.default.uniqWith([].concat(_toConsumableArray(action.payload.data), _toConsumableArray(state)), _lodash2.default.isEqual);
-			console.log('reducer : ' + JSON.stringify(_lodash2.default.intersectionWith(categoryState, action.payload.data, _lodash2.default.isEqual)));
 			return _lodash2.default.intersectionWith(categoryState, action.payload.data, _lodash2.default.isEqual);
 		case _bookActions.FETCH_BOOK_BY_SEARCH:
 			var searchedState = _lodash2.default.uniqWith([].concat(_toConsumableArray(action.payload.data), _toConsumableArray(state)), _lodash2.default.isEqual);
@@ -34000,8 +33937,10 @@ exports.default = function () {
 		case _bookActions.FETCH_CART_ITEMS:
 			var cartState = _lodash2.default.uniqWith([].concat(_toConsumableArray(action.payload.data), _toConsumableArray(state)), _lodash2.default.isEqual);
 			return _lodash2.default.intersectionWith(action.payload.data, cartState, _lodash2.default.isEqual);
+		case _bookActions.RESERVE_BOOKS:
+			var reservedState = _lodash2.default.uniqWith([].concat(_toConsumableArray(action.payload.data), _toConsumableArray(state)), _lodash2.default.isEqual);
+			return _lodash2.default.intersectionWith(action.payload.data, reservedState, _lodash2.default.isEqual);
 		case _bookActions.ERRORS:
-			console.log(action.payload);
 			return action.payload;
 		case _bookActions.RESET:
 			state = [];
@@ -34013,7 +33952,7 @@ exports.default = function () {
 
 var _bookActions = __webpack_require__(30);
 
-var _lodash = __webpack_require__(16);
+var _lodash = __webpack_require__(14);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
@@ -34084,7 +34023,7 @@ var _authActions = __webpack_require__(48);
 
 var _userActions = __webpack_require__(80);
 
-var _lodash = __webpack_require__(16);
+var _lodash = __webpack_require__(14);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
@@ -38767,7 +38706,7 @@ var EventPluginHub = __webpack_require__(34);
 var EventPropagators = __webpack_require__(35);
 var ExecutionEnvironment = __webpack_require__(7);
 var ReactDOMComponentTree = __webpack_require__(6);
-var ReactUpdates = __webpack_require__(14);
+var ReactUpdates = __webpack_require__(15);
 var SyntheticEvent = __webpack_require__(17);
 
 var getEventTarget = __webpack_require__(65);
@@ -39845,7 +39784,7 @@ var _prodInvariant = __webpack_require__(4),
 
 var React = __webpack_require__(29);
 var ReactComponentEnvironment = __webpack_require__(59);
-var ReactCurrentOwner = __webpack_require__(15);
+var ReactCurrentOwner = __webpack_require__(16);
 var ReactErrorUtils = __webpack_require__(60);
 var ReactInstanceMap = __webpack_require__(36);
 var ReactInstrumentation = __webpack_require__(12);
@@ -40754,7 +40693,7 @@ var ReactDOMComponentTree = __webpack_require__(6);
 var ReactDefaultInjection = __webpack_require__(222);
 var ReactMount = __webpack_require__(98);
 var ReactReconciler = __webpack_require__(27);
-var ReactUpdates = __webpack_require__(14);
+var ReactUpdates = __webpack_require__(15);
 var ReactVersion = __webpack_require__(237);
 
 var findDOMNode = __webpack_require__(254);
@@ -42045,7 +41984,7 @@ var _prodInvariant = __webpack_require__(4),
 var DOMPropertyOperations = __webpack_require__(91);
 var LinkedValueUtils = __webpack_require__(58);
 var ReactDOMComponentTree = __webpack_require__(6);
-var ReactUpdates = __webpack_require__(14);
+var ReactUpdates = __webpack_require__(15);
 
 var invariant = __webpack_require__(1);
 var warning = __webpack_require__(2);
@@ -42999,7 +42938,7 @@ var _prodInvariant = __webpack_require__(4),
 
 var LinkedValueUtils = __webpack_require__(58);
 var ReactDOMComponentTree = __webpack_require__(6);
-var ReactUpdates = __webpack_require__(14);
+var ReactUpdates = __webpack_require__(15);
 
 var invariant = __webpack_require__(1);
 var warning = __webpack_require__(2);
@@ -43787,7 +43726,7 @@ module.exports = ReactDebugTool;
 
 var _assign = __webpack_require__(5);
 
-var ReactUpdates = __webpack_require__(14);
+var ReactUpdates = __webpack_require__(15);
 var Transaction = __webpack_require__(41);
 
 var emptyFunction = __webpack_require__(11);
@@ -44018,7 +43957,7 @@ var EventListener = __webpack_require__(81);
 var ExecutionEnvironment = __webpack_require__(7);
 var PooledClass = __webpack_require__(21);
 var ReactDOMComponentTree = __webpack_require__(6);
-var ReactUpdates = __webpack_require__(14);
+var ReactUpdates = __webpack_require__(15);
 
 var getEventTarget = __webpack_require__(65);
 var getUnboundedScrollPosition = __webpack_require__(168);
@@ -44218,7 +44157,7 @@ var ReactComponentEnvironment = __webpack_require__(59);
 var ReactEmptyComponent = __webpack_require__(94);
 var ReactBrowserEventEmitter = __webpack_require__(39);
 var ReactHostComponent = __webpack_require__(96);
-var ReactUpdates = __webpack_require__(14);
+var ReactUpdates = __webpack_require__(15);
 
 var ReactInjection = {
   Component: ReactComponentEnvironment.injection,
@@ -44354,7 +44293,7 @@ var ReactComponentEnvironment = __webpack_require__(59);
 var ReactInstanceMap = __webpack_require__(36);
 var ReactInstrumentation = __webpack_require__(12);
 
-var ReactCurrentOwner = __webpack_require__(15);
+var ReactCurrentOwner = __webpack_require__(16);
 var ReactReconciler = __webpack_require__(27);
 var ReactChildReconciler = __webpack_require__(202);
 
@@ -46933,7 +46872,7 @@ module.exports = dangerousStyleValue;
 
 var _prodInvariant = __webpack_require__(4);
 
-var ReactCurrentOwner = __webpack_require__(15);
+var ReactCurrentOwner = __webpack_require__(16);
 var ReactDOMComponentTree = __webpack_require__(6);
 var ReactInstanceMap = __webpack_require__(36);
 
@@ -50870,7 +50809,7 @@ module.exports = onlyChild;
 
 var _prodInvariant = __webpack_require__(23);
 
-var ReactCurrentOwner = __webpack_require__(15);
+var ReactCurrentOwner = __webpack_require__(16);
 var REACT_ELEMENT_TYPE = __webpack_require__(116);
 
 var getIteratorFn = __webpack_require__(119);
