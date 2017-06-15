@@ -7,7 +7,7 @@ export default function(state=[],action){
 	switch(action.type){
 		case FETCH_BOOKS:
 			//add prev sate and payload and return uniq
-	      	return _.uniqWith([...action.payload.data,...state], _.isEqual);
+	      	return _.uniqWith([...state,...action.payload.data], _.isEqual);
 		case FETCH_BOOK:
 			const newState =_.uniqWith(_.concat(state,action.payload.data), _.isEqual);
 			return _.filter(newState,(obj)=>obj._id === action.payload.data._id);

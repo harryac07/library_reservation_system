@@ -1,7 +1,10 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
+import {Link} from 'react-router-dom';
 import _ from 'lodash';
 import {fetchBook,reset} from '../actions/bookActions'; // import actions here
+import {fetchUser} from '../actions/userActions'; // import actions here
+
 import Navigation from './Parts/Navigation';
 import CategoryFrame from './Parts/CategoryFrame';
 
@@ -11,7 +14,8 @@ class Book_detail extends Component{
 		this.state={
 			itemInCart : false,
 			cartMessage : false, // true only when cart is triggered
-			loggedIn : false
+			loggedIn : false,
+			reserved : false // is book already reserved? 
 		};
 	}
 	componentWillMount(){
@@ -33,7 +37,20 @@ class Book_detail extends Component{
 	}
 	componentDidMount(){
 		const bookId = this.props.match.params.id;
-		this.props.fetchBook(bookId);
+		//fetch book
+		this.props.fetchBook(bookId); // action
+		//fetch reserved book from user
+		const token = localStorage.getItem('user-token');
+		if(token){
+			const payload = JSON.parse(window.atob(token.split('.')[1]));
+			const bookId = this.props.match.params.id;
+			this.props.fetchUser(payload._id).then(()=>{
+				const reserved_book = _.find(this.props.user.data.reserved_books,(book)=>book._id == bookId);
+				if(reserved_book){
+					this.setState({reserved : true});
+				}
+			}); // action
+		}
 	}
 	componentWillUnmount(){
 		this.props.reset();
@@ -80,11 +97,13 @@ class Book_detail extends Component{
 		if(!book){
 			return <div>Loading...</div>;
 		}
+		console.log(this.state.reserved);
 		return(
 			<div className="row">
 				<img src = "/images/books.jpg" className="img img-responsive" style={{padding:15}} />
 				<div className="col-sm-12 col-md-12">
 					<h3>{book.title}</h3>
+					<hr/>
 					<h4>
 						<span className={"glyphicon "+((book.rating>0)?"glyphicon-star":"glyphicon-star-empty")}></span>
 						<span className={"glyphicon "+((book.rating>1)?"glyphicon-star":"glyphicon-star-empty")}></span>
@@ -97,14 +116,20 @@ class Book_detail extends Component{
 					<br />
 					<span>
 						
-						{ this.state.itemInCart
-							?
-								<button className="btn btn-danger cart_button" onClick={()=>this.removeFromCart(book._id)}>
-									Remove from cart
-								</button>
-							: 	<button className="btn btn-primary cart_button" onClick={()=>this.addToCart(book._id)}>Add to cart</button>
+						{ 	this.state.reserved
+								? <Link className="btn btn-primary cart_button" to="/reservation">Book Already Reserved</Link>
+								:
+								 	(
+								 		this.state.itemInCart
+										?
+											<button className="btn btn-danger cart_button" onClick={()=>this.removeFromCart(book._id)}>
+												Remove from cart
+											</button>
+										: 	<button className="btn btn-primary cart_button" onClick={()=>this.addToCart(book._id)}>Add to cart</button>
+									)
 						}
 					</span>
+					<br />
 					<div className="well">
 						<p>
 							Express One Eleven is created from super-soft fabrics for effortless layering and styling your way. 
@@ -150,8 +175,9 @@ class Book_detail extends Component{
 
 function mapStateToProps(state,ownProps){
 	return{
-		book : state.books
+		book : state.books,
+		user : state.users
 	};
 }
 
-export default connect(mapStateToProps,{fetchBook,reset})(Book_detail);
+export default connect(mapStateToProps,{fetchBook,reset,fetchUser})(Book_detail);

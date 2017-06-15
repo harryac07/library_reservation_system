@@ -10,8 +10,10 @@ hover : #C0392B;
 
 body{
 	box-sizing: border-box;
-	font-family: 'Open Sans', sans-serif;
 	margin: 0;
+}
+div {
+    font-family:Arial;
 }
 *, *:before, *:after {
   box-sizing: inherit;
@@ -31,6 +33,10 @@ h1,h2{
 input,.btn{
     border-radius: 0 !important;
 }
+textarea {
+    resize: vertical;
+
+}
 
 /* navbar-top */
 .navbar-header a{
@@ -43,6 +49,13 @@ input,.btn{
 	background-color: #C0392B !important;
 	color: #fff !important;
 	border: 0 !important;
+}
+.dropdown-menu{
+	color: red !important;
+	background-color: #2C3E50 !important;
+}
+.dropdown-menu>li>a{
+	color: #fff !important;
 }
 .alert-success, .alert-danger{
 	margin-bottom: 0!important;
@@ -368,6 +381,141 @@ div> .btn.btn-danger.remove{
 	width: 100px;
 }
 
+/* contact form */
+#SearchContainer { 
+	padding: 1em 0;
+	width: 80%;
+	margin: 0 auto;
+}
+
+/*Form Design*/
+div.contact_form form{
+	margin: 0 auto !important;
+	width: 70% !important;
+}
+
+.group{ 
+    position:relative;
+    margin-bottom:40px;
+}
+.group>input,.group>textarea {
+    padding:10px 10px 10px 5px;
+    display:block;
+    width:100%;
+    border:none;
+    border-bottom:1px solid #ccc;
+}
+.group>input:focus,.group>textarea:focus {
+    outline:none;
+}
+/* Label Design */
+ .group label {
+    color:#999;
+    font-size:18px;
+    font-weight:normal;
+    position:absolute;
+    pointer-events:none;
+    left:5px;
+    top:10px;
+    transition:0.2s ease all;
+    -moz-transition:0.2s ease all;
+    -webkit-transition:0.2s ease all;
+}
+/* Active state */
+ .group>input:focus ~ label, input:valid ~ label {
+    top:-20px !important;
+    font-size:14px !important;
+    color:#96281B !important;
+}
+.group>textarea:focus ~ label, textarea:valid ~ label {
+    top:-20px !important;
+    font-size:14px !important;
+    color:#96281B !important;
+}
+/* Underlining Bars */
+ .bar {
+    position:relative;
+    display:block;
+    width:100%;
+}
+.bar:before, .bar:after {
+    content:'';
+    height:2px;
+    width:0;
+    bottom:1px;
+    position:absolute;
+    background:#96281B;
+    transition:0.2s ease all;
+    -moz-transition:0.2s ease all;
+    -webkit-transition:0.2s ease all;
+}
+.bar:before {
+    left:50%;
+}
+.bar:after {
+    right:50%;
+}
+/* active state */
+ .group>input:focus ~ .bar:before, .group>input:focus ~ .bar:after {
+    width:50%;
+}
+/* Highlighter */
+ .highlight {
+    position:absolute;
+    height:60%;
+    width:100px;
+    top:25%;
+    left:0;
+    pointer-events:none;
+    opacity:0.5;
+}
+/* active state */
+ .group>input:focus ~ .highlight,.group>textarea:focus ~ .highlight {
+    -webkit-animation:inputHighlighter 0.3s ease;
+    -moz-animation:inputHighlighter 0.3s ease;
+    animation:inputHighlighter 0.3s ease;
+}
+
+/** Animations **/
+ @-webkit-keyframes inputHighlighter {
+    from {
+        background:#5264AE;
+    }
+    to {
+        width:0;
+        background:transparent;
+    }
+}
+@-moz-keyframes inputHighlighter {
+    from {
+        background:#5264AE;
+    }
+    to {
+        width:0;
+        background:transparent;
+    }
+}
+@keyframes inputHighlighter {
+    from {
+        background:#5264AE;
+    }
+    to {
+        width:0;
+        background:transparent;
+    }
+}
+#Send{ 
+    width: 100%; padding: 1em 0; cursor: pointer; border: 0; color: #fff; background: #22A7F0;
+    -webkit-transition: all .5s;-moz-transition: all .5s;transition: all .5s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+#Send:hover{ 
+    background: #62c0f4;
+    overflow: hidden;
+}
+
+
+/*contact form ends*/
 
 /*media*/
 @media (max-width: 768px) {

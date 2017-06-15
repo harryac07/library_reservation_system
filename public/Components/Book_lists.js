@@ -4,6 +4,7 @@ import {fetchByCategory,fetchBySearch,sortBookList,reset} from '../actions/bookA
 import Navigation from './Parts/Navigation';
 import CategoryFrame from './Parts/CategoryFrame';
 import _ from 'lodash';
+// import ReactCSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 
 class Book_lists extends Component{
 	constructor(props){
@@ -42,8 +43,9 @@ class Book_lists extends Component{
 		const books=this.props.books;
 		if(!books){
 			return <div>Loading Books...</div>
+		}else if(books.length<=0){
+			return (<div className="well" style={{textAlign:'center'}}><h3>Book Not Found!</h3></div>);
 		}
-		console.log('book : ',books);
 		return _.map(this.props.books,(book,i)=>{
 			return(
 				<div key={book._id} className="col-sm-3 col-md-3 col-xs-12" onClick={()=>this.renderBookDetail(book._id)}>
@@ -66,6 +68,11 @@ class Book_lists extends Component{
 	}
 
 	render(){
+		const trasitionOptions={
+			transitionName : "fade",
+			transitionEnterTimeout : 500,
+			transitionLeaveTimeout : 500
+		};
 		return(
 			<div>
 				<Navigation />
@@ -77,7 +84,7 @@ class Book_lists extends Component{
 							    Home <span className="glyphicon glyphicon-chevron-right"></span> <span style={{color:"#ccc"}}>{this.props.match.params.name}</span>
 							</div>
 							<div className="row">
-								{ this.renderBooks() }							
+								{ this.renderBooks() }					
 							</div>
 						</div>
 					</div>

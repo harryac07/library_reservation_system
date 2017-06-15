@@ -50,13 +50,11 @@ class Navigation extends Component {
 		/* update number of cartitems in every cart update in navigation */
 		if(!localStorage.getItem('cartItems') && this.state.cartItemsNumber!==0){
 			this.setState({cartItemsNumber : 0});
-			console.log('i am updated');
 		}
 		/* user loggedin status */
 		if(localStorage.getItem('user-token') && this.state.loggedIn===false){
 			this.setState({loggedIn : true});
 			this.getCurrentUser(localStorage.getItem('user-token'));
-			console.log('i am updated');
 		}
 
 		if(localStorage.getItem('cartItems')){
@@ -65,7 +63,6 @@ class Navigation extends Component {
 				this.setState({
 					cartItemsNumber : localStorage.getItem('cartItems').split(',').length
 				});
-				console.log('i am updated');
 			}	
 		}
 
@@ -95,7 +92,6 @@ class Navigation extends Component {
 		window.location.reload();
 	}
 	render(){
-
 		return(
 			<nav className="navbar navbar-inverse navbar-fixed-top">
 			  <div className="container-fluid">
@@ -108,14 +104,32 @@ class Navigation extends Component {
 			      <Link className="navbar-brand active" to="/"><span className="glyphicon glyphicon-home"></span></Link>
 			    </div>
 			    <div className="collapse navbar-collapse" id="top-nav">
-			      <ul className="nav navbar-nav">
-			        <li><Link to="#">ABOUT</Link></li>
-			        <li><Link to="#">CONTACT</Link></li>
-			       	<li><Link to="#"><i className="fa fa-facebook" aria-hidden="true"></i></Link></li>
-			       	<li><Link to="#"><i className="fa fa-google-plus" aria-hidden="true"></i></Link></li>
-			       	<li><Link to="#"><i className="fa fa-twitter" aria-hidden="true"></i></Link></li>
-			      </ul>
-			      <ul className="nav navbar-nav navbar-right">
+			     	<ul className="nav navbar-nav">
+			        	<li><Link to="#">ABOUT</Link></li>
+			        	<li><Link to="/contact">CONTACT</Link></li>
+			       		<li><Link to="#"><i className="fa fa-facebook" aria-hidden="true"></i></Link></li>
+			       		<li><Link to="#"><i className="fa fa-google-plus" aria-hidden="true"></i></Link></li>
+			       		<li><Link to="#"><i className="fa fa-twitter" aria-hidden="true"></i></Link></li>
+			      	</ul>
+			      {/* Right Navigation Account */}
+			      	{ this.state.loggedIn
+			      		?
+			      		<ul className="nav navbar-nav navbar-right dropdown">
+				      		<li>
+				      			<a className="dropdown-toggle" data-toggle="dropdown">Account <span className="caret"></span></a>
+								    <ul className="dropdown-menu">
+								      	<li><a className="text-primary">USER : {this.state.currentUser.name.toUpperCase()}</a></li>
+								      	<li className="divider"></li>
+								      	<li><Link to="/reservation">RESERVED BOOKS</Link></li>
+								      	<li className="divider"></li>
+								      	<li className="btn btn-danger btn-block" onClick={()=>this.logout()}><a>LOGOUT</a></li>
+								    </ul>
+				      		</li>
+			      		</ul>
+			      		: null
+			      	}
+			      	{/* Right Navigation Cart And Login/Logout */}
+			      	<ul className="nav navbar-nav navbar-right">
 			      	{ this.state.loggedIn 
 				      	?
 					      	(
@@ -127,16 +141,14 @@ class Navigation extends Component {
 							        	<span className="glyphicon glyphicon-shopping-cart"></span>
 							        	&nbsp;My Cart:{this.state.cartItemsNumber}
 							        </Link>
-						      	</li>,
-						      	<li key={3}><a>USER : {this.state.currentUser.name.toUpperCase()}</a></li>,
-						      	<li key={4} onClick={()=>this.logout()}><a>Logout</a></li>]
+						      	</li>]
 					      	)
 					    : 	(
-						        [<li key={5}><Link to="/register"><span className="glyphicon glyphicon-user"></span> Sign Up</Link></li>,
-						        <li key={6}><Link to="/login"><span className="glyphicon glyphicon-log-in"></span> Login</Link></li>]
+						        [<li key={2}><Link to="/register"><span className="glyphicon glyphicon-user"></span> Sign Up</Link></li>,
+						        <li key={3}><Link to="/login"><span className="glyphicon glyphicon-log-in"></span> Login</Link></li>]
 					    	)
 			      	}
-			      </ul>
+			      	</ul>
 			    </div>
 			  </div>
 			</nav>

@@ -17,6 +17,9 @@ router.post('/book/cart/reserve',BookCtrl.makeReservation); // reserve books and
 router.put('/book/remove-reservation/:id',BookCtrl.removeReservation); // remove reservation
 router.put('/book/:id',BookCtrl.updateBook);
 router.delete('/book/:id',BookCtrl.deleteBook);
+/* Reviews */
+router.post('/book/:bookid/review', BookCtrl.addReview); // allow authenticated user only to post
+router.get('/book/:bookid/review/:reviewid', BookCtrl.readReview);
 
 /* users */
 router.get('/users',UserCtrl.listUsers);

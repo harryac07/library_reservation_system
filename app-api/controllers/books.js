@@ -198,6 +198,7 @@ module.exports.postBook = (req,res)=>{
 		title : req.body.title,
 		category : categories,
 		keywords : keywords,
+		description : req.body.description,
 		available : req.body.available,
 		author : req.body.author,
 		published_date : req.body.published_date,
@@ -235,6 +236,7 @@ module.exports.updateBook = (req,res)=>{
 			book.category = categories,
 			book.keywords = keywords,
 			book.available = req.body.available,
+			book.description = req.body.description,
 			book.author = req.body.author,
 			book.published_date = req.body.published_date,
 			book.pages = req.body.pages,
@@ -268,6 +270,71 @@ module.exports.deleteBook = (req,res)=>{
 		}
 	});
 };
+
+/* GET a review to book */
+module.exports.readReview = (req,res)=>{
+	const bookId = req.params.bookid;
+	const reviewId = req.params.reviewid;
+	if(!bookId && !reviewId){
+		sendJSONresponse(res,404,{'message':'book id & review id is required'});
+		return;
+	}
+	Book.findById(bookId,(err,book)=>{
+		if(err){
+			sendJSONresponse(res,400,err);
+		}else if(!book){
+			sendJSONresponse(res,404,{'message':'book not found with that id'});
+		}
+
+		if(book.review && book.review.length>0){
+			const review = book.review.id(reviewId); // mongoose subdocument.id method to search matching id
+			if(!review){
+				sendJSONresponse(res,404,{'message':'review id not found'});
+			}
+			response ={
+				book : {
+					title : book.title,
+					id : bookId
+				},
+				review : review
+			};
+			sendJSONresponse(res,200,response);
+		}else{
+			sendJSONresponse(res,404,{'message':'review not found'});
+		}
+	});
+};
+
+/* ADD review */
+module.exports.addReview = (req, res) =>{
+	const bookId = req.params.bookid;
+	if(!bookId){
+		sendJSONresponse(res,404,{'message':'book id is required'});
+		return;
+	}
+	Book.findById(bookId,(err,book)=>{
+		if(err){
+			sendJSONresponse(res,400,err);
+		}else if(!book){
+			sendJSONresponse(res,404,{'message':'book not found with that id'});
+		}
+
+		book.review.push({
+			reviewAuthor: req.body.reviewAuthor,
+			rating: req.body.rating,
+			review: req.body.review
+		});
+		book.save((err,book)=>{
+			if(err){
+				sendJSONresponse(res,400,err);
+			}else{
+				sendJSONresponse(res,201,book);
+			}
+		});
+
+	})
+};
+
 
 
 

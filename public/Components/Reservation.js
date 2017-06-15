@@ -59,7 +59,6 @@ class Reservation extends Component{
 					</div>
 				);
 			}
-			// console.log(books);
 			return books.map((book,i)=>{
 				return(
 					<div className="col-sm-12 col-md-12 col-xs-12" key={book._id}>
@@ -102,10 +101,10 @@ class Reservation extends Component{
 									? 
 										(
 											<div className="jumbotron text-center" style={{padding:10,margin:'0 auto'}}>
-												<p className="text-primary"> 
+												<h4 className="text-primary"> 
 													Your Items have been reserved. Please visit your nearby Library and get your reserved books!<br />
-												</p>
-												<p className="text-danger">Identify yourself with valid ID!</p>
+												</h4>
+												<div className="text-center text-danger"><strong>Identify yourself with valid ID!</strong></div>
 											</div>
 										)
 									: 	null

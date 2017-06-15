@@ -103,7 +103,6 @@ class Cart extends Component{
 		}else if(!localStorage.getItem('cartItems')){
 			return (<div className="well" style={{textAlign:'center'}}><h3>Your Cart is Empty!</h3></div>);
 		}
-		
 		return books.map((book,i)=>{
 			return(
 				<div className="col-sm-12 col-md-12 col-xs-12" key={book._id}>

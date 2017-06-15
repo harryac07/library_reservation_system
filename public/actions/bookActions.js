@@ -89,7 +89,6 @@ export function makeReservation(books,user){
 	return (dispatch)=>{
 		return axios.post(`${ROOT_URL}/book/cart/reserve?user=${user}`,books)
 			.then((response)=>{
-				console.log('action ',response.data);
 				// dispatch({type : RESERVE_BOOKS, payload : response});
 			}).catch((err)=>{
 				// dispatch(returnErrors(err));

@@ -15,6 +15,7 @@ import Cart from './Components/Cart';
 import Register from './Components/Register';
 import Login from './Components/Login';
 import Reservation from './Components/Reservation';
+import Contact from './Components/Contact';
 
 
 const createStoreWithMiddleware = compose(applyMiddleware(thunk))(createStore);
@@ -26,6 +27,7 @@ ReactDom.render(
 	    		<Switch>
 	    			<Route path="/login" component={Login} /> 
 	    			<Route path="/register" component={Register} /> 
+	    			<Route path='/contact' component={Contact} />
 	    			<Route path="/reservation" component={Reservation} /> 
 	    			<Route path="/books/cart" component={Cart} />
 	    			<Route path="/book/:id" component={Book_detail} />

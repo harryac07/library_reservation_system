@@ -20,6 +20,7 @@ class App extends Component{
 		}
 	}
 	componentDidMount(){
+		//fetch all books
 		this.props.fetchBooks();
 	}
 	componentWillUnmount(){
@@ -45,7 +46,9 @@ class App extends Component{
 }
 
 function mapStateToProps(state){
-	return {books : state.books};
+	return {
+		books : state.books
+	};
 }
 
 export default connect(mapStateToProps,{fetchBooks,reset})(App);
