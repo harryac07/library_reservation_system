@@ -1,7 +1,6 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import {fetchByCategory,fetchBySearch,sortBookList,reset} from '../actions/bookActions'; // import actions here
-import Navigation from './Parts/Navigation';
 import CategoryFrame from './Parts/CategoryFrame';
 import _ from 'lodash';
 // import ReactCSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
@@ -39,6 +38,14 @@ class Book_lists extends Component{
 	componentWillUnmount(){
 		this.props.reset();
 	}
+	averageRating=(reviews)=>{
+		const totalReviews = reviews.length;
+		let rating = 0;
+		const ratings = _.map(reviews,(review)=>{
+			return rating+=review.rating;
+		});
+		return Math.ceil(rating / totalReviews);
+	}
 	renderBooks=()=>{
 		const books=this.props.books;
 		if(!books){
@@ -53,11 +60,11 @@ class Book_lists extends Component{
 					<div>
 						<h3>{book.title}</h3>
 						<h4>
-							<span className={"glyphicon "+((book.rating>0)?"glyphicon-star":"glyphicon-star-empty")}></span>
-							<span className={"glyphicon "+((book.rating>1)?"glyphicon-star":"glyphicon-star-empty")}></span>
-							<span className={"glyphicon "+((book.rating>2)?"glyphicon-star":"glyphicon-star-empty")}></span>
-							<span className={"glyphicon "+((book.rating>3)?"glyphicon-star":"glyphicon-star-empty")}></span>
-							<span className={"glyphicon "+((book.rating>4)?"glyphicon-star":"glyphicon-star-empty")}></span>
+							<span className={"glyphicon "+((this.averageRating(book.review)>0)?"glyphicon-star":"glyphicon-star-empty")}></span>
+							<span className={"glyphicon "+((this.averageRating(book.review)>1)?"glyphicon-star":"glyphicon-star-empty")}></span>
+							<span className={"glyphicon "+((this.averageRating(book.review)>2)?"glyphicon-star":"glyphicon-star-empty")}></span>
+							<span className={"glyphicon "+((this.averageRating(book.review)>3)?"glyphicon-star":"glyphicon-star-empty")}></span>
+							<span className={"glyphicon "+((this.averageRating(book.review)>4)?"glyphicon-star":"glyphicon-star-empty")}></span>
 						</h4>
 						<p>By {book.author}</p>
 					</div>
@@ -75,7 +82,6 @@ class Book_lists extends Component{
 		};
 		return(
 			<div>
-				<Navigation />
 				<div className="container category_nav">
 					<div className="row">
 						<CategoryFrame sort={this.sortBookList} />

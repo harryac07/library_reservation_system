@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import {login,loginFailure,loginSuccess,reset} from '../actions/authActions'; // import actions here
 import _ from 'lodash';
 
-import Navigation from './Parts/Navigation';
 import CategoryFrame from './Parts/CategoryFrame';
 import LoginForm from './Parts/LoginForm'; // to be changed to loginForm
 
@@ -34,7 +33,6 @@ class Login extends Component{
 	render(){
 		return(
 			<div>
-				<Navigation/>
 				<div className="container category_nav">
 					<div className="row">
 						<CategoryFrame />

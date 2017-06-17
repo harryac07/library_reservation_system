@@ -1,8 +1,11 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
+import { Modal, Button } from 'react-bootstrap';
 import _ from 'lodash';
-import {fetchBook,reset} from '../actions/bookActions'; // import actions here
+import moment from 'moment';
+
+import {fetchBook,addReview,reset} from '../actions/bookActions'; // import actions here
 import {fetchUser} from '../actions/userActions'; // import actions here
 
 import Navigation from './Parts/Navigation';
@@ -15,7 +18,8 @@ class Book_detail extends Component{
 			itemInCart : false,
 			cartMessage : false, // true only when cart is triggered
 			loggedIn : false,
-			reserved : false // is book already reserved? 
+			reserved : false, // is book already reserved? 
+			showModal: false // review modal
 		};
 	}
 	componentWillMount(){
@@ -92,12 +96,87 @@ class Book_detail extends Component{
 		});
 		
 	}
+	renderReviews=(reviews)=>{
+		return _.map(reviews,(review,i)=>{
+			return (
+				<li className="list-group-item" key={review._id}>
+					<div className="well">
+						<span style={{fontSize:18}}><strong>{review.reviewAuthor}</strong></span>
+						<span style={{float:'right'}}>{moment.utc(review.createdOn).local().format('MM.DD.YYYY')}</span>
+					</div>
+					<p>{review.review}</p>
+				</li>
+			);
+		});
+	}
+	averageRating=(reviews)=>{
+		const totalReviews = reviews.length;
+		let rating = 0;
+		const ratings = _.map(reviews,(review)=>{
+			return rating+=review.rating;
+		});
+		return Math.ceil(rating / totalReviews);
+	}
+	//modals for review
+	close=()=>{
+	    this.setState({ showModal: false });
+	}
+	open=()=>{
+		this.state.loggedIn
+			? this.setState({ showModal: true })
+			: this.props.history.push('/login')
+	}
+	submitReview=(e)=>{
+		e.preventDefault();
+		const bookId = this.props.book[0]._id;
+		const reviews = {
+			reviewAuthor : JSON.parse(window.atob(localStorage.getItem('user-token').split('.')[1])).name,
+			review : this.refs.review.value,
+			rating : this.refs.rating.value
+		}
+		this.props.addReview(bookId,reviews).then(()=>{
+			this.setState({showModal : false});
+			window.location.reload();
+		});
+	}
+	renderModal=()=>{
+	    return (
+	      	<div>
+		        <Modal show={this.state.showModal} onHide={this.close}>
+		          	<Modal.Body>
+		            	<div className="well text-center">
+		            		<h3 className="text-center">Add your review</h3>
+				            <form className="form-horizontal" onSubmit={this.submitReview}>
+					            <div className="form-group">
+					                <label>Rating</label>
+					                <select ref="rating" className="form-control" required>
+								        <option>1</option>
+								        <option>2</option>
+								        <option>3</option>
+								        <option>4</option>
+								        <option>5</option>
+								    </select>
+					            </div>
+					            <div className="form-group">
+					              <label>Review</label>
+					              <textarea className="form-control" ref="review" rows="5" required></textarea>
+					            </div>
+					            <button className="btn btn-primary" type="submit">Submit</button>&nbsp;
+					            <a className="btn btn-danger" onClick={this.close}>cancel</a>
+						    </form>
+		            	</div>
+		          	</Modal.Body>
+		        </Modal>
+	      	</div>
+	    );
+	}
 	renderBook=()=>{
 		const book  = this.props.book[0];
 		if(!book){
 			return <div>Loading...</div>;
 		}
-		console.log(this.state.reserved);
+		let averageRating = 0;
+		{book.review ? averageRating = this.averageRating(book.review) : null}
 		return(
 			<div className="row">
 				<img src = "/images/books.jpg" className="img img-responsive" style={{padding:15}} />
@@ -105,11 +184,13 @@ class Book_detail extends Component{
 					<h3>{book.title}</h3>
 					<hr/>
 					<h4>
-						<span className={"glyphicon "+((book.rating>0)?"glyphicon-star":"glyphicon-star-empty")}></span>
-						<span className={"glyphicon "+((book.rating>1)?"glyphicon-star":"glyphicon-star-empty")}></span>
-						<span className={"glyphicon "+((book.rating>2)?"glyphicon-star":"glyphicon-star-empty")}></span>
-						<span className={"glyphicon "+((book.rating>3)?"glyphicon-star":"glyphicon-star-empty")}></span>
-						<span className={"glyphicon "+((book.rating>4)?"glyphicon-star":"glyphicon-star-empty")}></span>
+						<span className={"glyphicon "+((averageRating>0)?"glyphicon-star":"glyphicon-star-empty")}></span>
+						<span className={"glyphicon "+((averageRating>1)?"glyphicon-star":"glyphicon-star-empty")}></span>
+						<span className={"glyphicon "+((averageRating>2)?"glyphicon-star":"glyphicon-star-empty")}></span>
+						<span className={"glyphicon "+((averageRating>3)?"glyphicon-star":"glyphicon-star-empty")}></span>
+						<span className={"glyphicon "+((averageRating>4)?"glyphicon-star":"glyphicon-star-empty")}></span>
+						&nbsp;&nbsp;&nbsp;
+						<span style={{cursor:'pointer'}} onClick={this.open}><small><u style={{color:'#C0392B'}}>Leave Feedback</u></small></span>
 					</h4>
 					<p>Quantity Available : {book.available}</p>
 					<h4>By {book.author}</h4>
@@ -130,12 +211,37 @@ class Book_detail extends Component{
 						}
 					</span>
 					<br />
+					<br />
 					<div className="well">
-						<p>
-							Express One Eleven is created from super-soft fabrics for effortless layering and styling your way. 
-							This cozy ribbed knit shirt is perfect for layering under a 
-							jean vest with a maxi skirt or tucked into an ankle pant for something more out-to-dinner.
-						</p>
+					  	<ul className="nav nav-tabs">
+						    <li className="active"><a data-toggle="tab" href="#home">Description</a></li>
+						    <li><a data-toggle="tab" href="#menu1">Reviews</a></li>
+					  	</ul>
+					  
+					  	<div className="tab-content">
+						    <div id="home" className="tab-pane fade in active">
+						      <h3>Description</h3>
+						      <p>{book.description ? book.description : 'description not available.'}</p>
+						    </div>
+						    <div id="menu1" className="tab-pane fade">
+						      	<h3>Reviews</h3>
+						      	<p>Average rating:&nbsp;&nbsp;
+									<span className={"glyphicon "+((averageRating>0)?"glyphicon-star":"glyphicon-star-empty")}></span>
+									<span className={"glyphicon "+((averageRating>1)?"glyphicon-star":"glyphicon-star-empty")}></span>
+									<span className={"glyphicon "+((averageRating>2)?"glyphicon-star":"glyphicon-star-empty")}></span>
+									<span className={"glyphicon "+((averageRating>3)?"glyphicon-star":"glyphicon-star-empty")}></span>
+									<span className={"glyphicon "+((averageRating>4)?"glyphicon-star":"glyphicon-star-empty")}></span>
+									<span style={{float:'right'}}>
+										<button className="btn btn-primary" onClick={this.open}>Add Review</button>
+									</span>
+								</p>
+								<hr />
+								{this.renderModal()}
+						     	<ul className="list-group">
+						     		{book.review && book.review.length>0 ? this.renderReviews(book.review) : 'There are no reviews for this product yet'}
+						     	</ul>
+						    </div>
+					  	</div>
 					</div>
 				</div>
 			</div>	
@@ -180,4 +286,4 @@ function mapStateToProps(state,ownProps){
 	};
 }
 
-export default connect(mapStateToProps,{fetchBook,reset,fetchUser})(Book_detail);
+export default connect(mapStateToProps,{fetchBook,addReview,reset,fetchUser})(Book_detail);

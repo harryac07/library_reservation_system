@@ -7,6 +7,7 @@ export const FETCH_BOOK_BY_SEARCH="FETCH_BOOK_BY_SEARCH";
 export const SORT_BOOKLIST = "SORT_BOOKLIST";
 export const FETCH_CART_ITEMS ="FETCH_CART_ITEMS";
 export const RESERVE_BOOKS = "RESERVE_BOOKS";
+export const POST_RATING = "POST_RATING";
 export const RESET ="RESET";
 export const ERRORS = "ERRORS";
 
@@ -37,7 +38,6 @@ export function fetchBook(bookId){
 	return (dispatch) =>{
 		return axios.get(`${ROOT_URL}/book/${bookId}`)
 			.then((response)=>{
-				console.log('action ',response.data);
 				dispatch({type : FETCH_BOOK, payload : response});
 			}).catch((err)=>{
 				dispatch(returnErrors(err));
@@ -98,6 +98,19 @@ export function makeReservation(books,user){
 }
 
 // remove reservation is handled in useractions
+
+
+// add review
+export function addReview(bookId,reviewData){
+	return dispatch=>{
+		return axios.post(`${ROOT_URL}/book/${bookId}/review`,reviewData)
+			.then(response=>{
+				dispatch({type : POST_RATING, payload : response});
+			}).catch(err=>{
+				dispatch(returnErrors(err));
+			});
+	}
+}
 
 
 //reset

@@ -120,6 +120,7 @@ module.exports.getCartItems=(req,res)=>{
 					for(var j=0;j<req.body.length;j++){
 						if(dbBook[i]._id == req.body[j]){
 							itemsArray.push(dbBook[i]);
+							
 						}
 					}
 				}

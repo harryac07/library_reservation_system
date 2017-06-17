@@ -42,9 +42,7 @@ class Navigation extends Component {
 		let element = document.querySelector(".alert");
 		if(element){
 			document.querySelector(".alert").style.display="block";
-			setTimeout(() => {
-			  	document.querySelector(".alert").style.display="none";
-			}, 2000);
+			_.delay(()=>document.querySelector(".alert").style.display="none" , 1800);
 		}
 
 		/* update number of cartitems in every cart update in navigation */
@@ -105,7 +103,7 @@ class Navigation extends Component {
 			    </div>
 			    <div className="collapse navbar-collapse" id="top-nav">
 			     	<ul className="nav navbar-nav">
-			        	<li><Link to="#">ABOUT</Link></li>
+			        	<li><Link to="/about">ABOUT</Link></li>
 			        	<li><Link to="/contact">CONTACT</Link></li>
 			       		<li><Link to="#"><i className="fa fa-facebook" aria-hidden="true"></i></Link></li>
 			       		<li><Link to="#"><i className="fa fa-google-plus" aria-hidden="true"></i></Link></li>
@@ -115,8 +113,8 @@ class Navigation extends Component {
 			      	{ this.state.loggedIn
 			      		?
 			      		<ul className="nav navbar-nav navbar-right dropdown">
-				      		<li>
-				      			<a className="dropdown-toggle" data-toggle="dropdown">Account <span className="caret"></span></a>
+				      		<li className="dropdown">
+				      			<a className="dropdown-toggle" data-toggle="dropdown">My Account <span className="caret"></span></a>
 								    <ul className="dropdown-menu">
 								      	<li><a className="text-primary">USER : {this.state.currentUser.name.toUpperCase()}</a></li>
 								      	<li className="divider"></li>
@@ -139,7 +137,7 @@ class Navigation extends Component {
 					      		<li key={1}>
 							      	<Link to="/books/cart">
 							        	<span className="glyphicon glyphicon-shopping-cart"></span>
-							        	&nbsp;My Cart:{this.state.cartItemsNumber}
+							        	&nbsp;My Cart : <span style={{backgroundColor:'#2C3E50',color:'#fff',padding:'5px 10px'}}>{this.state.cartItemsNumber}</span>
 							        </Link>
 						      	</li>]
 					      	)

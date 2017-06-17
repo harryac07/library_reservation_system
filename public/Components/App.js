@@ -2,7 +2,6 @@ import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import {fetchBooks,reset} from '../actions/bookActions'; // import actions here
 
-import Navigation from './Parts/Navigation';
 import HomeCategoryNav from './Parts/HomeCategoryNav';
 import Home from './Parts/Home';
 import Book from './Parts/Book';
@@ -15,9 +14,6 @@ import Footer from './Parts/Footer';
 class App extends Component{
 	constructor(props){
 		super(props);
-		this.state={
-			popularBooks :[]
-		}
 	}
 	componentDidMount(){
 		//fetch all books
@@ -33,7 +29,6 @@ class App extends Component{
 		}
 		return(
 			<div>
-				<Navigation />
 				<Home />
 				<HomeCategoryNav />
 				{ (this.props.books)?<Book books={books}/> : null }

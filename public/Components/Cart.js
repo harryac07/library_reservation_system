@@ -3,8 +3,8 @@ import {connect} from 'react-redux';
 import _ from 'lodash';
 
 import {fetchCartBooks,makeReservation,reset} from '../actions/bookActions'; // import actions here
-import Navigation from './Parts/Navigation';
 import CategoryFrame from './Parts/CategoryFrame';
+import Navigation from './Parts/Navigation';
 
 class Cart extends Component{
 	constructor(props){
@@ -61,7 +61,7 @@ class Cart extends Component{
 		localStorage.removeItem('cartItems');
 		if(booksAfterRemove.length>0){
 			localStorage.setItem('cartItems',booksAfterRemove);
-			this.setState({totalItems : booksAfterRemove.length})
+			this.setState({totalItems : booksAfterRemove.length});
 			this.props.fetchCartBooks(booksAfterRemove); // action (refetch the remained books in cart)
 		}else{
 			this.setState({totalItems : 0});
@@ -70,7 +70,6 @@ class Cart extends Component{
 	}
 	removeFromCart=(e,bookId)=>{
 		this.deleteCartItems(bookId);
-		// e.preventDefault();
 	}
 	emptyCart=()=>{
 		/* clear all cart items completely */
@@ -86,7 +85,6 @@ class Cart extends Component{
 			let cartBooks = cart.split(',');
 			this.props.makeReservation(cartBooks,user).then(()=>{ // action 
 				localStorage.removeItem('cartItems');
-				console.log('done');
 				this.setState({totalItems : 0});
 				this.props.history.push('/reservation');
 			}); 
@@ -124,7 +122,7 @@ class Cart extends Component{
 		const space = '&nbsp;';
 		return(
 			<div>
-				<Navigation/>
+				<Navigation />
 				<div className="container category_nav">
 					<div className="row">
 						<CategoryFrame />

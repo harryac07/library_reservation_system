@@ -16,6 +16,8 @@ import Register from './Components/Register';
 import Login from './Components/Login';
 import Reservation from './Components/Reservation';
 import Contact from './Components/Contact';
+import About from './Components/About';
+import Nav from './Components/Parts/Navigation'; // common commponent for all routes
 
 
 const createStoreWithMiddleware = compose(applyMiddleware(thunk))(createStore);
@@ -24,10 +26,12 @@ ReactDom.render(
 	<Provider store={createStoreWithMiddleware(reducers)}>
 	    <BrowserRouter>
 	    	<div>
+	    	<Nav />
 	    		<Switch>
 	    			<Route path="/login" component={Login} /> 
 	    			<Route path="/register" component={Register} /> 
 	    			<Route path='/contact' component={Contact} />
+	    			<Route path="/about" component={About} />
 	    			<Route path="/reservation" component={Reservation} /> 
 	    			<Route path="/books/cart" component={Cart} />
 	    			<Route path="/book/:id" component={Book_detail} />

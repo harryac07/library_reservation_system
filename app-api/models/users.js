@@ -33,6 +33,7 @@ var userSchema = new mongoose.Schema({
 	},
 	address : String,
 	phone : Number,
+	cart_books : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book',required:false }],
 	reserved_books : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book',required:false }],
 	hash : String,
 	salt : String

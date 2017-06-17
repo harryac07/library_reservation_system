@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "prestart": "webpack",
+    "postinstall": "webpack -p",
     "start": "node app "
   },
   "author": "hari adhikari",
@@ -24,6 +25,7 @@
     "jquery": "^3.2.1",
     "jsonwebtoken": "^7.4.1",
     "lodash": "^4.17.4",
+    "moment": "^2.18.1",
     "mongoose": "^4.10.3",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",

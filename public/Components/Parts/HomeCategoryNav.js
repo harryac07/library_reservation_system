@@ -19,7 +19,7 @@ class CategoryNav extends Component{
 		      		<li>
 		      			<a>
 		      				<form className="form-inline" method="get" action="/books/category/search">
-		                        <input type="text" name="search" ref="search" className="form-control" placeholder="search..." />
+		                        <input type="text" name="search" ref="search" className="form-control" placeholder="&#xF002; search..." style={{fontFamily:'Arial, FontAwesome'}} />
 		                        <input type="submit" className="btn btn-danger" />
 	                        </form>
 	                    </a>

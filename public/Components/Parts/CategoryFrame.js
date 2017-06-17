@@ -22,7 +22,7 @@ class CategoryFrame extends Component{
 			      			<a>
 			      				<form className="form-horizontal" method="get" action="/books/category/search">
 									<div className="input-group">
-									   <input type="text" name="search" className="form-control" />
+									   <input type="text" name="search" className="form-control" placeholder="&#xF002; search..." style={{fontFamily:'Arial, FontAwesome'}} />
 									   <span className="input-group-btn">
 									        <button className="btn btn-primary" type="submit">
 									        	<span className="glyphicon glyphicon-search"></span>

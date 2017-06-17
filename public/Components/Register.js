@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import {register,reset} from '../actions/authActions'; // import actions here
 import _ from 'lodash';
 
-import Navigation from './Parts/Navigation';
 import CategoryFrame from './Parts/CategoryFrame';
 import RegisterForm from './Parts/RegisterForm';
 
@@ -34,7 +33,6 @@ class Register extends Component{
 	render(){
 		return(
 			<div>
-				<Navigation/>
 				<div className="container category_nav">
 					<div className="row">
 						<CategoryFrame />

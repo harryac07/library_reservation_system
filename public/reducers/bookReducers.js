@@ -1,5 +1,6 @@
 
-import {FETCH_BOOKS,FETCH_BOOK,FETCH_BOOK_BY_CATEGORY,FETCH_BOOK_BY_SEARCH,SORT_BOOKLIST,FETCH_CART_ITEMS,RESERVE_BOOKS,RESET,ERRORS}
+import {FETCH_BOOKS,FETCH_BOOK,FETCH_BOOK_BY_CATEGORY,FETCH_BOOK_BY_SEARCH,SORT_BOOKLIST,
+	FETCH_CART_ITEMS,RESERVE_BOOKS,POST_RATING,RESET,ERRORS}
 	from '../actions/bookActions';
 import _ from 'lodash';
 
@@ -8,7 +9,7 @@ export default function(state=[],action){
 		case FETCH_BOOKS:
 			//add prev sate and payload and return uniq
 	      	return _.uniqWith([...state,...action.payload.data], _.isEqual);
-		case FETCH_BOOK:
+		case FETCH_BOOK || POST_RATING:
 			const newState =_.uniqWith(_.concat(state,action.payload.data), _.isEqual);
 			return _.filter(newState,(obj)=>obj._id === action.payload.data._id);
 		case FETCH_BOOK_BY_CATEGORY:

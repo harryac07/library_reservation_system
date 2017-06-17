@@ -2,7 +2,6 @@ import React,{Component} from 'react';
 import {Field, reduxForm,reset} from 'redux-form';
 import {Link} from 'react-router-dom';
 
-import Navigation from './Parts/Navigation';
 import CategoryFrame from './Parts/CategoryFrame';
 
 const FIELDS = {
@@ -101,7 +100,6 @@ class Contact extends Component{
 	render(){
 		return(
 			<div>
-				<Navigation/>
 				<div className="container category_nav">
 					<div className="row">
 						<CategoryFrame />

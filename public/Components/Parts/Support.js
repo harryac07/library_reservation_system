@@ -1,4 +1,5 @@
 import React,{Component} from 'react';
+import {Link} from 'react-router-dom';
 
 class Support extends Component{
 	render(){
@@ -46,7 +47,7 @@ class Support extends Component{
 							<div className="support-links">
 								<h4>USEFUL LINKS</h4>
 								<ul>
-									<li>contact us</li>
+									<li><Link to="/contact">contact us</Link></li>
 									<li>about us</li>
 									<li>most viewed books</li>
 									<li>top rated books</li>

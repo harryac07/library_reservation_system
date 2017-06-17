@@ -7,7 +7,6 @@ hover : #C0392B;
 */
 
 /*common*/
-
 body{
 	box-sizing: border-box;
 	margin: 0;
@@ -23,7 +22,7 @@ a:visited, a:active, a:hover, a:link{
 	color: #fff;
 }
 li a:hover{
-	background-color:transparent !important;
+	background-color:inherit !important;
 	color: #C0392B;
 }
 
@@ -56,6 +55,10 @@ textarea {
 }
 .dropdown-menu>li>a{
 	color: #fff !important;
+}
+li.dropdown.open > a {
+  	color: #fff;
+  	background: none !important;
 }
 .alert-success, .alert-danger{
 	margin-bottom: 0!important;
@@ -205,6 +208,9 @@ div.support-links ul{
 div.support-links ul>li{ 
 	font-size: 20px;
 }
+div.support-links ul>li>a{
+	color: #000 !important;
+}
 div.support-links ul>li:before{ 
 	content: "\25B6";
 	font-size: 15px;
@@ -338,6 +344,40 @@ div.category_nav{
 .category_nav .row .col-sm-10 .row .col-sm-3.col-md-3 div {
 	text-align: left !important;
 }
+/*book list category ends*/
+
+/*book details page*/
+.nav.nav-tabs{
+	border-bottom: 3px solid #C0392B;
+}
+.nav.nav-tabs>li>a{
+	color: #000 !important;
+	background-color:  !important;
+	border: 1px solid #C0392B;
+}
+.nav.nav-tabs>li.active a{
+	color: #fff !important;
+	background-color: #C0392B !important;
+	border: 1px solid #C0392B;
+}
+/*review rating*/
+.glyphicon-star-empty,.glyphicon-star{
+	color: #C0392B;
+}
+.rating {
+    float: left;
+    margin-left: 10px;
+}
+.rating span {
+    font-size: 22px;
+    cursor: pointer;
+    float: right;
+    color:  black !important;
+}
+.rating span:hover, .rating span:hover ~ span{
+    color: #C0392B !important;
+}
+
 
 /* Cart */
 div> .btn.btn-danger.remove{
@@ -345,6 +385,9 @@ div> .btn.btn-danger.remove{
     padding: 8px 15px;
     margin: 20px auto;
 }
+/*cart ends*/
+
+
 
 /* Register */
 
@@ -389,7 +432,7 @@ div> .btn.btn-danger.remove{
 }
 
 /*Form Design*/
-div.contact_form form{
+div.contact_form form,div.about{
 	margin: 0 auto !important;
 	width: 70% !important;
 }
@@ -513,9 +556,13 @@ div.contact_form form{
     background: #62c0f4;
     overflow: hidden;
 }
-
-
 /*contact form ends*/
+
+/* about */
+.col-sm-6.col-md-6>div>ul>li.list-group-item{
+	background-color: #ECF0F1;
+	margin: 2px;
+}
 
 /*media*/
 @media (max-width: 768px) {

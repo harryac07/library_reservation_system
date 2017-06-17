@@ -3,8 +3,6 @@ import {connect} from 'react-redux';
 import _ from 'lodash';
 
 import {fetchUser,reset,removeReservation} from '../actions/userActions'; // import actions here
-
-import Navigation from './Parts/Navigation';
 import CategoryFrame from './Parts/CategoryFrame';
 
 class Reservation extends Component{
@@ -80,7 +78,6 @@ class Reservation extends Component{
 	render(){
 		return(
 			<div>
-				<Navigation/>
 				<div className="container category_nav">
 					<div className="row">
 						<CategoryFrame />
