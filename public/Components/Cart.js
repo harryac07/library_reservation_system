@@ -95,21 +95,25 @@ class Cart extends Component{
 		e.preventDefault();
 	}
 	renderCartList=()=>{
-		const books = this.props.books;
+		const {books} = this.props.books;
 		if(!books){
-			return (<div className="well" style={{textAlign:'center'}}><h3>Loading...</h3></div>);
+			return (
+				<div className="well" style={{textAlign:'center'}}>
+					<i className="fa fa-spinner fa-spin" style={{fontSize:"28px"}}></i>
+				</div>
+			);
 		}else if(!localStorage.getItem('cartItems')){
 			return (<div className="well" style={{textAlign:'center'}}><h3>Your Cart is Empty!</h3></div>);
 		}
-		return books.map((book,i)=>{
+		return _.map(books,(book,i)=>{
 			return(
 				<div className="col-sm-12 col-md-12 col-xs-12" key={book._id}>
 					<div style={{float:'left',padding:'10px 20px'}} onClick={(e)=>this.renderBook(e,book._id)}>
 						<img src="/images/books.jpg" style={{height:80,width:70}} />
 					</div>
 					<div style={{float:'left',padding:'10px 20px'}}>
-						<h4>{book.title}</h4>&nbsp;<span><strong>By {book.author}</strong></span>
-						<p>This is just a demo ! real rendering will happen</p>
+						<h4><strong>{book.title}</strong></h4><span><strong>By {book.author}</strong></span>
+						<p>{book.description?_.truncate(book.description,{'length':50}):'no description'}</p>
 					</div>
 					<div onClick={(e)=>this.removeFromCart(e,book._id)}>
 						<button className="btn btn-danger remove">Remove</button>

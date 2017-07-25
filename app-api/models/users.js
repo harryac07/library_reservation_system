@@ -43,11 +43,11 @@ var userSchema = new mongoose.Schema({
 //set password
 userSchema.methods.setPassword = function(password){
 	this.salt = crypto.randomBytes(16).toString('hex'); // creating a random string for salt
-	this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64).toString('hex'); // create encryted hash
+	this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64,'sha512').toString('hex'); // create encryted hash
 };
 //validate password
 userSchema.methods.validPassword = function(password){ // validating submitted password
-	var hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64).toString('hex');
+	var hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64,'sha512').toString('hex');
 	return this.hash === hash;
 };
 //generate Json Web Token

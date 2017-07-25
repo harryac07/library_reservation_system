@@ -2,12 +2,17 @@ import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import {fetchByCategory,fetchBySearch,sortBookList,reset} from '../actions/bookActions'; // import actions here
 import CategoryFrame from './Parts/CategoryFrame';
+import Pagination from "react-js-pagination";
 import _ from 'lodash';
 // import ReactCSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 
 class Book_lists extends Component{
 	constructor(props){
 		super(props);
+		this.state={
+			activePage:1,
+			itemsCountPerPage:6
+		}
 	}
 	fetchBooks=(props)=>{
 		const categoryName=props.match.params.name;
@@ -15,17 +20,21 @@ class Book_lists extends Component{
 		const searchTerm = querySearch.get('search');
 		searchTerm 
 			? props.fetchBySearch(searchTerm) 
-			: props.fetchByCategory(categoryName)
+			: props.fetchByCategory(categoryName, this.state.activePage)
 	}
 	componentDidMount(){
 		this.fetchBooks(this.props);
 	}
 	componentWillReceiveProps(nextProps) {
 		//checking the route pathname and fetching the books
-
 	    if (nextProps.location.pathname !== this.props.location.pathname) {
 	    	this.fetchBooks(nextProps);
 	    }
+	}
+	componentDidUpdate(prevProps, prevState){
+		if(this.state.activePage !== prevState.activePage){
+			this.fetchBooks(this.props);
+		}
 	}
 	renderBookDetail=(bookId)=>{
 		this.props.history.push('/book/'+bookId);
@@ -47,13 +56,34 @@ class Book_lists extends Component{
 		return Math.ceil(rating / totalReviews);
 	}
 	renderBooks=()=>{
-		const books=this.props.books;
-		if(!books){
-			return <div>Loading Books...</div>
+		const {books,fetched,sort}=this.props.books;
+		if(!books || fetched===false){
+			return (<div className="text-center"><i className="fa fa-spinner fa-spin" style={{fontSize:"28px"}}></i></div>);
 		}else if(books.length<=0){
 			return (<div className="well" style={{textAlign:'center'}}><h3>Book Not Found!</h3></div>);
 		}
-		return _.map(this.props.books,(book,i)=>{
+		
+		/* For Pagination */
+
+		var filteredItems = []; // required results of books after pagination
+		var currentPage = this.state.activePage;
+		var numPerPage = this.state.itemsCountPerPage;
+		let begin = 0;
+		let end = 0;
+		
+		books.length>this.state.itemsCountPerPage
+			?	(
+					begin = ((currentPage-1) *  numPerPage),
+					end = begin + numPerPage
+				)
+			: 	(
+					begin = 0,
+					end = books.length
+				)
+		
+		filteredItems = books.slice(begin,end);
+
+		return _.map(_.orderBy(filteredItems,'title', sort ? sort:'ASC'),(book)=>{
 			return(
 				<div key={book._id} className="col-sm-3 col-md-3 col-xs-12" onClick={()=>this.renderBookDetail(book._id)}>
 					<img src = "/images/books.jpg" className="img-img-thumbnail" />
@@ -71,15 +101,26 @@ class Book_lists extends Component{
 				</div>				
 			);
 		});
-
+	}
+	handlePageChange=(pageNumber)=>{
+		console.log(`active page is ${pageNumber}`);
+    	this.setState({activePage: pageNumber});
+   	}
+	renderPagination=()=>{
+	  	return (
+	    	<Pagination
+		      	prevPageText='prev'
+		      	nextPageText='next'
+		      	firstPageText='first'
+		      	lastPageText='last'
+		      	activePage={this.state.activePage}
+		      	itemsCountPerPage={this.state.itemsCountPerPage} 
+		      	totalItemsCount={this.props.books.books.length} 
+		      	onChange={this.handlePageChange}/>
+	  	);
 	}
 
 	render(){
-		const trasitionOptions={
-			transitionName : "fade",
-			transitionEnterTimeout : 500,
-			transitionLeaveTimeout : 500
-		};
 		return(
 			<div>
 				<div className="container category_nav">
@@ -92,6 +133,7 @@ class Book_lists extends Component{
 							<div className="row">
 								{ this.renderBooks() }					
 							</div>
+							{ this.props.books.books.length>this.state.itemsCountPerPage ? this.renderPagination() : null}
 						</div>
 					</div>
 				</div>

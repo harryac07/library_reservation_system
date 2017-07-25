@@ -45,7 +45,7 @@ export function fetchBook(bookId){
 	}
 }
 // Fetch by category
-export function fetchByCategory(categoryName){
+export function fetchByCategory(categoryName,activePage){ // activePage is page selected in pagination
 	return (dispatch)=>{
 		axios.get(`${ROOT_URL}/book/category/${categoryName}`)
 			.then((response)=>{

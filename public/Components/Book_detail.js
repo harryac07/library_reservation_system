@@ -2,6 +2,9 @@ import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
+import ReactTimeout from 'react-timeout';
+import Rating from 'react-rating';
+
 import _ from 'lodash';
 import moment from 'moment';
 
@@ -19,8 +22,11 @@ class Book_detail extends Component{
 			cartMessage : false, // true only when cart is triggered
 			loggedIn : false,
 			reserved : false, // is book already reserved? 
-			showModal: false // review modal
+			showModal: false, // review modal
+			feedback : false, // user send review
+			rating : 0
 		};
+		console.log(this.state.feedback);
 	}
 	componentWillMount(){
 		/* cart handling */
@@ -69,6 +75,7 @@ class Book_detail extends Component{
 					itemInCart : true,
 					cartMessage : true
 				});
+				
 			}else{
 				let addedBooks = cart.split(',');
 				if(_.indexOf(addedBooks, bookId) ===-1){
@@ -77,6 +84,7 @@ class Book_detail extends Component{
 						itemInCart : true,
 						cartMessage : true
 					});
+					
 				}			
 			}
 		}else{ //  user not loggedin -> /login
@@ -95,16 +103,29 @@ class Book_detail extends Component{
 			cartMessage : true
 		});
 		
+		
 	}
 	renderReviews=(reviews)=>{
 		return _.map(reviews,(review,i)=>{
 			return (
 				<li className="list-group-item" key={review._id}>
 					<div className="well">
-						<span style={{fontSize:18}}><strong>{review.reviewAuthor}</strong></span>
+						<span style={{fontSize:18}}>
+							<strong>
+								{review.reviewAuthor}
+							</strong>
+							&nbsp;&nbsp;
+							<small style={{fontSize:14}}>
+								<span className={"glyphicon "+((review.rating>0)?"glyphicon-star":"glyphicon-star-empty")}></span>
+								<span className={"glyphicon "+((review.rating>1)?"glyphicon-star":"glyphicon-star-empty")}></span>
+								<span className={"glyphicon "+((review.rating>2)?"glyphicon-star":"glyphicon-star-empty")}></span>
+								<span className={"glyphicon "+((review.rating>3)?"glyphicon-star":"glyphicon-star-empty")}></span>
+								<span className={"glyphicon "+((review.rating>4)?"glyphicon-star":"glyphicon-star-empty")}></span>
+							</small>							
+						</span>
 						<span style={{float:'right'}}>{moment.utc(review.createdOn).local().format('MM.DD.YYYY')}</span>
 					</div>
-					<p>{review.review}</p>
+					<p><span>{review.review}</span></p>
 				</li>
 			);
 		});
@@ -119,24 +140,28 @@ class Book_detail extends Component{
 	}
 	//modals for review
 	close=()=>{
-	    this.setState({ showModal: false });
+	    this.setState({ showModal: false,cartMessage : false});
 	}
 	open=()=>{
+		this.setState({feedback : false});
 		this.state.loggedIn
-			? this.setState({ showModal: true })
+			? this.setState({ showModal: true ,cartMessage:false})
 			: this.props.history.push('/login')
 	}
 	submitReview=(e)=>{
 		e.preventDefault();
-		const bookId = this.props.book[0]._id;
+		const bookId = this.props.book.books._id;
 		const reviews = {
 			reviewAuthor : JSON.parse(window.atob(localStorage.getItem('user-token').split('.')[1])).name,
 			review : this.refs.review.value,
-			rating : this.refs.rating.value
+			rating : this.state.rating
 		}
 		this.props.addReview(bookId,reviews).then(()=>{
-			this.setState({showModal : false});
-			window.location.reload();
+			this.setState({showModal : false,feedback : true,rating:0});
+			/* recall fetchbook to update dom with new reviews*/
+			const bookId = this.props.match.params.id;
+			this.props.fetchBook(bookId); // action
+			console.log(this.state.feedback);
 		});
 	}
 	renderModal=()=>{
@@ -144,26 +169,27 @@ class Book_detail extends Component{
 	      	<div>
 		        <Modal show={this.state.showModal} onHide={this.close}>
 		          	<Modal.Body>
-		            	<div className="well text-center">
-		            		<h3 className="text-center">Add your review</h3>
-				            <form className="form-horizontal" onSubmit={this.submitReview}>
-					            <div className="form-group">
-					                <label>Rating</label>
-					                <select ref="rating" className="form-control" required>
-								        <option>1</option>
-								        <option>2</option>
-								        <option>3</option>
-								        <option>4</option>
-								        <option>5</option>
-								    </select>
-					            </div>
-					            <div className="form-group">
-					              <label>Review</label>
-					              <textarea className="form-control" ref="review" rows="5" required></textarea>
-					            </div>
-					            <button className="btn btn-primary" type="submit">Submit</button>&nbsp;
-					            <a className="btn btn-danger" onClick={this.close}>cancel</a>
-						    </form>
+		          		<div className="modal_wrap_content">
+			            	<div className="well text-center">
+			            		<h3 className="text-center" style={{color:'#C0392B'}}>Add your review</h3>
+					            <form className="form-horizontal review_form" onSubmit={this.submitReview}>
+						            <div className="form-group">
+						                <label><strong>Rating</strong></label><br/>
+										<Rating
+											name="react"
+										 	empty="fa fa-star-o fa-2x"
+										  	full="fa fa-star fa-2x"
+										  	initialRate={this.state.rating}
+										  	onChange={(rate) => this.setState({rating:rate})}/>
+						            </div>
+						            <div className="form-group">
+						              <label><strong>Review</strong></label>
+						              <textarea className="form-control" ref="review" rows="6" required></textarea>
+						            </div>
+						            <button className="btn btn-primary" type="submit">Submit</button>&nbsp;
+						            <a className="btn btn-danger" onClick={this.close}>cancel</a>
+							    </form>
+			            	</div>
 		            	</div>
 		          	</Modal.Body>
 		        </Modal>
@@ -171,10 +197,12 @@ class Book_detail extends Component{
 	    );
 	}
 	renderBook=()=>{
-		const book  = this.props.book[0];
-		if(!book){
-			return <div>Loading...</div>;
+		const book  = this.props.book.books;
+		const fetched  = this.props.book.fetched;
+		if(!book || book.fetched===false){
+			return (<div className="text-center"><i className="fa fa-spinner fa-spin" style={{fontSize:"28px"}}></i></div>);
 		}
+
 		let averageRating = 0;
 		{book.review ? averageRating = this.averageRating(book.review) : null}
 		return(
@@ -198,7 +226,11 @@ class Book_detail extends Component{
 					<span>
 						
 						{ 	this.state.reserved
-								? <Link className="btn btn-primary cart_button" to="/reservation">Book Already Reserved</Link>
+								? 
+									<Link className="btn btn-primary cart_button" to="/reservation">
+										<i className="fa fa-check" aria-hidden="true"></i>&nbsp;
+										Book Already Reserved
+									</Link>
 								:
 								 	(
 								 		this.state.itemInCart
@@ -225,12 +257,14 @@ class Book_detail extends Component{
 						    </div>
 						    <div id="menu1" className="tab-pane fade">
 						      	<h3>Reviews</h3>
-						      	<p>Average rating:&nbsp;&nbsp;
-									<span className={"glyphicon "+((averageRating>0)?"glyphicon-star":"glyphicon-star-empty")}></span>
-									<span className={"glyphicon "+((averageRating>1)?"glyphicon-star":"glyphicon-star-empty")}></span>
-									<span className={"glyphicon "+((averageRating>2)?"glyphicon-star":"glyphicon-star-empty")}></span>
-									<span className={"glyphicon "+((averageRating>3)?"glyphicon-star":"glyphicon-star-empty")}></span>
-									<span className={"glyphicon "+((averageRating>4)?"glyphicon-star":"glyphicon-star-empty")}></span>
+						      	<p><strong>Average rating:</strong>&nbsp;&nbsp;
+						      		<strong style={{fontSize:18}}>
+										<span className={"glyphicon "+((averageRating>0)?"glyphicon-star":"glyphicon-star-empty")}></span>
+										<span className={"glyphicon "+((averageRating>1)?"glyphicon-star":"glyphicon-star-empty")}></span>
+										<span className={"glyphicon "+((averageRating>2)?"glyphicon-star":"glyphicon-star-empty")}></span>
+										<span className={"glyphicon "+((averageRating>3)?"glyphicon-star":"glyphicon-star-empty")}></span>
+										<span className={"glyphicon "+((averageRating>4)?"glyphicon-star":"glyphicon-star-empty")}></span>
+									</strong>
 									<span style={{float:'right'}}>
 										<button className="btn btn-primary" onClick={this.open}>Add Review</button>
 									</span>
@@ -249,12 +283,12 @@ class Book_detail extends Component{
 	}
 	render(){
 		let title, category ='';
-		const book = this.props.book[0];
+		const book = this.props.book.books;
 		if(book){
 			category = book.category
 			title = book.title
 		}
-
+		console.log('cartMessage : '+this.state.cartMessage);
 		return(
 			<div>
 				<Navigation cartMessage={this.state.cartMessage} itemInCart={this.state.itemInCart} currentBook={title} />
@@ -268,9 +302,21 @@ class Book_detail extends Component{
 							    <span className="glyphicon glyphicon-chevron-right"></span>&nbsp;
 							    <span style={{color:"gray"}}>{title}</span>
 							</div>
+							<div className="content_wrap">		
+								{ this.renderBook() }
 
-							{ this.renderBook() }							
-							
+								{
+									this.state.feedback
+									?
+										(
+										  	<div className="alert alert-info alert-dismissable alert_message">
+										  		<a href="#" className="close" data-dismiss="alert" aria-label="close">&times;</a>
+										    	Thank you for your feedback!
+										 	</div>
+										)
+									: null
+								}		
+							</div>	
 						</div>
 					</div>
 				</div>

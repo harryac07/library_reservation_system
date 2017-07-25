@@ -172,10 +172,8 @@ module.exports.removeReservation=(req,res)=>{
 		}else if(!user){
 			sendJSONresponse(res,404,{'message':'user not found'});
 		}else{
-			console.log(user.reserved_books);
 			const index = user.reserved_books.indexOf(id);
 			user.reserved_books.splice(index,1);
-			console.log(user.reserved_books+' after delete');
 			user.save((err,user)=>{
 				if(err){
 					sendJSONresponse(res,201,err);

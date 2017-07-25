@@ -66,6 +66,7 @@ class Contact extends Component{
 		});
 	}
 	onSubmit=(data)=>{
+	    this.setState({feedback:true});
 	    console.log(data);
 	}
 	renderForm=()=>{
@@ -108,11 +109,24 @@ class Contact extends Component{
 							    Home <span className="glyphicon glyphicon-chevron-right"></span>&nbsp;
 							    <span style={{color:"gray"}}>Contact</span>&nbsp;
 							</div>
-							<h2 className="text-center">Contact Us</h2>	
-							<p className="text-center">Please use the form below to contact us.</p>
-							<br />
-							<div className="row">
-								{this.renderForm()}
+							<div className="content_wrap">
+								<h2 className="text-center">Contact Us</h2>	
+								<p className="text-center">Please use the form below to contact us.</p>
+								<br />
+								<div className="row">
+									{this.renderForm()}
+								</div>
+								{
+									this.state.feedback
+									?
+										(
+										  	<div className="alert alert-info alert-dismissable alert_message">
+										  		<a href="#" className="close" data-dismiss="alert" aria-label="close">&times;</a>
+										    	Thank you for your feedback!
+										 	</div>
+										)
+									: null
+								}
 							</div>
 						</div>
 					</div>

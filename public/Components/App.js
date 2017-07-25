@@ -14,6 +14,9 @@ import Footer from './Parts/Footer';
 class App extends Component{
 	constructor(props){
 		super(props);
+		this.state={
+			booksFetched : false
+		}
 	}
 	componentDidMount(){
 		//fetch all books
@@ -24,14 +27,14 @@ class App extends Component{
 	}
 	render(){
 		const {books}=this.props;
-		if(!books){
+		if(!books || books.fetched===false){
 			return <div>Loading...</div>
 		}
 		return(
 			<div>
 				<Home />
 				<HomeCategoryNav />
-				{ (this.props.books)?<Book books={books}/> : null }
+				{ (this.props.books.books)?<Book books={books.books}/> : null }
 				<Support />
 				<Carousel />
 				<Footer />

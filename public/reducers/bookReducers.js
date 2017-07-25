@@ -1,36 +1,63 @@
 
-import {FETCH_BOOKS,FETCH_BOOK,FETCH_BOOK_BY_CATEGORY,FETCH_BOOK_BY_SEARCH,SORT_BOOKLIST,
-	FETCH_CART_ITEMS,RESERVE_BOOKS,POST_RATING,RESET,ERRORS}
+import {FETCH_BOOKS,FETCH_BOOK,FETCH_BOOK_BY_CATEGORY,FETCH_BOOK_BY_SEARCH,SORT_BOOKLIST,FETCH_CART_ITEMS,RESERVE_BOOKS,RESET,ERRORS}
 	from '../actions/bookActions';
 import _ from 'lodash';
 
-export default function(state=[],action){
+const initialState={
+  	fetched: false,
+  	books : []
+};
+export default function(state=initialState,action){
 	switch(action.type){
 		case FETCH_BOOKS:
 			//add prev sate and payload and return uniq
-	      	return _.uniqWith([...state,...action.payload.data], _.isEqual);
-		case FETCH_BOOK || POST_RATING:
-			const newState =_.uniqWith(_.concat(state,action.payload.data), _.isEqual);
-			return _.filter(newState,(obj)=>obj._id === action.payload.data._id);
+	      	return Object.assign({},state,{
+	      		fetched : true,
+	      		books : action.payload.data
+	      	});
+		case FETCH_BOOK:
+	      	return Object.assign({},state,{
+	      		fetched : true,
+	      		books : action.payload.data
+	      	});
 		case FETCH_BOOK_BY_CATEGORY:
-			const categoryState = _.uniqWith([...action.payload.data,...state], _.isEqual);
-			return _.intersectionWith(categoryState,action.payload.data, _.isEqual);
+	      	return Object.assign({},state,{
+	      		fetched : true,
+	      		// books : _.orderBy(action.payload.data,'title', 'ASC')
+	      		books : action.payload.data
+	      	});
 		case FETCH_BOOK_BY_SEARCH:
-			const searchedState = _.uniqWith([...action.payload.data,...state], _.isEqual);
-			return _.intersectionWith(searchedState,action.payload.data, _.isEqual);
+	      	return Object.assign({},state,{
+	      		fetched : true,
+	      		books : action.payload.data
+	      	});
 		case SORT_BOOKLIST:
-			const sortedList = _.orderBy(state,'title', action.payload);
-			return sortedList;
+	      	return Object.assign({},state,{
+	      		fetched : true,
+	      		books : state.books,
+	      		sort : action.payload // sort keywords
+	      	});
 		case FETCH_CART_ITEMS:
-			const cartState = _.uniqWith([...action.payload.data,...state], _.isEqual);
-			return _.intersectionWith(action.payload.data,cartState, _.isEqual);
+	      	return Object.assign({},state,{
+	      		fetched : true,
+	      		books : action.payload.data
+	      	});
 		case RESERVE_BOOKS:
-			const reservedState = _.uniqWith([...action.payload.data,...state], _.isEqual);
-			return _.intersectionWith(action.payload.data,reservedState, _.isEqual);
+	      	return Object.assign({},state,{
+	      		fetched : true,
+	      		books : action.payload.data
+	      	});
 		case ERRORS:
-			return action.payload;
+			state={
+				fetched:false,
+				books:[]
+			};
+			return state;
 		case RESET:
-			state=[];
+			state={
+				fetched:false,
+				books:[]
+			};
 			return state;
 		default:
 			return state;

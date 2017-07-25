@@ -42,7 +42,7 @@ class Navigation extends Component {
 		let element = document.querySelector(".alert");
 		if(element){
 			document.querySelector(".alert").style.display="block";
-			_.delay(()=>document.querySelector(".alert").style.display="none" , 1800);
+			_.delay(()=>document.querySelector(".alert").style.display="none" , 1200);
 		}
 
 		/* update number of cartitems in every cart update in navigation */
@@ -71,14 +71,14 @@ class Navigation extends Component {
 		if(this.props.cartMessage===true){
 			if(this.props.itemInCart){
 				return(
-					<a className="alert alert-success" style={{color:'#000'}}>
-						<strong>{this.props.currentBook}</strong> is succesfully Added.
+					<a className="alert alert-info  alert_message">
+						<strong style={{borderBottom : '1px solid white'}}>{this.props.currentBook}</strong> <small>is succesfully Added.</small>
 					</a>
 				);
 			}else{
 				return(
-					<a className="alert alert-danger" style={{color:'#000'}}>
-						<strong>{this.props.currentBook}</strong> is succesfully Removed.
+					<a className="alert alert-info  alert_message">
+						<strong style={{borderBottom : '1px solid white'}}>{this.props.currentBook}</strong> <small>is succesfully Removed.</small>
 					</a>
 				);
 			}			
@@ -131,15 +131,12 @@ class Navigation extends Component {
 			      	{ this.state.loggedIn 
 				      	?
 					      	(
-					      		[<li key={0}>
-						      		{this.cartMessage()}
-						      	</li>,
 					      		<li key={1}>
 							      	<Link to="/books/cart">
 							        	<span className="glyphicon glyphicon-shopping-cart"></span>
 							        	&nbsp;My Cart : <span style={{backgroundColor:'#2C3E50',color:'#fff',padding:'5px 10px'}}>{this.state.cartItemsNumber}</span>
 							        </Link>
-						      	</li>]
+						      	</li>
 					      	)
 					    : 	(
 						        [<li key={2}><Link to="/register"><span className="glyphicon glyphicon-user"></span> Sign Up</Link></li>,
@@ -148,6 +145,9 @@ class Navigation extends Component {
 			      	}
 			      	</ul>
 			    </div>
+			    	{
+			      		this.cartMessage()
+			      	}
 			  </div>
 			</nav>
 		);
