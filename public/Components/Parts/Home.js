@@ -11,8 +11,8 @@ class Home extends Component {
 				      	<li><Link to="/">HOME</Link></li>
 				      </ul>
 				      <ul className="nav navbar-nav navbar-right">
-				      	<li><Link to="/">SERVICES</Link></li>
-				      	<li><Link to="/">CONTACTS</Link></li>
+				      	<li><Link to="/about">SERVICE</Link></li>
+				      	<li><Link to="/contact">CONTACT</Link></li>
 				      </ul>
 				    </div>
 				</div>

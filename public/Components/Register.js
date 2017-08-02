@@ -13,16 +13,29 @@ class Register extends Component{
 			error:""
 		}
 	}
-	submitForm=(userDetail)=>{
-		this.props.register(userDetail); // action
+	submitForm=(userDetail,confirm_password_status)=>{
+		confirm_password_status===true
+			?	
+				(
+					this.setState({error:''}),
+					this.props.register(userDetail) // action
+				)
+			: 	this.setState({error : 'password unmatched!'})
+
+		
 	}
 	componentDidUpdate(){
-	    if (this.props.user.status==200){
-	      	this.props.history.push('/login');
+		if(this.state.error!="password unmatched!"){
+		    if (this.props.user.status==200){
+		      	this.props.history.push('/login');
 
-	    }else{
-	    	this.setState({error : this.props.user.data.message});
-	    }
+		    }else{
+		    	this.props.user.data
+		    		? 	this.setState({error : this.props.user.data.message})
+		    		: 	null
+		    }
+		}
+		
 	}
 	shouldComponentUpdate(nextProp, nextState) {
         return !(_.isEqual(nextProp, this.props) && _.isEqual(nextState, this.state));
@@ -40,7 +53,7 @@ class Register extends Component{
 							<section style={{textAlign:'center'}}>
 							 	<h2>Register</h2>
 							 	<hr />
-							 	{this.state.error ? <p style={{color:'#4B77BE'}} className="error">&#x2731; {this.state.error}</p> : null}
+							 	{this.state.error? <p className="error text-danger">&#x2731; {this.state.error}</p> : null}
 						 	</section>
 						 	<RegisterForm submit={this.submitForm} />
 						</div>

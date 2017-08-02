@@ -17,12 +17,24 @@ export function fetchUser(userId){
 			});
 	}
 }
-//Remove reservation Put method
-export function removeReservation(bookId,user){
+//Cancel reservation delete method one by one
+export function cancelReservation(bookId,user){
 	return(dispatch)=>{
-		return axios.put(`${ROOT_URL}/book/remove-reservation/${bookId}?user=${user}`)
+		return axios.put(`${ROOT_URL}/book/cancel-reservation/${bookId}?user=${user}`)
 			.then((response)=>{
 				// console.log('book removed!')
+			}).catch((err)=>{
+				// dispatch({type : REMOVE_RESERVE_BOOKS, payload : err.response});
+			});
+	}
+}
+//Remove reservation in a bulk
+export function removeReservation(books,user){
+	console.log('action books '+books.length);
+	return(dispatch)=>{
+		return axios.post(`${ROOT_URL}/book/remove-reservation?user=${user}`,books)
+			.then((response)=>{
+				// console.log('books removed!')
 			}).catch((err)=>{
 				// dispatch({type : REMOVE_RESERVE_BOOKS, payload : err.response});
 			});

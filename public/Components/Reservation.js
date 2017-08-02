@@ -1,8 +1,9 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import _ from 'lodash';
+import moment from 'moment';
 
-import {fetchUser,reset,removeReservation} from '../actions/userActions'; // import actions here
+import {fetchUser,reset,cancelReservation,removeReservation} from '../actions/userActions'; // import actions here
 import CategoryFrame from './Parts/CategoryFrame';
 
 class Reservation extends Component{
@@ -13,12 +14,21 @@ class Reservation extends Component{
 		}
 	}
 	componentDidMount(){
-		let token = localStorage.getItem('user-token');
+		const token = localStorage.getItem('user-token');
+		let bookCount;
 		if(token){
 			const payload = JSON.parse(window.atob(token.split('.')[1]));
+			let expiredBooks;
 			this.props.fetchUser(payload._id).then(()=>{
-				const bookCount = this.props.user.data.reserved_books.length;
-				this.setState({totalItems : bookCount})
+				// get expiry books out from list
+				expiredBooks = _.filter(this.props.user.data.reserved_books,(book)=>{
+					return moment().isSameOrAfter(book.expiry_date);
+				});
+				/* remove expired books from reservation list */
+				bookCount = this.props.user.data.reserved_books.length;
+				this.setState({totalItems : bookCount});
+				/* removeReservation if expired */
+				this.removeReservation(expiredBooks,payload,bookCount);
 			}); // action
 		}
 	}
@@ -30,16 +40,30 @@ class Reservation extends Component{
 		e.preventDefault();
 	}
 	cancelReservation=(e,bookId)=>{
-		let token = localStorage.getItem('user-token');
+		const token = localStorage.getItem('user-token');
 		if(token){
 			const payload = JSON.parse(window.atob(token.split('.')[1]));
-			this.props.removeReservation(bookId,payload.email).then(()=>{ // action cancel reservation
+			this.props.cancelReservation(bookId,payload.email).then(()=>{ // action cancel reservation
 		    	this.props.fetchUser(payload._id).then(()=>{
 		    		const bookCount = this.props.user.data.reserved_books.length;
 		    		this.setState({totalItems : bookCount})
 		    	}); // action fetch user detail again		
 			}); 
 		}
+	}
+	removeReservation=(expiredBooks,payload,bookCount)=>{
+		if(expiredBooks.length>0){
+			this.props.removeReservation(expiredBooks,payload.email).then(()=>{
+		    	this.props.fetchUser(payload._id).then(()=>{
+					this.setState({
+						totalItems : bookCount-expiredBooks.length
+					});
+		    	}); // action fetch user detail
+			});
+		}
+	}
+	formatDate=(date)=>{
+		return moment(date).format('MM/DD/YYYY HH:mm');
 	}
 	renderReservedBooks=()=>{
 		if(!this.props.user || this.props.user.length<=0){
@@ -57,18 +81,17 @@ class Reservation extends Component{
 					</div>
 				);
 			}
-			console.log('books ',books);
 			return books.map((book,i)=>{
 				return(
-					<div className="col-sm-12 col-md-12 col-xs-12" key={book._id}>
-						<div style={{float:'left',padding:'10px 20px'}} onClick={(e)=>this.renderBook(e,book._id)}>
+					<div className="col-sm-12 col-md-12 col-xs-12" key={book.book._id}>
+						<div style={{float:'left',padding:'10px 20px'}} onClick={(e)=>this.renderBook(e,book.book._id)}>
 							<img src="/images/books.jpg" style={{height:80,width:70}} />
 						</div>
 						<div style={{float:'left',padding:'10px 20px'}}>
-							<h4><strong>{book.title}</strong></h4><span><strong>By {book.author}</strong></span>
-							<p>{book.description?_.truncate(book.description,{'length':50}):'no description'}</p>
+							<h4><strong>{book.book.title}</strong></h4><span><strong>By {book.book.author}</strong></span>
+							<p><strong style={{color:'#C0392B'}}>Reservation expires: </strong>{this.formatDate(book.expiry_date)}</p>
 						</div>
-						<div onClick={(e)=>this.cancelReservation(e,book._id)}>
+						<div style={{float:'right',padding:'10px 20px'}} onClick={(e)=>this.cancelReservation(e,book.book._id)}>
 							<button className="btn btn-danger remove">Cancel Reservation</button>
 						</div>
 					</div>
@@ -90,15 +113,15 @@ class Reservation extends Component{
 							    <span style={{color:"gray"}}>items : <strong>{this.state.totalItems}</strong> </span>
 							</div>
 							<h2 className="text-center">Your Reserved Books</h2>	
-							<div className="row">
+							<div className="row reserved_lists">
 								{this.renderReservedBooks()}
 							</div>	
-							<br /><br />
+							<br />
 							{
 								this.state.totalItems
 									? 
 										(
-											<div className="jumbotron text-center" style={{padding:10,margin:'0 auto'}}>
+											<div className="jumbotron text-center reservation_notice">
 												<h4 className="text-primary"> 
 													Your Items have been reserved. Please visit your nearby Library and get your reserved books!<br />
 												</h4>
@@ -120,7 +143,7 @@ function mapStateToProps(state){
 	}
 }
 
-export default connect(mapStateToProps,{fetchUser,removeReservation,reset})(Reservation);
+export default connect(mapStateToProps,{fetchUser,cancelReservation,removeReservation,reset})(Reservation);
 
 
 

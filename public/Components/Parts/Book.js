@@ -1,5 +1,6 @@
 import React,{Component} from 'react';
 import { Route , withRouter} from 'react-router-dom';
+import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 class Book extends Component{
@@ -9,20 +10,37 @@ class Book extends Component{
 	renderSingle=(bookId)=>{
 		this.props.history.push(`/book/${bookId}`);
 	}
+	averageRating=(reviews)=>{
+		const totalReviews = reviews.length;
+		let rating = 0;
+		const ratings = _.map(reviews,(review)=>{
+			return rating+=review.rating;
+		});
+		return Math.ceil(rating / totalReviews);
+	}
+	sortByRating=(books)=>{
+		const reviewedBooks = _.filter(books,(book)=>{
+			return book.review.length>0;
+		});
+		return _.sortBy(reviewedBooks,(book)=>{
+			return this.averageRating(book.review);
+		}).reverse(); // review in asc order
+	}
 	renderPopularBooks=()=>{
-		const books= _.take(this.props.books, 4);
-		return _.map(books,(book)=>{
+		const books = this.sortByRating(this.props.books);
+		const sortedBooks= _.take(books, 4); // take 4 most higher reviewed books
+		return _.map(sortedBooks,(book)=>{
 			return( 			
 				<div className="col-sm-3 col-md-3" key={book._id} onClick={()=>this.renderSingle(book._id)}>
 					<img src = "/images/books.jpg" className="img-img-thumbnail" />
 					<div>
 						<h3>{book.title}</h3>
 						<h4>
-							<span className={"glyphicon "+((book.rating>0)?"glyphicon-star":"glyphicon-star-empty")}></span>
-							<span className={"glyphicon "+((book.rating>1)?"glyphicon-star":"glyphicon-star-empty")}></span>
-							<span className={"glyphicon "+((book.rating>2)?"glyphicon-star":"glyphicon-star-empty")}></span>
-							<span className={"glyphicon "+((book.rating>3)?"glyphicon-star":"glyphicon-star-empty")}></span>
-							<span className={"glyphicon "+((book.rating>4)?"glyphicon-star":"glyphicon-star-empty")}></span>
+							<span className={"glyphicon "+((this.averageRating(book.review)>0)?"glyphicon-star":"glyphicon-star-empty")}></span>
+							<span className={"glyphicon "+((this.averageRating(book.review)>1)?"glyphicon-star":"glyphicon-star-empty")}></span>
+							<span className={"glyphicon "+((this.averageRating(book.review)>2)?"glyphicon-star":"glyphicon-star-empty")}></span>
+							<span className={"glyphicon "+((this.averageRating(book.review)>3)?"glyphicon-star":"glyphicon-star-empty")}></span>
+							<span className={"glyphicon "+((this.averageRating(book.review)>4)?"glyphicon-star":"glyphicon-star-empty")}></span>
 						</h4>
 						<p>By {book.author}</p>
 					</div>
@@ -43,6 +61,11 @@ class Book extends Component{
 			</div>
 		);
 	}
+	
+} // component ends
+
+Book.propTypes = {
+	books: PropTypes.array.isRequired
 }
 
 export default withRouter(Book);

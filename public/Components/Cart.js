@@ -17,7 +17,7 @@ class Cart extends Component{
 		this.setCartItems();
 	}
 	componentDidMount(){
-		const cart = localStorage.getItem('cartItems');
+		const cart = this.getCartItems();
 		if(cart && typeof cart!==null){
 			let cartBooks = cart.split(',');
 			this.props.fetchCartBooks(cartBooks); // action 
@@ -28,25 +28,31 @@ class Cart extends Component{
     }
 	componentDidUpdate(){
 		/* update number of cartitems in every cart update in navigation */
-		if(!localStorage.getItem('cartItems') && this.state.totalItems!==0){
+		if(!this.getCartItems() && this.state.totalItems!==0){
 			this.setState({totalItems : 0});
 		}
 
-		if(localStorage.getItem('cartItems')){
-			if(localStorage.getItem('cartItems').split(',').length!==this.state.totalItems){
+		if(this.getCartItems()){
+			if(this.getCartItems().split(',').length!==this.state.totalItems){
 				/* when cart update, update to state */
 				this.setState({
-					totalItems : localStorage.getItem('cartItems').split(',').length
+					totalItems : this.getCartItems().split(',').length
 				});
-				this.props.fetchCartBooks(localStorage.getItem('cartItems').split(',')); // action 
+				this.props.fetchCartBooks(this.getCartItems().split(',')); // action 
 			}	
 		}
 	}
 	componentWillUnmount(){
 		this.props.reset();
 	}
+	getCartItems=()=>{
+		return localStorage.getItem('cartItems');
+	}
+	removeCartItems=()=>{
+		return localStorage.removeItem('cartItems');
+	}
 	setCartItems=()=>{
-		let cart = localStorage.getItem('cartItems');
+		let cart = this.getCartItems();
 		if(cart && typeof cart!==null){
 			let addedBooks = cart.split(',');
 			this.setState({totalItems : addedBooks.length})
@@ -56,9 +62,9 @@ class Cart extends Component{
 		}
 	}
 	deleteCartItems=(bookId)=>{
-		let bookToRemove = localStorage.getItem('cartItems').split(',');
+		let bookToRemove = this.getCartItems().split(',');
 		let booksAfterRemove = _.pull(bookToRemove, bookId);
-		localStorage.removeItem('cartItems');
+		this.removeCartItems();
 		if(booksAfterRemove.length>0){
 			localStorage.setItem('cartItems',booksAfterRemove);
 			this.setState({totalItems : booksAfterRemove.length});
@@ -73,18 +79,18 @@ class Cart extends Component{
 	}
 	emptyCart=()=>{
 		/* clear all cart items completely */
-		localStorage.removeItem('cartItems'); 
+		this.removeCartItems();
 		this.setState({totalItems : 0});
 	}
 	makeReservation=()=>{
-		let cart = localStorage.getItem('cartItems');
+		let cart = this.getCartItems();
 		let token = localStorage.getItem('user-token');
 		const payload = JSON.parse(window.atob(token.split('.')[1]));
 		const user =  payload.email;
 		if(cart && typeof cart!==null){
 			let cartBooks = cart.split(',');
 			this.props.makeReservation(cartBooks,user).then(()=>{ // action 
-				localStorage.removeItem('cartItems');
+				this.removeCartItems();
 				this.setState({totalItems : 0});
 				this.props.history.push('/reservation');
 			}); 
@@ -102,7 +108,7 @@ class Cart extends Component{
 					<i className="fa fa-spinner fa-spin" style={{fontSize:"28px"}}></i>
 				</div>
 			);
-		}else if(!localStorage.getItem('cartItems')){
+		}else if(!this.getCartItems()){
 			return (<div className="well" style={{textAlign:'center'}}><h3>Your Cart is Empty!</h3></div>);
 		}
 		return _.map(books,(book,i)=>{
@@ -123,7 +129,6 @@ class Cart extends Component{
 		});
 	}
 	render(){
-		const space = '&nbsp;';
 		return(
 			<div>
 				<Navigation />

@@ -3,6 +3,20 @@ const crypto = require('crypto');
 const books = require('./books');
 const jwt = require('jsonwebtoken');
 
+var reservationSchema = new mongoose.Schema({
+	book : { type: mongoose.Schema.Types.ObjectId, ref: 'Book',required:true },
+	reserved_date : {
+		type: Date,
+		default: Date.now,
+		required:true
+	},
+	expiry_date : {
+		type: Date,
+		required:true,
+		default: new Date().setDate(new Date().getDate() + 30)
+	}
+});
+
 var userSchema = new mongoose.Schema({
 	name :{
 		type : String,
@@ -34,7 +48,7 @@ var userSchema = new mongoose.Schema({
 	address : String,
 	phone : Number,
 	cart_books : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book',required:false }],
-	reserved_books : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book',required:false }],
+	reserved_books : [reservationSchema],
 	hash : String,
 	salt : String
 

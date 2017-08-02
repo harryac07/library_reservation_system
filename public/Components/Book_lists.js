@@ -19,8 +19,8 @@ class Book_lists extends Component{
 		let querySearch = new URLSearchParams(props.location.search);
 		const searchTerm = querySearch.get('search');
 		searchTerm 
-			? props.fetchBySearch(searchTerm) 
-			: props.fetchByCategory(categoryName, this.state.activePage)
+			? props.fetchBySearch(searchTerm)  // action
+			: props.fetchByCategory(categoryName, this.state.activePage) // action
 	}
 	componentDidMount(){
 		this.fetchBooks(this.props);
@@ -41,11 +41,11 @@ class Book_lists extends Component{
 	}
 
 	sortBookList=(keyword)=>{
-		//dispatch action to reducer
-		this.props.sortBookList(keyword);
+		this.props.sortBookList(keyword); // action
 	}
 	componentWillUnmount(){
 		this.props.reset();
+
 	}
 	averageRating=(reviews)=>{
 		const totalReviews = reviews.length;
@@ -62,7 +62,7 @@ class Book_lists extends Component{
 		}else if(books.length<=0){
 			return (<div className="well" style={{textAlign:'center'}}><h3>Book Not Found!</h3></div>);
 		}
-		
+
 		/* For Pagination */
 
 		var filteredItems = []; // required results of books after pagination

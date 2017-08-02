@@ -50,24 +50,9 @@ class Contact extends Component{
             </div>
 		);		
 	}
-
-	/* escape html entities for preventing XXS */
-	escapeHtml=(text)=>{
-		var map = {
-			'&': '&amp;',
-			'<': '&lt;',
-			'>': '&gt;',
-			'"': '&quot;',
-			"'": '&#039;'
-		};
-
-		return text.replace(/[&<>"']/g, function(m) {
-			return map[m];
-		});
-	}
 	onSubmit=(data)=>{
 	    this.setState({feedback:true});
-	    console.log(data);
+	    console.log(data); // only consoling for now
 	}
 	renderForm=()=>{
 		const { error, handleSubmit, pristine, reset, submitting } = this.props
@@ -148,7 +133,6 @@ function validate(values){
 		errors.comment = "Comment is required!";
 	}
 	return errors;
-
 
 }
 

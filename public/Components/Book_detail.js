@@ -4,7 +4,6 @@ import {Link} from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 import ReactTimeout from 'react-timeout';
 import Rating from 'react-rating';
-
 import _ from 'lodash';
 import moment from 'moment';
 
@@ -26,7 +25,6 @@ class Book_detail extends Component{
 			feedback : false, // user send review
 			rating : 0
 		};
-		console.log(this.state.feedback);
 	}
 	componentWillMount(){
 		/* cart handling */
@@ -55,7 +53,7 @@ class Book_detail extends Component{
 			const payload = JSON.parse(window.atob(token.split('.')[1]));
 			const bookId = this.props.match.params.id;
 			this.props.fetchUser(payload._id).then(()=>{
-				const reserved_book = _.find(this.props.user.data.reserved_books,(book)=>book._id == bookId);
+				const reserved_book = _.find(this.props.user.data.reserved_books,({book})=>book._id == bookId);
 				if(reserved_book){
 					this.setState({reserved : true});
 				}
@@ -140,7 +138,7 @@ class Book_detail extends Component{
 	}
 	//modals for review
 	close=()=>{
-	    this.setState({ showModal: false,cartMessage : false});
+	    this.setState({ showModal: false,cartMessage : false,rating:0});
 	}
 	open=()=>{
 		this.setState({feedback : false});
@@ -161,7 +159,6 @@ class Book_detail extends Component{
 			/* recall fetchbook to update dom with new reviews*/
 			const bookId = this.props.match.params.id;
 			this.props.fetchBook(bookId); // action
-			console.log(this.state.feedback);
 		});
 	}
 	renderModal=()=>{
@@ -288,7 +285,7 @@ class Book_detail extends Component{
 			category = book.category
 			title = book.title
 		}
-		console.log('cartMessage : '+this.state.cartMessage);
+
 		return(
 			<div>
 				<Navigation cartMessage={this.state.cartMessage} itemInCart={this.state.itemInCart} currentBook={title} />

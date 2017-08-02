@@ -11,6 +11,7 @@
   "author": "hari adhikari",
   "license": "ISC",
   "dependencies": {
+    "S": "0.0.1",
     "axios": "^0.16.1",
     "babel-preset-stage-1": "^6.24.1",
     "body-parser": "^1.17.2",
@@ -30,6 +31,7 @@
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
+    "prop-types": "^15.5.10",
     "react": "^15.5.4",
     "react-bootstrap": "^0.31.0",
     "react-dom": "^15.5.4",

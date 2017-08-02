@@ -3,6 +3,12 @@ import React , { Component } from 'react';
 class LoginForm extends Component{
 	constructor(props){
 		super(props);
+		this.state={
+			email : ''
+		}
+	}
+	handleChange=(e)=>{
+		this.setState({email : e.target.value});
 	}
 	submit=(e)=>{
 		const data={
@@ -10,7 +16,6 @@ class LoginForm extends Component{
 			email : this.refs.email.value
 		};
 		this.refs.password.value="";
-		this.refs.email.value="";
 		e.preventDefault();
 		
 		this.props.formSubmit(data);
@@ -20,7 +25,7 @@ class LoginForm extends Component{
 			<form onSubmit={this.submit} className="register-form">
 			  	<div className="form-group">
 				    <label htmlFor="email" >Email:</label>
-				    <input type="email" ref="email" className="form-control " id="email" placeholder="Enter email" />
+				    <input type="email" value={this.state.email} onChange={this.handleChange} ref="email" className="form-control " id="email" placeholder="Enter email" />
 			  	</div>
 			  	<div className="form-group">
 				    <label htmlFor="password">Password:</label>

@@ -45,6 +45,11 @@ textarea {
   	color: #000;
   	display: block;
 }
+.fa-spinner.fa-spin{
+	position: absolute;
+	left: 50%;
+	top: 40vh !important;
+}
 
 /* navbar-top */
 .navbar-header a{
@@ -59,6 +64,9 @@ textarea {
 	border: 0 !important;
 	height: 50px;
 }
+#top-nav.navbar-collapse{
+	background: #C0392B !important;
+}
 .dropdown-menu{
 	color: red !important;
 	background-color: #2C3E50 !important;
@@ -68,7 +76,7 @@ textarea {
 }
 li.dropdown.open > a {
   	color: #fff;
-  	background: none !important;
+  	/*background: none !important;*/
 }
 .alert-success, .alert-danger{
 	margin-bottom: 0!important;
@@ -386,7 +394,8 @@ div.content_wrap{
 	font-size: 18px;
 	font-family: sans-serif;
 	color: #fff !important;
-	background-color: #2C3E50 !important;
+	border: 1px solid #C0392B !important;
+	background-color: #2C3E50 !important; /*2C3E50*/
 	z-index: 999;
 }
 .fa.fa-check{
@@ -616,12 +625,35 @@ div.content_wrap{
 	margin: 2px;
 }
 
+/*reservation page*/
+.reservation_notice{
+	position: fixed;
+	height: auto;
+	bottom: 0;
+	left: 0;
+	background: #2C3E50 !important;
+	border-radius: 0 !important;
+	margin: 0 auto !important;
+	padding: 5px !important;
+}
+.reservation_notice>h4{
+	color: #fff !important;
+	font-family: arial,sans-serif;
+	font-weight: normal;
+}
+div.row.reserved_lists{
+	overflow-y:scroll;
+	height: 55vh;
+	margin-bottom: 0px;
+}
+
 /*media*/
 @media (max-width: 768px) {
     div> .btn.btn-danger.remove{
-	    float: left !important;
 	    padding: 8px 20px;
-	    margin: 20px 20px;
+	    margin: 20px 0px;
+	    display: block;
+	    width: 100% !important;
     }
 	/* Register */
 	.register-form>div>input,.register-form>div>label{
@@ -637,6 +669,19 @@ div.content_wrap{
 	    text-align: center;
 	    transform: translate(-50%, -50%);
 		margin : 0 auto !important;
+	}
+	/*reservation page*/
+	.reservation_notice{
+		position: relative;
+		height: auto;
+		width: 100% !important;
+	}
+	div.row.reserved_lists{
+		overflow:visible;
+		height: auto;
+	}
+	.reservation_notice>h4{
+		font-size: 16px;
 	}
 
 }

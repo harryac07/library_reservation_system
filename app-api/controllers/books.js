@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Book = mongoose.model('Book');
 const User = mongoose.model('User');
 const _ = require('lodash');
+const moment = require('moment');
 
 const sendJSONresponse = (res, status, content)=>{
 	res.status(status);
@@ -10,29 +11,16 @@ const sendJSONresponse = (res, status, content)=>{
 
 /* GET all books */
 module.exports.listBooks = (req,res)=>{
-	const queryParams = req.query.sort;
-	if(queryParams==='rating'){
-		//sort by rating(desc) to get popular books
-		Book.find().sort({'rating':-1}).exec((err,book)=>{
-			if(err){
-				sendJSONresponse(res,400,err);
-			}else if(!book){
-				sendJSONresponse(res,404,{'message':'Book not found'});
-			}else{
-				sendJSONresponse(res,200,book);
-			}
-		});
-	}else{
-		Book.find((err,book)=>{
-			if(!book || book.length<=0){
-				sendJSONresponse(res,404,{'message':'Book Not Found'});
-			}else if(err){
-				sendJSONresponse(res,400,err);
-			}else{
-				sendJSONresponse(res,200,book);
-			}
-		});
-	}
+	// const queryParams = req.query.sort;
+	Book.find((err,book)=>{
+		if(!book || book.length<=0){
+			sendJSONresponse(res,404,{'message':'Book Not Found'});
+		}else if(err){
+			sendJSONresponse(res,400,err);
+		}else{
+			sendJSONresponse(res,200,book);
+		}
+	});
 	return;
 };
 
@@ -142,10 +130,17 @@ module.exports.makeReservation = (req,res)=>{
 		}else if(!user){
 			sendJSONresponse(res,404,{'message':'user not found'});
 		}else{
+			const reservedBookIds = [];
 			const books = req.body;
+
+			for(var i=0;i<user.reserved_books.length;i++){
+				reservedBookIds.push(user.reserved_books[i].book._id);
+			}
 			for(var i=0;i<books.length;i++){
-				if(user.reserved_books.indexOf(books[i])<0){
-					user.reserved_books.push(books[i]);
+				if(reservedBookIds.indexOf(books[i])<0){
+					user.reserved_books.push({
+						book : books[i]
+					});
 				}
 			}
 			user.save((err,user)=>{
@@ -159,8 +154,8 @@ module.exports.makeReservation = (req,res)=>{
 	});
 
 }
-/* DELETE Remove reservation ,each book */
-module.exports.removeReservation=(req,res)=>{
+/* DELETE cancel reservation ,each book */
+module.exports.cancelReservation=(req,res)=>{
 	const query = req.query.user;
 	const id = req.params.id;
 	if(!query){
@@ -172,11 +167,49 @@ module.exports.removeReservation=(req,res)=>{
 		}else if(!user){
 			sendJSONresponse(res,404,{'message':'user not found'});
 		}else{
-			const index = user.reserved_books.indexOf(id);
-			user.reserved_books.splice(index,1);
+			for(var i=0;i<user.reserved_books.length;i++){
+				console.log(user.reserved_books[i].book);
+				if(user.reserved_books[i].book==id){
+					console.log('matched');
+					user.reserved_books.splice(i,1);
+				}
+			}
+
 			user.save((err,user)=>{
 				if(err){
-					sendJSONresponse(res,201,err);
+					sendJSONresponse(res,400,err);
+				}else{
+					sendJSONresponse(res,200,user);
+				}
+			});
+		}
+	});
+}
+
+/* DELETE remove reservation in a bulk ,list of books */
+module.exports.removeReservation=(req,res)=>{
+	const query = req.query.user;
+	if(!query){
+		sendJSONresponse(res,404,{'message':'user email/id is required'});
+	}
+	User.findOne({email : query},(err,user)=>{
+		if(err){
+			sendJSONresponse(res,400,err);
+		}else if(!user){
+			sendJSONresponse(res,404,{'message':'user not found'});
+		}else{
+			const books = req.body;
+			for(var i=0;i<books.length;i++){
+				for(var j=0;j<user.reserved_books.length;j++){
+				    if (user.reserved_books[j].book == books[i].book._id) {
+				        user.reserved_books.splice(j,1);
+				    }
+				
+				}
+			}
+			user.save((err,user)=>{
+				if(err){
+					sendJSONresponse(res,400,err);
 				}else{
 					sendJSONresponse(res,200,user);
 				}

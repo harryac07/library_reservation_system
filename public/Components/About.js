@@ -47,12 +47,9 @@ class About extends Component{
 											<li className="list-group-item">Copy Machine</li>
 											<li className="list-group-item">Customer Workstation</li>
 											<li className="list-group-item">Reading Books</li>
-											<li className="list-group-item">Game Console</li>
-											<li className="list-group-item">Scanner</li>
 											<li className="list-group-item">Video Editing Softwares</li>
 											<li className="list-group-item">Color Prints</li>
 											<li className="list-group-item">Book Exchange</li>
-											<li className="list-group-item">Wifi</li>
 										</ul>
 									</div>
 								</div>

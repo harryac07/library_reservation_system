@@ -1,4 +1,5 @@
 import axios from 'axios';
+import _ from 'lodash';
 
 export const FETCH_BOOKS="FETCH_BOOKS";
 export const FETCH_BOOK="FETCH_BOOK";
@@ -20,7 +21,6 @@ export function returnErrors(data){
 		payload : data
 	}
 }
-
 
 // Fetch Books 
 export function fetchBooks(){

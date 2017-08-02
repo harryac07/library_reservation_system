@@ -17,12 +17,9 @@ class Login extends Component{
 		this.props.login(userData); // action
 	}
 	componentDidUpdate(){
-	    if (localStorage.getItem('user-token')){
-	      	this.props.history.push('/');
-
-	    }else{
-	    	this.setState({error : this.props.userdata.data.message});
-	    }
+	    localStorage.getItem('user-token')
+	      	?	this.props.history.push('/')
+	    	: 	this.setState({error : this.props.userdata.data.message})
 	}
 	shouldComponentUpdate(nextProp, nextState) {
         return !(_.isEqual(nextProp, this.props) && _.isEqual(nextState, this.state));
