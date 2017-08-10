@@ -3,6 +3,8 @@ import axios from 'axios';
 export const FETCH_USER="FETCH_USER";
 export const RESET = "RESET";
 export const REMOVE_RESERVE_BOOKS = "REMOVE_RESERVE_BOOKS";
+export const CHANGEPASSWORD = "CHANGEPASSWORD";
+export const REQUESTPASSWORDCHANGE = "REQUESTPASSWORDCHANGE";
 
 const ROOT_URL = "http://localhost:3000/api";
 
@@ -40,6 +42,34 @@ export function removeReservation(books,user){
 			});
 	}
 }
+//request password change
+export function requestPasswordChange(email){
+	return dispatch=>{
+		return axios.post(`${ROOT_URL}/request-password-change`,email)
+			.then(response=>{
+				// console.log('email success '+response.data);
+				dispatch({type : REQUESTPASSWORDCHANGE, payload : response});
+			}).catch(err=>{
+				// console.log('email error '+err.response.data);
+				dispatch({type : REQUESTPASSWORDCHANGE, payload : err.response});
+			});
+	}
+}
+
+// Change password
+export function changePassword(token,password){
+	return dispatch=>{
+		return axios.post(`${ROOT_URL}/changepassword/${token}`,password)
+			.then(response=>{
+				console.log('email success '+response.data);
+				dispatch({type : CHANGEPASSWORD, payload : response});
+			}).catch(err=>{
+				console.log('email error '+err.response.data);
+				dispatch({type : CHANGEPASSWORD, payload : err.response});
+			});
+	}
+}
+
 //reset state
 export function reset(){
 	return{

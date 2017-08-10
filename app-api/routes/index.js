@@ -31,5 +31,10 @@ router.delete('/user/:id',UserCtrl.deleteUser);
 //Authentication
 router.post('/register', ctrlAuth.register);
 router.post('/login', ctrlAuth.login);
+router.post('/request-password-change',ctrlAuth.requestPasswordChange);
+router.post('/changepassword/:token',ctrlAuth.changePassword);
+
+//contact
+router.post('/contact',ctrlAuth.contact);
 
 module.exports = router;

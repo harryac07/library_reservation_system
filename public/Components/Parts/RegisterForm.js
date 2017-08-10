@@ -42,28 +42,26 @@ class RegisterForm extends Component{
 		return(
 			<form onSubmit={this.submit} className="register-form">
 			  	<div className="form-group">
-				    <label htmlFor="name" >Name:</label>
+			  		<i className="fa fa-asterisk" aria-hidden="true"></i>
 				    <input type="text" value={this.state.name} onChange={this.handleNameChange} ref="name" className="form-control " id="name" placeholder="Enter name" />
 			  	</div>
 			  	<div className="form-group">
-				    <label htmlFor="email" >Email:</label>
+			  		<i className="fa fa-asterisk" aria-hidden="true"></i>
 				    <input type="email" value={this.state.email} onChange={this.handleEmailChange} ref="email" className="form-control " id="email" placeholder="Enter email" />
 			  	</div>
 			  	<div className="form-group">
-				    <label htmlFor="phone" >Phone:</label>
 				    <input type="text" ref="phone" className="form-control " id="phone" placeholder="Enter phone" />
 			  	</div>
 			  	<div className="form-group">
-				    <label htmlFor="address">Address:</label>
 				    <input type="text" ref="address" className="form-control" id="address" placeholder="Enter address" />
 			  	</div>
 			  	<div className="form-group">
-				    <label htmlFor="password">Set Password:</label>
-				    <input type="password" ref="password" className="form-control" id="password" placeholder="Enter password" />
+			  		<i className="fa fa-asterisk" aria-hidden="true"></i>
+				    <input type="password" ref="password" className="form-control" id="password" placeholder="Enter Password" />
 			  	</div>
 			  	<div className="form-group">
-				    <label htmlFor="password">Confirm Password:</label>
-				    <input type="password" ref="confirm_password" className="form-control" id="password" placeholder="Enter password again" />
+			  		<i className="fa fa-asterisk" aria-hidden="true"></i>
+				    <input type="password" ref="confirm_password" className="form-control" id="password" placeholder="Confirm Password" />
 			  	</div>
 			  	<button type="submit" className="btn btn-primary">Submit</button>
 			</form>

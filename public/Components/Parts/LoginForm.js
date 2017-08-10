@@ -1,4 +1,5 @@
 import React , { Component } from 'react';
+import {Link} from 'react-router-dom';
 
 class LoginForm extends Component{
 	constructor(props){
@@ -24,14 +25,15 @@ class LoginForm extends Component{
 		return(
 			<form onSubmit={this.submit} className="register-form">
 			  	<div className="form-group">
-				    <label htmlFor="email" >Email:</label>
-				    <input type="email" value={this.state.email} onChange={this.handleChange} ref="email" className="form-control " id="email" placeholder="Enter email" />
+				    <input type="email" value={this.state.email} onChange={this.handleChange} ref="email" className="form-control " id="email" placeholder="Email" />
 			  	</div>
 			  	<div className="form-group">
-				    <label htmlFor="password">Password:</label>
-				    <input type="password" ref="password" className="form-control" id="password" placeholder="Enter password" />
+				    <input type="password" ref="password" className="form-control" id="password" placeholder="Password" />
 			  	</div>
 			  	<button type="submit" className="btn btn-primary">Login</button>
+			  	<div className="text-center">
+			  		<span>Forgot your password? <u><Link to="/passwordreset">Click Here</Link></u></span>
+			  	</div>
 			</form>
 		);
 	}

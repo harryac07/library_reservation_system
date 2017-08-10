@@ -6,9 +6,9 @@ export const REGISTER = 'REGISTER'
 export const LOGIN = 'LOGIN'
 export const LOGOUT = "LOGOUT";
 export const RESET ="RESET";
+export const CONTACT = "CONTACT";
 
 const ROOT_URL = "http://localhost:3000/api";
-
 //save token
 export function saveToken(token){
 	window.localStorage['user-token'] = token;
@@ -43,13 +43,29 @@ export function login(user){
 	}
 
 }
-//logout
+// logout
 export function logout(){
 	window.localStorage.removeItem('user-token');
 	return {
 		type : LOGOUT
 	}
 }
+
+// CONTACT
+export function contact(data){
+	return (dispatch)=>{
+		axios.post(`${ROOT_URL}/contact`,data)
+			.then((response)=>{
+				console.log(response);
+				console.log(response.data);
+				dispatch({type : CONTACT, payload : response});
+			}).catch(err=>{
+				dispatch({type : CONTACT, payload : err.response});
+			});
+	}
+}
+
+
 //reset
 export function reset(){
 	return{

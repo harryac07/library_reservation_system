@@ -1,6 +1,6 @@
-import {REGISTER,LOGIN,REMOVE_RESERVE_BOOKS,RESET}
+import {REGISTER,LOGIN,REMOVE_RESERVE_BOOKS,CONTACT,RESET}
 	from '../actions/authActions';
-import {FETCH_USER} from '../actions/userActions';
+import {FETCH_USER,REQUESTPASSWORDCHANGE,CHANGEPASSWORD} from '../actions/userActions';
 import _ from 'lodash';
 
 export default function(state=[],action){
@@ -9,10 +9,16 @@ export default function(state=[],action){
 			return action.payload;
 		case LOGIN:
 			return action.payload; // return token
+		case REQUESTPASSWORDCHANGE:
+			return action.payload;
+		case CHANGEPASSWORD:
+			console.log('from reducer ',action.payload);
+			return action.payload;
 		case FETCH_USER:
 			return action.payload;
+		case CONTACT:
+			return action.payload;
 		case RESET:
-			console.log('reset');
 			state=[];
 			return state;
 		default:

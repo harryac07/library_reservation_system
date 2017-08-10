@@ -8,7 +8,13 @@ class Home extends Component {
 			  	<div className="container-fluid nav-bottom">
 				    <div className="center_nav_bottom">
 				    	<ul className="nav navbar-nav">
-				      	<li><Link to="/">HOME</Link></li>
+				      	<li>
+				      		<Link to="/">
+							    <div className="main-logo">
+									<img src = "/images/book-logo.png"/>
+								</div>
+				      		</Link>
+				      	</li>
 				      </ul>
 				      <ul className="nav navbar-nav navbar-right">
 				      	<li><Link to="/about">SERVICE</Link></li>

@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import {register,reset} from '../actions/authActions'; // import actions here
 import _ from 'lodash';
 
-import CategoryFrame from './Parts/CategoryFrame';
 import RegisterForm from './Parts/RegisterForm';
 
 class Register extends Component{
@@ -45,18 +44,18 @@ class Register extends Component{
 	}
 	render(){
 		return(
-			<div>
-				<div className="container category_nav">
-					<div className="row">
-						<CategoryFrame />
-						<div className="col-sm-10">
-							<section style={{textAlign:'center'}}>
-							 	<h2>Register</h2>
-							 	<hr />
-							 	{this.state.error? <p className="error text-danger">&#x2731; {this.state.error}</p> : null}
-						 	</section>
-						 	<RegisterForm submit={this.submitForm} />
-						</div>
+			<div className="category_nav container Register">
+				<div>
+					<div className="login-logo-image">
+						<img src = "/images/book-logo.png"/>
+					</div>
+					<div className="well wrapRegisterForm">
+						<section style={{textAlign:'center'}}>
+						 	<h1>Register</h1>
+						 	<div className="hr"></div>
+						 	{this.state.error? <p className="error text-danger">&#x2731; {this.state.error}</p> : null}
+					 	</section>
+					 	<RegisterForm submit={this.submitForm} />
 					</div>
 				</div>
 			</div>

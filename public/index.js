@@ -14,6 +14,7 @@ import Book_lists from './Components/Book_lists';
 import Cart from './Components/Cart';
 import Register from './Components/Register';
 import Login from './Components/Login';
+import Password_reset from './Components/Parts/Password_reset';
 import Reservation from './Components/Reservation';
 import Contact from './Components/Contact';
 import About from './Components/About';
@@ -30,6 +31,7 @@ ReactDom.render(
 	    		<Switch>
 	    			<Route path="/login" component={Login} /> 
 	    			<Route path="/register" component={Register} /> 
+	    			<Route path="/passwordreset" component={Password_reset} />
 	    			<Route path='/contact' component={Contact} />
 	    			<Route path="/about" component={About} />
 	    			<Route path="/reservation" component={Reservation} /> 

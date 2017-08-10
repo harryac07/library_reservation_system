@@ -38,7 +38,7 @@ var userSchema = new mongoose.Schema({
 	verifyToken: {
 		type: String
 	},
-	tokenExpiryTime:{
+	tokenExpiryTime:{ 
 		type:Date
 	},
 	admin : {
