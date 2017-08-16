@@ -21,6 +21,9 @@ var BookSchema = new mongoose.Schema({
 		type : String,
 		required : true
 	},
+	image : {
+		type : String
+	},
 	review: [reviewSchema],
 	category:String,
 	keywords : [String],

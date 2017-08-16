@@ -1,4 +1,5 @@
 import React,{ Component } from 'react';
+import { Route , withRouter} from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 
@@ -8,7 +9,8 @@ class Navigation extends Component {
 		this.state={
 			cartItemsNumber : 0, // for hiding cart message
 			loggedIn : false,
-			currentUser : {}
+			currentUser : {},
+			admin:false
 		};
 	}
 	getCurrentUser=(token)=>{
@@ -19,7 +21,9 @@ class Navigation extends Component {
 			name: payload.name,
 			admin: payload.admin
 		};
-		this.setState({currentUser : userdata});
+		payload.email ==='harry_ac07@yahoo.com'
+			?  this.setState({admin : true,currentUser : userdata})
+			:  this.setState({admin : false,currentUser : userdata})
 	}
 	componentWillMount(){
 		let cart = localStorage.getItem('cartItems');
@@ -87,6 +91,7 @@ class Navigation extends Component {
 	logout=()=>{
 		localStorage.removeItem('user-token');
 		localStorage.removeItem('cartItems');
+		this.props.history.push('/');
 		window.location.reload();
 	}
 	render(){
@@ -131,16 +136,21 @@ class Navigation extends Component {
 			      	{ this.state.loggedIn 
 				      	?
 					      	(
-					      		<li key={1}>
-							      	<Link to="/books/cart">
-							        	<span className="glyphicon glyphicon-shopping-cart"></span>
-							        	&nbsp;My Cart : <span style={{backgroundColor:'#2C3E50',color:'#fff',padding:'5px 10px'}}>{this.state.cartItemsNumber}</span>
-							        </Link>
-						      	</li>
+					      		[
+					      			<li key={1}>{this.state.admin ? <Link to="/add_book">Add New Book</Link> : null}</li>,
+						      		<li key={2}>
+								      	<Link to="/books/cart">
+								        	<span className="glyphicon glyphicon-shopping-cart"></span>
+								        	&nbsp;My Cart : <span style={{backgroundColor:'#2C3E50',color:'#fff',padding:'5px 10px'}}>{this.state.cartItemsNumber}</span>
+								        </Link>
+							      	</li>
+							    ]
 					      	)
 					    : 	(
-						        [<li key={2}><Link to="/register"><span className="glyphicon glyphicon-user"></span> Sign Up</Link></li>,
-						        <li key={3}><Link to="/login"><span className="glyphicon glyphicon-log-in"></span> Login</Link></li>]
+						        [	
+						        	<li key={3}><Link to="/register"><span className="glyphicon glyphicon-user"></span> Sign Up</Link></li>,
+						        	<li key={4}><Link to="/login"><span className="glyphicon glyphicon-log-in"></span> Login</Link></li>
+						        ]
 					    	)
 			      	}
 			      	</ul>
@@ -155,4 +165,4 @@ class Navigation extends Component {
 }
 
 
-export default Navigation;
+export default withRouter(Navigation);

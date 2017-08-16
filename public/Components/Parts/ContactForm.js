@@ -1,7 +1,6 @@
 import React,{Component} from 'react';
 import {Field, reduxForm,reset} from 'redux-form';
 import {Link} from 'react-router-dom';
-import CategoryFrame from './CategoryFrame';
 
 const FIELDS = {
 	name: {
@@ -26,11 +25,10 @@ class ContactForm extends Component{
 		const {meta : {touched, error} } = field;
 		const className = `form-group ${touched&&error ? 'has-error' : ''}`;
 		return(
-            <div className="group">
-                <input type={field.type} placeholder={field.placeholder} autoComplete="off" {...field.input} />
-                <span className="highlight"></span>
-                <span className="bar"></span>
-                <label>{touched ? error : <i className="fa fa-asterisk" aria-hidden="true"></i>}</label>
+            <div className={className}>
+            	<i className="fa fa-asterisk" aria-hidden="true"></i>
+                <input type={field.type} className="form-control"  placeholder={field.placeholder} autoComplete="off" {...field.input} />
+                <label className="contact_form_label">{touched ? error : null}</label>
             </div>
 		);
 	}
@@ -38,11 +36,10 @@ class ContactForm extends Component{
 		const {meta : {touched, error} } = field;
 		const className = `form-group ${touched&&error ? 'has-error' : ''}`;
 		return(
-            <div className="group">
-                <textarea type={field.type} placeholder={field.placeholder} autoComplete="off" {...field.input} />
-                <span className="highlight"></span>
-                <span className="bar"></span>
-                <label>{touched ? error : <i className="fa fa-asterisk" aria-hidden="true"></i>}</label>
+            <div className={className}>
+            	<i className="fa fa-asterisk" aria-hidden="true"></i>
+                <textarea type={field.type} className="form-control"  placeholder={field.placeholder} autoComplete="off" {...field.input} />
+                <label className="contact_form_label">{touched ? error : null}</label>
             </div>
 		);		
 	}
@@ -52,27 +49,25 @@ class ContactForm extends Component{
 	renderForm=()=>{
 		const { error, handleSubmit, pristine, reset, submitting } = this.props
 		return(
-			<div className="contact_form">
-			    <form onSubmit={handleSubmit(this.onSubmit)}>
+			<div className="">
+			    <form onSubmit={handleSubmit(this.onSubmit)} className="common-form">
 			    	<Field
 			    		placeholder="Enter Name"
 			    		type="text"
 			    		name="name"
-			    		id="Name"
 			    		component={this.renderField}/>
 
 			    	<Field
 			    		placeholder="Enter Email"
 			    		type ="email"
 			    		name="email"
-			    		id="Email"
 			    		component={this.renderField}/>
 			    	<Field
 			    		placeholder="Enter Comment"
 			    		name="comment"
 			    		component={this.renderTextArea}/>
-			    	<button className="btn btn-primary"type="submit">Submit</button>&nbsp;
-			    	<Link className="btn btn-danger" to="/">Cancel</Link>
+			    	<button className="btn btn-primary contact_button"type="submit">Submit</button>&nbsp;
+			    	<Link className="btn btn-danger contact_button" to="/">Cancel</Link>
 			    </form>
 		    </div>
 		);
@@ -80,37 +75,32 @@ class ContactForm extends Component{
 
 	render(){
 		return(
-			<div>
-				<div className="container category_nav">
-					<div className="row">
-						<CategoryFrame />
-						<div className="col-sm-10">
-							<div>
-							    Home <span className="glyphicon glyphicon-chevron-right"></span>&nbsp;
-							    <span style={{color:"gray"}}>Contact</span>&nbsp;
-							</div>
-							<div className="content_wrap">
-								<h2 className="text-center">Contact Us</h2>	
-								<p className="text-center">Please use the form below to contact us.</p>
-								<br />
-								<div className="row">
-									{this.renderForm()}
-								</div>
-								{
-									this.props.feedback
-									?
-										(
-										  	<div className="alert alert-info alert-dismissable alert_message">
-										  		<a href="#" className="close" data-dismiss="alert" aria-label="close">&times;</a>
-										    	Thank you for your feedback!
-										 	</div>
-										)
-									: null
-								}
-							</div>
-						</div>
+			<div className="container category_nav ContactForm">
+				<div>
+					<div className="login-logo-image">
+						<img src = "/images/book-logo.png"/>
 					</div>
-				</div>
+					<div className="well wrapLoginForm">
+						<section style={{textAlign:'center'}}>
+						 	<h1>Contact us</h1>
+						 	<div className="hr"></div>
+					 	</section>
+						<div className="row">
+							{this.renderForm()}
+						</div>
+						{
+							this.props.feedback
+							?
+								(
+								  	<div className="alert alert-info alert-dismissable alert_message">
+								  		<a href="#" className="close" data-dismiss="alert" aria-label="close">&times;</a>
+								    	Thank you for your feedback!
+								 	</div>
+								)
+							: null
+						}
+					</div>
+				</div>		
 			</div>
 		);
 	}

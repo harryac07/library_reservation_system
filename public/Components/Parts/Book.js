@@ -32,7 +32,7 @@ class Book extends Component{
 		return _.map(sortedBooks,(book)=>{
 			return( 			
 				<div className="col-sm-3 col-md-3" key={book._id} onClick={()=>this.renderSingle(book._id)}>
-					<img src = "/images/books.jpg" className="img-img-thumbnail" />
+					<img src = {book.image} className="img-img-thumbnail Homepage_image" />
 					<div>
 						<h3>{book.title}</h3>
 						<h4>
@@ -42,7 +42,7 @@ class Book extends Component{
 							<span className={"glyphicon "+((this.averageRating(book.review)>3)?"glyphicon-star":"glyphicon-star-empty")}></span>
 							<span className={"glyphicon "+((this.averageRating(book.review)>4)?"glyphicon-star":"glyphicon-star-empty")}></span>
 						</h4>
-						<p>By {book.author}</p>
+						<p><strong>By {book.author}</strong></p>
 					</div>
 				</div>
 			);

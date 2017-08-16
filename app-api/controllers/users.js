@@ -27,7 +27,7 @@ module.exports.listUser = (req,res)=>{
 	}
 	
 	User.findById(userId)
-		.populate('reserved_books.book', '_id title author rating description') // comes more if needed
+		.populate('reserved_books.book', '_id title author rating description image') // comes more if needed
 		.exec((err,user)=>{
 		if(!user){
 			sendJSONresponse(res,404,{'message':'users not found with that id'});

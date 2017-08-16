@@ -113,17 +113,22 @@ class Cart extends Component{
 		}
 		return _.map(books,(book,i)=>{
 			return(
-				<div className="col-sm-12 col-md-12 col-xs-12" key={book._id}>
-					<div style={{float:'left',padding:'10px 20px'}} onClick={(e)=>this.renderBook(e,book._id)}>
-						<img src="/images/books.jpg" style={{height:80,width:70}} />
+				<div className="col-sm-12 col-md-12 col-xs-12 cartItem" key={book._id}>
+					<div className="row">
+						<div className="col-xs-3 col-sm-2 col-md-2" onClick={(e)=>this.renderBook(e,book._id)}>
+							<img src={book.image} style={{height:80,width:70}} />
+						</div>
+						<div className="col-xs-6 col-sm-8 col-md-8">
+							<h4><strong>{book.title}</strong></h4><span><strong>By {book.author}</strong></span>
+							<p>{book.description?_.truncate(book.description,{'length':60}):'no description'}</p>
+						</div>
+						<div className="col-xs-3 col-sm-2 col-md-2" onClick={(e)=>this.removeFromCart(e,book._id)}>
+							<button className="btn btn-sm btn-remove">
+								<span className="glyphicon glyphicon-trash"></span>
+							</button>
+						</div>
 					</div>
-					<div style={{float:'left',padding:'10px 20px'}}>
-						<h4><strong>{book.title}</strong></h4><span><strong>By {book.author}</strong></span>
-						<p>{book.description?_.truncate(book.description,{'length':50}):'no description'}</p>
-					</div>
-					<div onClick={(e)=>this.removeFromCart(e,book._id)}>
-						<button className="btn btn-danger remove">Remove</button>
-					</div>
+					<hr />
 				</div>
 			);
 		});

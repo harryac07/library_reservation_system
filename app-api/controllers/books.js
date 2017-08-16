@@ -3,6 +3,7 @@ const Book = mongoose.model('Book');
 const User = mongoose.model('User');
 const _ = require('lodash');
 const moment = require('moment');
+var cloudinary = require('cloudinary');
 
 const sendJSONresponse = (res, status, content)=>{
 	res.status(status);
@@ -222,26 +223,29 @@ module.exports.removeReservation=(req,res)=>{
 module.exports.postBook = (req,res)=>{
 	let categories = "";
 	let keywords = "";
+	console.log(req.files);
 
 	keywords=req.body.keywords.replace(/\s/g, '').split(',');
 	categories=req.body.category.replace(/\s/g, '').split(',');
-
-	Book.create({
-		title : req.body.title,
-		category : categories,
-		keywords : keywords,
-		description : req.body.description,
-		available : req.body.available,
-		author : req.body.author,
-		published_date : req.body.published_date,
-		pages : req.body.pages,
-		language : req.body.language	
-	},(err,book)=>{
-		if(err){
-			sendJSONresponse(res,400,err);
-		}else{
-			sendJSONresponse(res,201,book);
-		}
+	cloudinary.uploader.upload(req.files.image.path, function(result) {
+		Book.create({
+			title : req.body.title,
+			category : categories,
+			keywords : keywords,
+			description : req.body.description,
+			available : req.body.available,
+			author : req.body.author,
+			published_date : req.body.published_date,
+			pages : req.body.pages,
+			language : req.body.language,
+			image : result.url
+		},(err,book)=>{
+			if(err){
+				sendJSONresponse(res,400,err);
+			}else{
+				sendJSONresponse(res,201,book);
+			}
+		});
 	});
 };
 

@@ -19,6 +19,7 @@ import Reservation from './Components/Reservation';
 import Contact from './Components/Contact';
 import About from './Components/About';
 import Nav from './Components/Parts/Navigation'; // common commponent for all routes
+import Add_NewBook from './Components/Add_NewBook';
 
 
 const createStoreWithMiddleware = compose(applyMiddleware(thunk))(createStore);
@@ -33,6 +34,7 @@ ReactDom.render(
 	    			<Route path="/register" component={Register} /> 
 	    			<Route path="/passwordreset" component={Password_reset} />
 	    			<Route path='/contact' component={Contact} />
+	    			<Route path='/add_book' component={Add_NewBook} />
 	    			<Route path="/about" component={About} />
 	    			<Route path="/reservation" component={Reservation} /> 
 	    			<Route path="/books/cart" component={Cart} />

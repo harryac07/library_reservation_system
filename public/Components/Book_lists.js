@@ -65,9 +65,9 @@ class Book_lists extends Component{
 
 		/* For Pagination */
 
-		var filteredItems = []; // required results of books after pagination
-		var currentPage = this.state.activePage;
-		var numPerPage = this.state.itemsCountPerPage;
+		let filteredItems = []; // required results of books after pagination
+		let currentPage = this.state.activePage;
+		let numPerPage = this.state.itemsCountPerPage;
 		let begin = 0;
 		let end = 0;
 		
@@ -86,7 +86,7 @@ class Book_lists extends Component{
 		return _.map(_.orderBy(filteredItems,'title', sort ? sort:'ASC'),(book)=>{
 			return(
 				<div key={book._id} className="col-sm-3 col-md-3 col-xs-12" onClick={()=>this.renderBookDetail(book._id)}>
-					<img src = "/images/books.jpg" className="img-img-thumbnail" />
+					<img src = {book.image} className="img-img-thumbnail" />
 					<div>
 						<h3>{book.title}</h3>
 						<h4>
@@ -96,14 +96,13 @@ class Book_lists extends Component{
 							<span className={"glyphicon "+((this.averageRating(book.review)>3)?"glyphicon-star":"glyphicon-star-empty")}></span>
 							<span className={"glyphicon "+((this.averageRating(book.review)>4)?"glyphicon-star":"glyphicon-star-empty")}></span>
 						</h4>
-						<p>By {book.author}</p>
+						<p><strong>By {book.author}</strong></p>
 					</div>
 				</div>				
 			);
 		});
 	}
 	handlePageChange=(pageNumber)=>{
-		console.log(`active page is ${pageNumber}`);
     	this.setState({activePage: pageNumber});
    	}
 	renderPagination=()=>{

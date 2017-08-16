@@ -26,20 +26,18 @@ class Password_reset extends Component{
 	}
 	handleSubmitRequest=(e)=>{
 		e.preventDefault();
+		this.setState({submitRequest : true,message : ''});
 		this.props.requestPasswordChange({'email':this.refs.email.value}).then(()=>{
 			if(this.props.user.status==200){
 				this.setState({
-					submitRequest : true,
 					message : 'A verification message has been sent to your email address!'
 				});
 			}else if(this.props.user.status==404){
 				this.setState({
-					submitRequest:true,
 					message:'Email address not found!'
 				});				
 			}else{
 				this.setState({
-					submitRequest:true,
 					message:'Something went wrong. Try again!'
 				});
 			}
@@ -48,31 +46,34 @@ class Password_reset extends Component{
 	}
 	handlePasswordChange=(e)=>{
 		e.preventDefault();
+		this.setState({submitRequest : true,message : ''});
 		if(this.refs.password.value === this.refs.confirm_password.value){
 			this.props.changePassword(this.getQueryToken(), {'password' : this.refs.password.value}).then((e)=>{
 					if(this.props.user.status==201){
 						this.props.history.push('/login')
 					}else{
 						this.setState({
-							submitRequest:true,
 							message:'The token has expired. Please resend your email and reset within 1 hour'
 						});
 					}
 				});
 		}else{
 			this.setState({
-				submitRequest:true,
 				message : 'password confirmation failed!'
 			});
 		}
 		this.refs.password.value="";
 		this.refs.confirm_password.value="";
 	}
+	GoToResetLink=(e)=>{
+		// e.preventDefault();
+		this.setState({queryToken : false});
+	}
 	renderRequestForm=()=>{
 		return(
-			<form onSubmit={this.handleSubmitRequest} className="register-form">
+			<form onSubmit={this.handleSubmitRequest} className="common-form">
 			  	<div className="form-group">
-				    <input type="email" ref="email" className="form-control " placeholder="Email" />
+				    <input type="email" ref="email" className="form-control " placeholder="Email" required />
 			  	</div>
 			  	<button type="submit" className="btn btn-primary">Submit</button>
 			</form>	
@@ -80,16 +81,16 @@ class Password_reset extends Component{
 	}
 	renderChangePasswordForm=()=>{
 		return(
-			<form onSubmit={this.handlePasswordChange} className="register-form">
+			<form onSubmit={this.handlePasswordChange} className="common-form">
 			  	<div className="form-group">
-				    <input type="password" ref="password" className="form-control " placeholder="Password" />
+				    <input type="password" ref="password" className="form-control " placeholder="Password" required />
 			  	</div>
 			  	<div className="form-group">
-				    <input type="password" ref="confirm_password" className="form-control " placeholder="Confirm Password" />
+				    <input type="password" ref="confirm_password" className="form-control " placeholder="Confirm Password" required />
 			  	</div>
 			  	<button type="submit" className="btn btn-primary">Submit</button>
 			  	<div className="text-center">
-			  		<span>Resend password reset link? <u><Link to="/passwordreset">Click Here</Link></u></span>
+			  		<span>Resend password reset link? <u><Link to="/passwordreset" onClick={this.GoToResetLink}>Click Here</Link></u></span>
 			  	</div>
 			</form>			
 		);	
@@ -107,8 +108,12 @@ class Password_reset extends Component{
 						 	<div className="hr"></div>
 						 	{
 						 		this.state.submitRequest
-						 			? <p className="error text-danger">&#x2731; {this.state.message}! </p> 
-						 			: null
+						 			? ( this.state.message						 			
+							 			? <p className="error text-danger">&#x2731; {this.state.message}! </p> 
+							 			: <i className="fa fa-refresh fa-spin"></i>
+							 		   )
+							 		: null
+						 		
 						 	}
 					 	</section>
 						 {

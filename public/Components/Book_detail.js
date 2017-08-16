@@ -204,7 +204,7 @@ class Book_detail extends Component{
 		{book.review ? averageRating = this.averageRating(book.review) : null}
 		return(
 			<div className="row">
-				<img src = "/images/books.jpg" className="img img-responsive" style={{padding:15}} />
+				<img src = {book.image} className="img img-responsive book_detail_image" />
 				<div className="col-sm-12 col-md-12">
 					<h3>{book.title}</h3>
 					<hr/>
@@ -250,7 +250,7 @@ class Book_detail extends Component{
 					  	<div className="tab-content">
 						    <div id="home" className="tab-pane fade in active">
 						      <h3>Description</h3>
-						      <p>{book.description ? book.description : 'description not available.'}</p>
+						      <p id="book_detail_description">{book.description ? book.description : 'description not available.'}</p>
 						    </div>
 						    <div id="menu1" className="tab-pane fade">
 						      	<h3>Reviews</h3>

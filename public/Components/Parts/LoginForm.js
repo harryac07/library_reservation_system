@@ -23,9 +23,9 @@ class LoginForm extends Component{
 	}
 	render(){
 		return(
-			<form onSubmit={this.submit} className="register-form">
+			<form onSubmit={this.submit} className="common-form">
 			  	<div className="form-group">
-				    <input type="email" value={this.state.email} onChange={this.handleChange} ref="email" className="form-control " id="email" placeholder="Email" />
+				    <input type="email" value={this.state.email} onChange={this.handleChange} ref="email" className="form-control" id="email" placeholder="Email" />
 			  	</div>
 			  	<div className="form-group">
 				    <input type="password" ref="password" className="form-control" id="password" placeholder="Password" />

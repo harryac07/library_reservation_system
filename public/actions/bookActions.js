@@ -5,6 +5,7 @@ export const FETCH_BOOKS="FETCH_BOOKS";
 export const FETCH_BOOK="FETCH_BOOK";
 export const FETCH_BOOK_BY_CATEGORY="FETCH_BOOK_BY_CATEGORY";
 export const FETCH_BOOK_BY_SEARCH="FETCH_BOOK_BY_SEARCH";
+export const POST_BOOK = "POST_BOOK";
 export const SORT_BOOKLIST = "SORT_BOOKLIST";
 export const FETCH_CART_ITEMS ="FETCH_CART_ITEMS";
 export const RESERVE_BOOKS = "RESERVE_BOOKS";
@@ -63,6 +64,20 @@ export function fetchBySearch(searchTerm){
 				dispatch({type : FETCH_BOOK_BY_SEARCH, payload : response});
 			}).catch((err)=>{
 				dispatch(returnErrors(err));
+			});
+	}
+}
+
+// /POST Books
+export function addNewBook(bookdata){
+	return dispatch=>{
+		axios.post(`${ROOT_URL}/book`,bookdata)
+			.then(response=>{
+				// console.log('response',response.data);
+				dispatch({type : POST_BOOK, payload : response});
+			}).catch(err=>{
+				// console.log(err.response.data);
+				dispatch({type : POST_BOOK, payload : err});
 			});
 	}
 }

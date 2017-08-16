@@ -40,7 +40,7 @@ class RegisterForm extends Component{
 	}
 	render(){
 		return(
-			<form onSubmit={this.submit} className="register-form">
+			<form onSubmit={this.submit} className="common-form">
 			  	<div className="form-group">
 			  		<i className="fa fa-asterisk" aria-hidden="true"></i>
 				    <input type="text" value={this.state.name} onChange={this.handleNameChange} ref="name" className="form-control " id="name" placeholder="Enter name" />

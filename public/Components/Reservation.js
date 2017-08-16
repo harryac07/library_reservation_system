@@ -83,17 +83,22 @@ class Reservation extends Component{
 			}
 			return books.map((book,i)=>{
 				return(
-					<div className="col-sm-12 col-md-12 col-xs-12" key={book.book._id}>
-						<div style={{float:'left',padding:'10px 20px'}} onClick={(e)=>this.renderBook(e,book.book._id)}>
-							<img src="/images/books.jpg" style={{height:80,width:70}} />
+					<div className="col-sm-12 col-md-12 col-xs-12 reservedItem" key={book.book._id}>
+						<div className="row">
+							<div className="col-xs-3 col-sm-2 col-md-2" onClick={(e)=>this.renderBook(e,book.book._id)}>
+								<img src={book.book.image} style={{height:80,width:70}} />
+							</div>
+							<div className="col-xs-6 col-sm-8 col-md-8">
+								<h4><strong>{book.book.title}</strong></h4><span><strong>By {book.book.author}</strong></span>
+								<p><strong style={{color:'#C0392B'}}>Reservation expires: </strong>{this.formatDate(book.expiry_date)}</p>
+							</div>
+							<div className="col-xs-3 col-sm-2 col-md-2" onClick={(e)=>this.cancelReservation(e,book.book._id)}>
+								<button className="btn btn-sm btn-remove">
+									cancel
+								</button>
+							</div>
 						</div>
-						<div style={{float:'left',padding:'10px 20px'}}>
-							<h4><strong>{book.book.title}</strong></h4><span><strong>By {book.book.author}</strong></span>
-							<p><strong style={{color:'#C0392B'}}>Reservation expires: </strong>{this.formatDate(book.expiry_date)}</p>
-						</div>
-						<div style={{float:'right',padding:'10px 20px'}} onClick={(e)=>this.cancelReservation(e,book.book._id)}>
-							<button className="btn btn-danger remove">Cancel Reservation</button>
-						</div>
+						<hr />
 					</div>
 				);
 			});

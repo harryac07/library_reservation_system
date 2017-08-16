@@ -125,6 +125,10 @@ li.dropdown.open > a {
 ul.nav.navbar-nav>li.active,a:visited{
 	background: #2C3E50 !important;
 }
+.Homepage_image{
+	width: 100%;
+	height: 320px !important;
+}
 .main-logo img{
 	border-radius: 50%;
 	border: 1px solid #C0392B;
@@ -427,6 +431,14 @@ div.content_wrap{
 	position: relative ;
 	width: 100%;
 }
+#book_detail_description{
+	white-space: pre-line;
+}
+.book_detail_image{
+	padding: 15px;
+    width:100%;
+    height:80vh !important;
+}
 .alert_message{
     position: fixed;
     left: 50%;
@@ -480,10 +492,14 @@ form.review_form textarea{
 
 
 /* Cart */
-div> .btn.btn-danger.remove{
+div.cartItem>div{
+	padding: 0 15px;
+}
+div> .btn.btn-sm.btn-remove{
     float: right !important;
-    padding: 8px 15px;
-    margin: 20px auto;
+}
+div> .btn.btn-sm.btn-remove>span{
+    color: #C0392B !important;
 }
 /*cart ends*/
 
@@ -516,14 +532,9 @@ div.category_nav.container.Login>div,div.category_nav.container.Register>div{
 }
 div.category_nav.container.Register{
 	background-color: #ccc;
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
 	width: 100% !important;
-	height: auto;
-	min-height: 135vh;
+	min-height: 115vh;
+	top: 0 !important;
 }
 div.login-logo-image img{
 	border-radius: 50%;
@@ -573,30 +584,35 @@ div.hr:after {
 	margin: 10px auto;
 	font-size: 18px;
 }
-.register-form{
+.fa.fa-refresh.fa-spin{
+	font-size: 22px;
+	color: #FFF;
+	margin-top:10px;
+}
+.common-form{
 	padding: 30px;
 }
-.register-form>div>input{
+.common-form>div>input,.common-form>div>textarea{
 	width: 90%;
 	padding: 25px;
 	margin: 0px auto;
 	color : #C0392B;
 }
-.register-form>div>span{
+.common-form>div>span{
 	color: #ccc;
 }
-.register-form >div>.fa.fa-asterisk{
+.common-form >div>.fa.fa-asterisk{
 	position: absolute;
 	padding: 20px 20px; /* mobile 20px 10px;*/
 	right: 0;
 	color: #C0392B !important;
 }
-.register-form>button{
+.common-form>button{
 	border-radius: 0;
 	width: 50%;
 	display: block;
 	padding: 15px;
-	margin: 40px auto !important;
+	margin: 5px auto !important;
 }
  /*react animation login form */
 
@@ -612,157 +628,43 @@ div.hr:after {
  /*react animation login form ends*/
 
 /* contact form */
-
-#SearchContainer { 
-	padding: 1em 0;
-	width: 80%;
-	margin: 0 auto;
+div.category_nav.container.ContactForm{
+	background-color: #ccc;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: 100% !important;
+	height: auto !important;
+}
+div.category_nav.container.ContactForm{
+	height: auto;
+	min-height: 110vh;
+	animation: fadein 2s;
+    -moz-animation: fadein 2s; /* Firefox */
+    -webkit-animation: fadein 2s; /* Safari and Chrome */
+    -o-animation: fadein 2s; /* Opera */
 }
 
-/*Form Design*/
-div.contact_form form,div.about{
-	margin: 0 auto !important;
-	width: 70% !important;
+.contact_form_label{
+	position: relative;
+	left: 40%;
+	right: 40%;
+	color: #C0392B;
+}
+.contact_button{
+	border-radius: 0;
+	width: 50%;
+	display: block !important;
+	padding: 15px !important;
+	margin: 0px auto !important;
 }
 
-.group{ 
-    position:relative;
-    margin-bottom:40px;
-}
-.group>input::-webkit-input-placeholder {
-text-align: left;
-}
-.group>textarea::-webkit-input-placeholder {
-text-align: left;
-}
-.group>input:-moz-placeholder { /* Firefox 18- */
-text-align: left;  
-}
-.group>input::-moz-placeholder {  /* Firefox 19+ */
-text-align: left;  
-}
-.group>input:-ms-input-placeholder {  
-text-align: left; 
-}
-.group>input,.group>textarea {
-    padding:10px 10px 10px 5px;
-    display:block;
-    width:100%;
-    border:none;
-    border-bottom:1px solid #ccc;
-}
-.group>input:focus,.group>textarea:focus {
-    outline:none;
-}
-/* Label Design */
- .group label {
-    color:#999;
-    font-size:18px;
-    font-weight:normal;
-    position:absolute;
-    pointer-events:none;
-    left:5px;
-    top:10px;
-    transition:0.2s ease all;
-    -moz-transition:0.2s ease all;
-    -webkit-transition:0.2s ease all;
-}
-/* Active state */
- .group>input:focus ~ label, input:valid ~ label {
-    top:-20px !important;
-    font-size:14px !important;
-    color:#96281B !important;
-}
-.group>textarea:focus ~ label, textarea:valid ~ label {
-    top:-20px !important;
-    font-size:14px !important;
-    color:#96281B !important;
-}
-/* Underlining Bars */
- .bar {
-    position:relative;
-    display:block;
-    width:100%;
-}
-.bar:before, .bar:after {
-    content:'';
-    height:2px;
-    width:0;
-    bottom:1px;
-    position:absolute;
-    background:#96281B;
-    transition:0.2s ease all;
-    -moz-transition:0.2s ease all;
-    -webkit-transition:0.2s ease all;
-}
-.bar:before {
-    left:50%;
-}
-.bar:after {
-    right:50%;
-}
-/* active state */
- .group>input:focus ~ .bar:before, .group>input:focus ~ .bar:after {
-    width:50%;
-}
-/* Highlighter */
- .highlight {
-    position:absolute;
-    height:60%;
-    width:100px;
-    top:25%;
-    left:0;
-    pointer-events:none;
-    opacity:0.5;
-}
-/* active state */
- .group>input:focus ~ .highlight,.group>textarea:focus ~ .highlight {
-    -webkit-animation:inputHighlighter 0.3s ease;
-    -moz-animation:inputHighlighter 0.3s ease;
-    animation:inputHighlighter 0.3s ease;
-}
-
-/** Animations **/
- @-webkit-keyframes inputHighlighter {
-    from {
-        background:#5264AE;
-    }
-    to {
-        width:0;
-        background:transparent;
-    }
-}
-@-moz-keyframes inputHighlighter {
-    from {
-        background:#5264AE;
-    }
-    to {
-        width:0;
-        background:transparent;
-    }
-}
-@keyframes inputHighlighter {
-    from {
-        background:#5264AE;
-    }
-    to {
-        width:0;
-        background:transparent;
-    }
-}
-#Send{ 
-    width: 100%; padding: 1em 0; cursor: pointer; border: 0; color: #fff; background: #22A7F0;
-    -webkit-transition: all .5s;-moz-transition: all .5s;transition: all .5s;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-#Send:hover{ 
-    background: #62c0f4;
-    overflow: hidden;
-}
-div.content_wrap{
+/*div.content_wrap{
 	position: relative ;
 	width: 100%;
-}
+}*/
 /*contact form ends*/
 
 /* about */
@@ -792,9 +694,24 @@ div.row.reserved_lists{
 	height: 55vh;
 	margin-bottom: 0px;
 }
+div.reservedItem>div{
+	padding: 0 15px;
+}
+div> .btn.btn-sm.btn-remove{
+    float: right !important;
+    color: #C0392B !important;
+}
+
+/*add new book */
+div.category_nav.container.Add_NewBook{
+
+}
 
 /*media*/
 @media (max-width: 768px) {
+	.btn{
+		/*width: 100% !important;*/
+	}
     div> .btn.btn-danger.remove{
 	    padding: 8px 20px;
 	    margin: 20px 0px;
@@ -802,6 +719,10 @@ div.row.reserved_lists{
 	    width: 100% !important;
     }
     /* home */
+	.Homepage_image{
+		width: 100%;
+		height: 280px !important;
+	}
 	.main-logo img{
 		border-radius: 50%;
 	    position: relative;
@@ -821,20 +742,21 @@ div.row.reserved_lists{
 		padding: 0px !important;
 		margin : 0 !important;
 	}
+
 	div>.well.wrapLoginForm{
-		right: 0;
-		bottom: 0;
+		right: 0 ;
+		bottom: 0 ;
 	}
 	div.category_nav.container.Register,div.category_nav.container.Login{
 		height: auto;
 		min-height: 100vh !important;
 	}
-	.register-form>div>input,.register-form>div>label{
+	.common-form>div>input,.common-form>div>textarea,.common-form>div>label{
 		width: 100%;
 		display: block;
 	}
 	.form-group>.fa.fa-asterisk{
-		padding:  20px 10px;
+		padding:  20px 10px !important;
 	}
 	/* book detail */
 	.alert_message{
@@ -858,6 +780,36 @@ div.row.reserved_lists{
 	}
 	.reservation_notice>h4{
 		font-size: 16px;
+	}
+	/*contact*/
+	.ContactForm.container{
+		position: absolute;
+		left: 0;
+		width: 100% !important;
+		padding: 0px !important;
+		margin : 0 !important;
+		height: 100px!important;
+	}
+	.ContactForm>div>div.wrapLoginForm{
+		width: 90%;
+		position: absolute;
+		left: 5%;
+		bottom: 0;
+		right: 0 !important;
+		height: 100vh !important;
+		bottom: 0;
+	}
+	.contact_form_label{
+		position: relative;
+		left: 30%;
+		right: 30%;
+	}
+	.common-form>button,.contact_button{
+		border-radius: 0;
+		width: 100%;
+		display: block;
+		padding: 15px !important;
+		margin: 0px auto !important;
 	}
 
 }
