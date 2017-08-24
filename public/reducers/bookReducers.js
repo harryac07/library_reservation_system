@@ -23,7 +23,6 @@ export default function(state=initialState,action){
 		case FETCH_BOOK_BY_CATEGORY:
 	      	return Object.assign({},state,{
 	      		fetched : true,
-	      		// books : _.orderBy(action.payload.data,'title', 'ASC')
 	      		books : action.payload.data
 	      	});
 		case FETCH_BOOK_BY_SEARCH:
@@ -55,8 +54,7 @@ export default function(state=initialState,action){
 			return state;
 		case RESET:
 			state={
-				fetched:false,
-				books:[]
+				fetched:false
 			};
 			return state;
 		default:

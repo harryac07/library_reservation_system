@@ -4,9 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prestart": "webpack",
-    "postinstall": "webpack -p",
-    "start": "node app "
+      "prestart": "webpack",
+      "postinstall": "webpack -p",
+      "start": "node app "
+  },
+  "engines": {
+    "node": "8.2.1",
+    "npm": "5.3.0"
   },
   "author": "hari adhikari",
   "license": "ISC",

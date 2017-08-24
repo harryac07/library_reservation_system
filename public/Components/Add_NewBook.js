@@ -6,6 +6,30 @@ import FormData from 'form-data'
 class Add_NewBook extends Component{
 	constructor(props){
 		super(props);
+		this.state={
+			formHeight : 0,
+			parentHeight : 0
+		}
+	}
+	setHeightOfParent=()=>{
+		const parentHeight =document.querySelector('.container').clientHeight;
+		const first_child_div =document.querySelector('.first_child_div').clientHeight;
+		const wrapLoginForm = document.querySelector('.wrapLoginForm').clientHeight;
+		// const elementHeight = this.state.formHeight;
+		console.log(parentHeight,first_child_div+wrapLoginForm+25);
+		this.setState({ parentHeight:  first_child_div+wrapLoginForm+25});		
+	}
+	componentDidMount(){
+		this.setHeightOfParent();
+		window.addEventListener("resize", this.setHeightOfParent);
+	}
+	componentDidUpdate(prevProps, prevState){
+		prevState.parentHeight===0
+			? this.setHeightOfParent()
+			: null
+	}
+	componentWillUnmount(){
+		window.removeEventListener("resize",this.setHeightOfParent);
 	}
 	submit=(e)=>{
 		e.preventDefault();
@@ -24,9 +48,10 @@ class Add_NewBook extends Component{
 		data ="";
 	}
 	render(){
+		console.log(this.state.parentHeight);
 		return(
-			<div className="category_nav container Add_NewBook">
-				<div>
+			<div className="category_nav container Add_NewBook" style={{height : this.state.parentHeight}}>
+				<div className="first_child_div">
 					<div className="login-logo-image">
 						<img src = "/images/book-logo.png"/>
 					</div>

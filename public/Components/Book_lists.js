@@ -45,7 +45,6 @@ class Book_lists extends Component{
 	}
 	componentWillUnmount(){
 		this.props.reset();
-
 	}
 	averageRating=(reviews)=>{
 		const totalReviews = reviews.length;
@@ -57,12 +56,11 @@ class Book_lists extends Component{
 	}
 	renderBooks=()=>{
 		const {books,fetched,sort}=this.props.books;
-		if(!books || fetched===false){
+		if(fetched===false || books ==undefined){
 			return (<div className="text-center"><i className="fa fa-spinner fa-spin" style={{fontSize:"28px"}}></i></div>);
-		}else if(books.length<=0){
+		}else if(fetched===true && books.length<=0){
 			return (<div className="well" style={{textAlign:'center'}}><h3>Book Not Found!</h3></div>);
 		}
-
 		/* For Pagination */
 
 		let filteredItems = []; // required results of books after pagination
@@ -83,7 +81,7 @@ class Book_lists extends Component{
 		
 		filteredItems = books.slice(begin,end);
 
-		return _.map(_.orderBy(filteredItems,'title', sort ? sort:'ASC'),(book)=>{
+		return _.map(_.orderBy(filteredItems,'title', sort ? sort:'desc'),(book)=>{
 			return(
 				<div key={book._id} className="col-sm-3 col-md-3 col-xs-12" onClick={()=>this.renderBookDetail(book._id)}>
 					<img src = {book.image} className="img-img-thumbnail" />
@@ -132,7 +130,11 @@ class Book_lists extends Component{
 							<div className="row">
 								{ this.renderBooks() }					
 							</div>
-							{ this.props.books.books.length>this.state.itemsCountPerPage ? this.renderPagination() : null}
+							{ 
+								this.props.books.books!==undefined
+									? (this.props.books.books.length>this.state.itemsCountPerPage ? this.renderPagination() : null)
+									: null
+							}
 						</div>
 					</div>
 				</div>

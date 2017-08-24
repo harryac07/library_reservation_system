@@ -1,16 +1,18 @@
 import React,{ Component } from 'react';
 import { Route , withRouter} from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { Alert, Button } from 'react-bootstrap';
 import _ from 'lodash';
 
 class Navigation extends Component {
 	constructor(props){
 		super(props);
 		this.state={
-			cartItemsNumber : 0, // for hiding cart message
+			cartItemsNumber : 0, 
 			loggedIn : false,
 			currentUser : {},
-			admin:false
+			admin:false,
+			alertVisible:false // for displaying cart message
 		};
 	}
 	getCurrentUser=(token)=>{
@@ -41,18 +43,28 @@ class Navigation extends Component {
 			this.getCurrentUser(login);
 		}
 	}
+	componentDidMount(){
+		// facebook follow button
+	    window.fbAsyncInit = function() {
+	        //SDK loaded, initialize it
+	        FB.init({
+	            appId      : '229434510832358',
+	            xfbml      : true,
+	            version    : 'v2.6'
+	        });
+	        //JS SDK initialized, now you can use it
+	        FB.XFBML.parse();
+	    };
+	}
 	componentDidUpdate(){
-		/* cart manage */
-		let element = document.querySelector(".alert");
-		if(element){
-			document.querySelector(".alert").style.display="block";
-			_.delay(()=>document.querySelector(".alert").style.display="none" , 1200);
-		}
+		// facebook follow button
+		FB.XFBML.parse();
 
 		/* update number of cartitems in every cart update in navigation */
 		if(!localStorage.getItem('cartItems') && this.state.cartItemsNumber!==0){
 			this.setState({cartItemsNumber : 0});
 		}
+
 		/* user loggedin status */
 		if(localStorage.getItem('user-token') && this.state.loggedIn===false){
 			this.setState({loggedIn : true});
@@ -69,24 +81,16 @@ class Navigation extends Component {
 		}
 
 	}
-	cartMessage=()=>{
-	
-		/* this is triggered from detail page for cart */
-		if(this.props.cartMessage===true){
-			if(this.props.itemInCart){
-				return(
-					<a className="alert alert-info  alert_message">
-						<strong style={{borderBottom : '1px solid white'}}>{this.props.currentBook}</strong> <small>is succesfully Added.</small>
-					</a>
-				);
-			}else{
-				return(
-					<a className="alert alert-info  alert_message">
-						<strong style={{borderBottom : '1px solid white'}}>{this.props.currentBook}</strong> <small>is succesfully Removed.</small>
-					</a>
-				);
+	componentWillReceiveProps(nextProps){
+		if(this.props !== nextProps){
+			if(nextProps.cartMessage===true){
+				console.log('cartMessage');
+				this.setState({alertVisible : true});			
 			}			
 		}
+	}
+	hideAlert=()=>{
+		this.setState({alertVisible: false});
 	}
 	logout=()=>{
 		localStorage.removeItem('user-token');
@@ -121,7 +125,7 @@ class Navigation extends Component {
 				      		<li className="dropdown">
 				      			<a className="dropdown-toggle" data-toggle="dropdown">My Account <span className="caret"></span></a>
 								    <ul className="dropdown-menu">
-								      	<li><a className="text-primary">USER : {this.state.currentUser.name.toUpperCase()}</a></li>
+								      	<li><Link to="/account" className="text-primary">My Account</Link></li>
 								      	<li className="divider"></li>
 								      	<li><Link to="/reservation">RESERVED BOOKS</Link></li>
 								      	<li className="divider"></li>
@@ -156,7 +160,24 @@ class Navigation extends Component {
 			      	</ul>
 			    </div>
 			    	{
-			      		this.cartMessage()
+			      		this.state.alertVisible
+			      		 	? 
+								this.props.itemInCart
+		      						?
+										(
+									        <Alert bsStyle="info" onDismiss={this.hideAlert} className="alert_message">
+												<strong style={{borderBottom : '1px solid #2C3E50'}}>{this.props.currentBook}</strong> <small>is succesfully Added.</small>
+									        </Alert>
+										)
+									:
+										(
+											<Alert bsStyle="danger" onDismiss={this.hideAlert} className="alert_message">
+												<strong style={{borderBottom : '1px solid #2C3E50'}}>{this.props.currentBook}</strong> <small>is succesfully Removed.</small>
+									        </Alert>
+										)
+							: null
+
+		      				
 			      	}
 			  </div>
 			</nav>

@@ -101,15 +101,15 @@ class Cart extends Component{
 		e.preventDefault();
 	}
 	renderCartList=()=>{
-		const {books} = this.props.books;
-		if(!books){
+		const {books,fetched} = this.props.books;
+		if(!this.getCartItems()){
+			return (<div className="well" style={{textAlign:'center'}}><h3>Your Cart is Empty!</h3></div>);
+		}else if(books==undefined || fetched==false){
 			return (
 				<div className="well" style={{textAlign:'center'}}>
 					<i className="fa fa-spinner fa-spin" style={{fontSize:"28px"}}></i>
 				</div>
 			);
-		}else if(!this.getCartItems()){
-			return (<div className="well" style={{textAlign:'center'}}><h3>Your Cart is Empty!</h3></div>);
 		}
 		return _.map(books,(book,i)=>{
 			return(

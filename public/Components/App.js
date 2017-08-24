@@ -22,14 +22,18 @@ class App extends Component{
 		//fetch all books
 		this.props.fetchBooks();
 	}
+	componentWillReceiveProps(newProps){
+		if(this.props!==newProps){
+			this.setState({booksFetched:true});
+		}
+	}
 	componentWillUnmount(){
+		this.setState({booksFetched:false});
 		this.props.reset();
 	}
 	render(){
 		const {books}=this.props;
-		if(!books || books.fetched===false){
-			return <div>Loading...</div>
-		}
+
 		return(
 			<div>
 				<Home />

@@ -70,7 +70,17 @@ module.exports.updateUser = (req,res)=>{
 			user.name = req.body.name,
 			user.email = req.body.email,
 			user.address = req.body.address,
-			user.phone = req.body.phone
+			user.phone = req.body.phone,
+			user.subscription = req.body.subscription,
+			user.admin = user.admin,
+			user.cart_books = user.cart_books,
+			user.hash = user.hash,
+			user.salt = user.salt,
+			user.reserved_books = user.reserved_books,
+			user.verified = user.verified,
+			user.verifyToken = user.verifyToken,
+			user.__v = user.__v,
+			user._id = user._id
 
 			user.save((err,user)=>{
 				err

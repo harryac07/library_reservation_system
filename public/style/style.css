@@ -41,7 +41,7 @@ input,.btn{
     border-radius: 0 !important;
 }
 textarea {
-    resize: vertical;
+    resize: none;
 
 }
 ::-webkit-input-placeholder {
@@ -59,6 +59,24 @@ textarea {
 :-ms-input-placeholder {  
    text-align: center; 
 }
+div.well{
+	margin: 5px !important;
+	padding: 0px !important;
+	box-shadow: none;
+	-webkit-box-shadow: none !important;
+	background-color:  transparent !important;
+	border: none !important;
+	text-align: left;
+}
+div.jumbotron{
+	padding: 15px !important;
+	margin: 0 !important;
+	text-align: left;
+	width: 100% !important;
+	box-shadow: 0 0 8px gray;
+	line-height: 30px;
+	font-size: 20px;
+}
 .mobile_category_menu{
 	width: 20%;
 	text-align: center;
@@ -72,6 +90,7 @@ textarea {
 	position: absolute;
 	left: 50%;
 	top: 40vh !important;
+	font-size: 60px !important;
 }
 
 /* navbar-top */
@@ -130,6 +149,7 @@ ul.nav.navbar-nav>li.active,a:visited{
 	height: 320px !important;
 }
 .main-logo img{
+	z-index: 1;
 	border-radius: 50%;
 	border: 1px solid #C0392B;
     position: relative;
@@ -213,6 +233,7 @@ div.book_navigation{
 }
 
 /* support */
+
 .support .row{
 	padding: 30px 0px !important;
 }
@@ -230,15 +251,6 @@ div.book_navigation{
 	min-height: 350px;
 	height: 400px;
 }
-div.well{
-	margin: 5px !important;
-	padding: 0px !important;
-	box-shadow: none;
-	-webkit-box-shadow: none !important;
-	background-color:  transparent !important;
-	border: none !important;
-	text-align: left;
-}
 div.well>div{
 	text-align: left !important;
 }
@@ -252,6 +264,32 @@ div.support-content{
 	float: left;
 	width: 80%;
 	padding-left: 0px;
+}
+div.support_contact_link{
+	margin-top: 20px;
+}
+div.support_contact_link>a {
+	background-color: #fff !important;
+	border: 2px solid #C0392B;
+	color: #C0392B !important;
+}
+div.support_contact_link>a:hover {
+	background-color: #C0392B !important;
+	color: #fff !important;
+}
+.btn-social-icon{
+	color: red !important;
+	border: 1px solid #2C3E50;
+	border-radius: 50% !important;
+	width: 50px;
+	height: 50px;
+	background-color: #C0392B !important;
+	margin-right: 5px;
+	text-align: center;
+}
+.btn-social-icon>i{
+	position: relative;
+	top:20%;
 }
 
 .support-icon .fa{
@@ -276,7 +314,7 @@ div.support-links ul>li:before{
 	font-size: 15px;
 	margin-right: 10px;	
 	color: #C0392B;
-}
+} /* suppport ends */
 /*div.fb-share-button{
 	background: gray !important;
 	border-radius: none;
@@ -434,10 +472,14 @@ div.content_wrap{
 #book_detail_description{
 	white-space: pre-line;
 }
+div.image_wrap{
+	height:70vh !important;
+	width:100%;
+	overflow:hidden;
+	padding: 15px 15px;
+}
 .book_detail_image{
-	padding: 15px;
-    width:100%;
-    height:80vh !important;
+    min-width:100%;
 }
 .alert_message{
     position: fixed;
@@ -448,16 +490,34 @@ div.content_wrap{
 	margin : 0 auto !important;
 	font-size: 18px;
 	font-family: sans-serif;
-	color: #fff !important;
+	/*color: #fff !important;*/
 	border: 1px solid #C0392B !important;
-	background-color: #2C3E50 !important; /*2C3E50*/
-	z-index: 999;
+	/*background-color: #2C3E50 !important; /*2C3E50*/
+	z-index: 999 !important;
+	opacity: 1;
+}
+.cart_button{
+	background-color: transparent !important;
+	border-radius: 25px !important;
+	color: #2C3E50 !important;
+	font-size: 20px !important;
+	padding-top: 5px !important;
+}
+.cart_button:hover{
+	background-color: #C0392B !important;
+	color: #fff !important;
+    /* Slower transition off hover */
+    -webkit-transition-duration: 0.5s; 
+       -moz-transition-duration: 0.5s;
+         -o-transition-duration: 0.5s;
+            transition-duration: 0.5s;
 }
 .fa.fa-check{
-	font-size: 20px;
+	font-size: 28px;
 	color: green;
-	background-color: #fff;
+	background-color: transparent;
 	border-radius: 0;
+	padding-right: 5px !important;
 }
 /*modal*/
 
@@ -536,12 +596,15 @@ div.category_nav.container.Register{
 	min-height: 115vh;
 	top: 0 !important;
 }
+div.login-logo-image{
+	z-index: 1 !important;
+}
 div.login-logo-image img{
 	border-radius: 50%;
     border: 2px solid #C0392B;
     position: relative;
     top:50px;
-    z-index: 999;
+    z-index: 1 !important;
     display: block;
     margin: 0 auto;
     background: #ccc;
@@ -636,7 +699,6 @@ div.category_nav.container.ContactForm{
 	left: 0;
 	right: 0;
 	width: 100% !important;
-	height: auto !important;
 }
 div.category_nav.container.ContactForm{
 	height: auto;
@@ -653,12 +715,15 @@ div.category_nav.container.ContactForm{
 	right: 40%;
 	color: #C0392B;
 }
-.contact_button{
+.contact_button,button.contact_button{
 	border-radius: 0;
-	width: 50%;
-	display: block !important;
+	width: 35% !important;
+	display: inline-block!important;
 	padding: 15px !important;
-	margin: 0px auto !important;
+	margin: 0 25px !important;
+}
+.contact_button:last-child{
+	float: right;
 }
 
 /*div.content_wrap{
@@ -688,6 +753,7 @@ div.category_nav.container.ContactForm{
 	color: #fff !important;
 	font-family: arial,sans-serif;
 	font-weight: normal;
+	text-align: 
 }
 div.row.reserved_lists{
 	overflow-y:scroll;
@@ -704,8 +770,36 @@ div> .btn.btn-sm.btn-remove{
 
 /*add new book */
 div.category_nav.container.Add_NewBook{
-
+	width: 100%;
+	position: absolute;
+	background-color: #ccc !important;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
 }
+
+/* user profile */
+
+#account_tab{
+	width: 100% !important;
+}
+.account_tab{
+	text-align: center;
+}
+.account_tab .jumbotron a,.account_tab .jumbotron button{
+	margin-right: 5px;
+}
+.form-horizontal{
+	width: 100% !important;
+	padding: 15px 15px;
+}
+.form-horizontal label{
+	text-align: left !important;
+}
+/*.form-horizontal button{
+	margin-right: 5px;
+}*/
 
 /*media*/
 @media (max-width: 768px) {
@@ -760,6 +854,15 @@ div.category_nav.container.Add_NewBook{
 	}
 	/* book detail */
 	.alert_message{
+			width: 100%;
+	    position: fixed;
+	    left: 50%;
+	    top: 75px;
+	    text-align: center;
+	    transform: translate(-50%, -50%);
+		margin : 0 auto !important;
+		z-index: 999 !important;
+
 		width: 100%;
 	    position: fixed;
 	    left: 50%;
@@ -767,12 +870,14 @@ div.category_nav.container.Add_NewBook{
 	    text-align: center;
 	    transform: translate(-50%, -50%);
 		margin : 0 auto !important;
+		z-index: 999 !important;
 	}
 	/*reservation page*/
 	.reservation_notice{
 		position: relative;
 		height: auto;
 		width: 100% !important;
+		text-align: center !important;
 	}
 	div.row.reserved_lists{
 		overflow:visible;
@@ -780,6 +885,7 @@ div.category_nav.container.Add_NewBook{
 	}
 	.reservation_notice>h4{
 		font-size: 16px;
+		float: center !important;
 	}
 	/*contact*/
 	.ContactForm.container{
@@ -788,7 +894,6 @@ div.category_nav.container.Add_NewBook{
 		width: 100% !important;
 		padding: 0px !important;
 		margin : 0 !important;
-		height: 100px!important;
 	}
 	.ContactForm>div>div.wrapLoginForm{
 		width: 90%;
@@ -804,14 +909,33 @@ div.category_nav.container.Add_NewBook{
 		left: 30%;
 		right: 30%;
 	}
-	.common-form>button,.contact_button{
-		border-radius: 0;
-		width: 100%;
-		display: block;
-		padding: 15px !important;
+	.contact_button,button.contact_button{
+		width: 48% !important;
 		margin: 0px auto !important;
 	}
+	/* support */
+	.support .row .col-sm-4{
+		padding: 5px;
+		height: auto;
+	}
+	.support .row>.col-sm-4:first-of-type>div{border: 1px solid #ccc !important;}
 
+	.support .row .col-sm-4>div{
+		border: none !important;
+		min-height: 150px;
+		height: auto;
+	}
+
+	/* user profile */
+	.account_tab .col-sm-9{
+		margin-top: 20px !important;
+	}
+	.account_tab .jumbotron a,.account_tab .jumbotron button{
+		margin: 0px;
+		display: block;
+		margin-top: 5px;
+		width: 100% !important;
+	}
 }
 
 

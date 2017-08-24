@@ -196,7 +196,7 @@ class Book_detail extends Component{
 	renderBook=()=>{
 		const book  = this.props.book.books;
 		const fetched  = this.props.book.fetched;
-		if(!book || book.fetched===false){
+		if(fetched===false){
 			return (<div className="text-center"><i className="fa fa-spinner fa-spin" style={{fontSize:"28px"}}></i></div>);
 		}
 
@@ -204,7 +204,9 @@ class Book_detail extends Component{
 		{book.review ? averageRating = this.averageRating(book.review) : null}
 		return(
 			<div className="row">
-				<img src = {book.image} className="img img-responsive book_detail_image" />
+				<div className="image_wrap">
+					<img src = {book.image} className="img img-responsive book_detail_image" />
+				</div>
 				<div className="col-sm-12 col-md-12">
 					<h3>{book.title}</h3>
 					<hr/>
@@ -225,8 +227,8 @@ class Book_detail extends Component{
 						{ 	this.state.reserved
 								? 
 									<Link className="btn btn-primary cart_button" to="/reservation">
-										<i className="fa fa-check" aria-hidden="true"></i>&nbsp;
-										Book Already Reserved
+										<i className="fa fa-check" aria-hidden="true"></i>
+										reserved
 									</Link>
 								:
 								 	(
@@ -281,11 +283,11 @@ class Book_detail extends Component{
 	render(){
 		let title, category ='';
 		const book = this.props.book.books;
-		if(book){
-			category = book.category
-			title = book.title
-		}
 
+		if(book){
+			category = book.category;
+			title = book.title;
+		}
 		return(
 			<div>
 				<Navigation cartMessage={this.state.cartMessage} itemInCart={this.state.itemInCart} currentBook={title} />

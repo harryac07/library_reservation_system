@@ -75,32 +75,8 @@ class ContactForm extends Component{
 
 	render(){
 		return(
-			<div className="container category_nav ContactForm">
-				<div>
-					<div className="login-logo-image">
-						<img src = "/images/book-logo.png"/>
-					</div>
-					<div className="well wrapLoginForm">
-						<section style={{textAlign:'center'}}>
-						 	<h1>Contact us</h1>
-						 	<div className="hr"></div>
-					 	</section>
-						<div className="row">
-							{this.renderForm()}
-						</div>
-						{
-							this.props.feedback
-							?
-								(
-								  	<div className="alert alert-info alert-dismissable alert_message">
-								  		<a href="#" className="close" data-dismiss="alert" aria-label="close">&times;</a>
-								    	Thank you for your feedback!
-								 	</div>
-								)
-							: null
-						}
-					</div>
-				</div>		
+			<div>
+				{this.renderForm()}	
 			</div>
 		);
 	}

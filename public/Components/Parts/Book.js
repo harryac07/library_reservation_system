@@ -27,6 +27,11 @@ class Book extends Component{
 		}).reverse(); // review in asc order
 	}
 	renderPopularBooks=()=>{
+		if(!this.props.books || this.props.books==undefined){
+			return (<div className="text-center"><i className="fa fa-spinner fa-spin"></i></div>);
+		}else if(this.props.books.length<=0){
+			return (<div className="well" style={{textAlign:'center'}}><h3>Book Not Found!</h3></div>);
+		}
 		const books = this.sortByRating(this.props.books);
 		const sortedBooks= _.take(books, 4); // take 4 most higher reviewed books
 		return _.map(sortedBooks,(book)=>{
