@@ -93,8 +93,8 @@ module.exports.login = (req, res)=>{
 
 }; // login ends
 
-/* request password change */
-module.exports.requestPasswordChange=(req,res)=>{
+/* request password reset during login */
+module.exports.requestPasswordReset=(req,res)=>{
 	console.log(req.body);
 	User.findOne({email : req.body.email})
 		.exec((err,user)=>{
@@ -155,8 +155,8 @@ module.exports.requestPasswordChange=(req,res)=>{
 		});
 }; // request password change ends
 
-/* change password */
-module.exports.changePassword = (req,res)=>{
+/* reset password */
+module.exports.resetPassword = (req,res)=>{
 	console.log(req.body.password);
 	const token = req.params.token;
 	if(!token){
@@ -189,9 +189,38 @@ module.exports.changePassword = (req,res)=>{
 			}
 		}
 	})
-	
+} //reset password ends
 
-}
+/* changePassword */
+module.exports.changePassword = (req,res)=>{
+	console.log(req.body.password);
+	const id = req.params.userid;
+	if(!id){
+		sendJSONresponse(res,404,{'message':'user id is required!'});
+		return;
+	}
+	User.findOne({
+		_id : id,
+	},(err,user)=>{
+		if(err){
+			sendJSONresponse(res,400,err);
+			return;
+		}else if(!user){
+			sendJSONresponse(res,404,{'message':'user not found'});
+			return;
+		}else{
+			user.setPassword(req.body.password); // use setPassword method to set salt and hash
+			user.save((err,userdata)=>{
+				if (err) {
+					sendJSONresponse(res, 400, err);
+					return;
+				} else {
+					sendJSONresponse(res, 201, userdata);
+				}
+			});
+		}
+	})
+} // change password ends 
 
 /* Contact */
 module.exports.contact = (req,res)=>{

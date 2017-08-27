@@ -9,6 +9,25 @@ class Support extends Component{
 			facebook_share : ''
 		}
 	}
+	componentDidMount(){
+		// facebook follow button
+	    window.fbAsyncInit = function() {
+	        //SDK loaded, initialize it
+	        FB.init({
+	            appId      : '229434510832358',
+	            xfbml      : true,
+	            version    : 'v2.6'
+	        });
+	        //JS SDK initialized, now you can use it
+	        FB.XFBML.parse();
+	    };
+	}
+	componentDidUpdate(){
+		// facebook follow button
+		_.delay(()=>{
+			FB.XFBML.parse();
+		},1000);
+	}
 	render(){
 		const facebook_share = '<div class="fb-follow" data-href="https://www.facebook.com/officialroutineofnepalbanda/" width="50px" data-layout="standard" data-size="large" data-show-faces="true"></div>';
 		return(
@@ -66,7 +85,7 @@ class Support extends Component{
 									<h4>USEFUL LINKS</h4>
 									<ul>
 										<li><Link to="/contact">contact us</Link></li>
-										<li>about us</li>
+										<li><Link to="/about">about us</Link></li>
 										<li>most viewed books</li>
 										<li>top rated books</li>
 										<li>our works and activities</li>

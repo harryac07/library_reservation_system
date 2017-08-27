@@ -1,4 +1,5 @@
 import React,{Component} from 'react';
+import _ from 'lodash';
 
 class UserProfileForm extends Component{
 	constructor(props) {
@@ -8,7 +9,8 @@ class UserProfileForm extends Component{
 	  		email:'',
 	  		subscription:'',
 	  		address:'',
-	  		phone:0
+	  		phone:0,
+	  		errors : {} 
 	  	}
 	}
 	handleInputChange=(e)=>{
@@ -30,7 +32,7 @@ class UserProfileForm extends Component{
 		e.preventDefault();
 		this.props.viewDetailPage(true);
 	}
-	submitForm=(e)=>{
+	submitDetailForm=(e)=>{
 		e.preventDefault();
 		const updatedInfo={
 	  		name : this.refs.name.value,
@@ -40,23 +42,38 @@ class UserProfileForm extends Component{
 	  		phone:this.refs.phone.value
 		};
 		this.setState(updatedInfo);
-		this.props.submit(updatedInfo); // send to parent
+
+		const errors = this.validateForm();
+		if(_.size(errors)>0){
+			this.setState({errors});
+			return;
+		}
+		/* no errors then submit */
+		this.props.updateDetail(updatedInfo);
 	}
-	render(){
+	validateForm=()=>{
+		const errors = {};
+		this.state.name=="" ? errors.name="Name is required":null
+		this.state.email=="" ? errors.email="Email is required":null
+		this.state.address=="" ? errors.address="Address is required":null
+		this.state.phone=="" ? errors.phone="Phone is required":null
+		return errors;
+	}
+	renderUpdateForm=()=>{
 		return(
 				<div className="">
 					<h2>Update your information</h2>
-					<form onSubmit={this.submitForm} className="form-horizontal">
-					  	<div className="form-group">
+					<form onSubmit={this.submitDetailForm} className="form-horizontal">
+					  	<div className={`form-group ${this.state.errors.name ? 'has-error' : ''}`}>
 						    <label className="control-label col-sm-3" htmlFor="name">Name:</label>
 						    <div className="col-sm-9">
-						      <input onChange={this.handleInputChange} type="text" value={this.state.name} ref="name" className="form-control " name="name" placeholder="Enter name" />
+						      	<input onChange={this.handleInputChange} type="text" value={this.state.name} ref="name" className="form-control " name="name" placeholder="Enter name" />
 						    </div>
 					  	</div>
-					  	<div className="form-group">
+					  	<div className={`form-group ${this.state.errors.email ? 'has-error' : ''}`}>
 						    <label className="control-label col-sm-3" htmlFor="email">Email:</label>
 						    <div className="col-sm-9">
-						      <input onChange={this.handleInputChange} type="email" value={this.state.email} ref="email" className="form-control " name="email" placeholder="Enter email" />
+						      	<input onChange={this.handleInputChange} type="email" value={this.state.email} ref="email" className="form-control " name="email" placeholder="Enter email" />
 						    </div>
 					  	</div>
 					  	<div className="form-group">
@@ -68,13 +85,13 @@ class UserProfileForm extends Component{
 								</select>
 						    </div>
 					  	</div>
-					  	<div className="form-group">
+					  	<div className={`form-group ${this.state.errors.address ? 'has-error' : ''}`}>
 						    <label className="control-label col-sm-3" htmlFor="address">Address:</label>
 						    <div className="col-sm-9">
 						      <input onChange={this.handleInputChange} type="text" ref="address" value={this.state.address} className="form-control" name="address" placeholder="Enter address" />
 						    </div>
 					  	</div>
-					  	<div className="form-group">
+					  	<div className={`form-group ${this.state.errors.phone ? 'has-error' : ''}`}>
 						    <label className="control-label col-sm-3" htmlFor="phone">Phone:</label>
 						    <div className="col-sm-9">
 						      <input onChange={this.handleInputChange} type="number" ref="phone" value={this.state.phone} className="form-control" name="phone" placeholder="Enter phone" />
@@ -88,6 +105,13 @@ class UserProfileForm extends Component{
 					  	</div>
 					  	
 					</form>
+				</div>
+		);
+	}
+	render(){
+		return(
+				<div>
+					{this.renderUpdateForm()}
 				</div>
 		);
 	}

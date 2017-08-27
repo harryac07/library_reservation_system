@@ -43,12 +43,15 @@ class Reservation extends Component{
 		const token = localStorage.getItem('user-token');
 		if(token){
 			const payload = JSON.parse(window.atob(token.split('.')[1]));
-			this.props.cancelReservation(bookId,payload.email).then(()=>{ // action cancel reservation
-		    	this.props.fetchUser(payload._id).then(()=>{
-		    		const bookCount = this.props.user.data.reserved_books.length;
-		    		this.setState({totalItems : bookCount})
-		    	}); // action fetch user detail again		
-			}); 
+			const confirm = confirm('Are you sure to remove this book?');
+			if(confirm){
+				this.props.cancelReservation(bookId,payload.email).then(()=>{ // action cancel reservation
+			    	this.props.fetchUser(payload._id).then(()=>{
+			    		const bookCount = this.props.user.data.reserved_books.length;
+			    		this.setState({totalItems : bookCount})
+			    	}); // action fetch user detail again		
+				}); 
+			}
 		}
 	}
 	removeReservation=(expiredBooks,payload,bookCount)=>{

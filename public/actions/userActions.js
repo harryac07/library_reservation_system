@@ -3,9 +3,11 @@ import axios from 'axios';
 export const FETCH_USER="FETCH_USER";
 export const RESET = "RESET";
 export const REMOVE_RESERVE_BOOKS = "REMOVE_RESERVE_BOOKS";
+export const RESETPASSWORD = "RESETPASSWORD";
 export const CHANGEPASSWORD = "CHANGEPASSWORD";
 export const REQUESTPASSWORDCHANGE = "REQUESTPASSWORDCHANGE";
 export const UPDATEUSER = "UPDATEUSER";
+export const DELETEUSER = "DELETEUSER";
 
 const ROOT_URL = "http://localhost:3000/api";
 
@@ -43,10 +45,10 @@ export function removeReservation(books,user){
 			});
 	}
 }
-//request password change during login
-export function requestPasswordChange(email){
+//request password reset during login
+export function requestPasswordReset(email){
 	return dispatch=>{
-		return axios.post(`${ROOT_URL}/request-password-change`,email)
+		return axios.post(`${ROOT_URL}/request-password-reset`,email)
 			.then(response=>{
 				// console.log('email success '+response.data);
 				dispatch({type : REQUESTPASSWORDCHANGE, payload : response});
@@ -57,10 +59,21 @@ export function requestPasswordChange(email){
 	}
 }
 
-// Change password during login
-export function changePassword(token,password){
+// Reset password during login
+export function resetPassword(token,password){
 	return dispatch=>{
-		return axios.post(`${ROOT_URL}/changepassword/${token}`,password)
+		return axios.post(`${ROOT_URL}/resetpassword/${token}`,password)
+			.then(response=>{
+				dispatch({type : RESETPASSWORD, payload : response});
+			}).catch(err=>{
+				dispatch({type : RESETPASSWORD, payload : err.response});
+			});
+	}
+}
+// Change password after login
+export function changePassword(userid,password){
+	return dispatch=>{
+		return axios.post(`${ROOT_URL}/changepassword/${userid}`,password)
 			.then(response=>{
 				dispatch({type : CHANGEPASSWORD, payload : response});
 			}).catch(err=>{
@@ -77,6 +90,13 @@ export function updateUser(userInfo,userId){
 			}).catch(err=>{
 				dispatch({type : UPDATEUSER, payload : err.response});
 			});
+	}
+}
+
+//Delete User
+export function deleteUser(userId){
+	return dispatch=>{
+		return axios.delete(`${ROOT_URL}/user/${userId}`);
 	}
 }
 

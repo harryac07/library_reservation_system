@@ -107,23 +107,26 @@ class Book_detail extends Component{
 		return _.map(reviews,(review,i)=>{
 			return (
 				<li className="list-group-item" key={review._id}>
-					<div className="well">
-						<span style={{fontSize:18}}>
-							<strong>
-								{review.reviewAuthor}
-							</strong>
-							&nbsp;&nbsp;
-							<small style={{fontSize:14}}>
-								<span className={"glyphicon "+((review.rating>0)?"glyphicon-star":"glyphicon-star-empty")}></span>
-								<span className={"glyphicon "+((review.rating>1)?"glyphicon-star":"glyphicon-star-empty")}></span>
-								<span className={"glyphicon "+((review.rating>2)?"glyphicon-star":"glyphicon-star-empty")}></span>
-								<span className={"glyphicon "+((review.rating>3)?"glyphicon-star":"glyphicon-star-empty")}></span>
-								<span className={"glyphicon "+((review.rating>4)?"glyphicon-star":"glyphicon-star-empty")}></span>
-							</small>							
-						</span>
-						<span style={{float:'right'}}>{moment.utc(review.createdOn).local().format('MM.DD.YYYY')}</span>
+					<div className="well each_review">
+						<div className="review_profile_image text-center">{_.capitalize(review.reviewAuthor.charAt(0))}</div>
+						<div>
+							<span>
+								<strong>
+									{_.startCase(review.reviewAuthor)}
+								</strong>
+								&nbsp;&nbsp;
+								<small>
+									<span className={"glyphicon "+((review.rating>0)?"glyphicon-star":"glyphicon-star-empty")}></span>
+									<span className={"glyphicon "+((review.rating>1)?"glyphicon-star":"glyphicon-star-empty")}></span>
+									<span className={"glyphicon "+((review.rating>2)?"glyphicon-star":"glyphicon-star-empty")}></span>
+									<span className={"glyphicon "+((review.rating>3)?"glyphicon-star":"glyphicon-star-empty")}></span>
+									<span className={"glyphicon "+((review.rating>4)?"glyphicon-star":"glyphicon-star-empty")}></span>
+								</small>							
+							</span>
+							<span className="review_date"><small>{moment.utc(review.createdOn).local().format('MM.DD.YYYY')}</small></span>
+							<p className="review"><span>{review.review}</span></p>
+						</div>
 					</div>
-					<p><span>{review.review}</span></p>
 				</li>
 			);
 		});
@@ -168,7 +171,8 @@ class Book_detail extends Component{
 		          	<Modal.Body>
 		          		<div className="modal_wrap_content">
 			            	<div className="well text-center">
-			            		<h3 className="text-center" style={{color:'#C0392B'}}>Add your review</h3>
+			            		<h3 style={{color:'#C0392B'}}>Add your review</h3>
+			            		<hr style={{backgroundColor:"#2C3E50",height:3,border:'none'}} />
 					            <form className="form-horizontal review_form" onSubmit={this.submitReview}>
 						            <div className="form-group">
 						                <label><strong>Rating</strong></label><br/>
@@ -204,11 +208,13 @@ class Book_detail extends Component{
 		{book.review ? averageRating = this.averageRating(book.review) : null}
 		return(
 			<div className="row">
-				<div className="image_wrap">
-					<img src = {book.image} className="img img-responsive book_detail_image" />
+				<div className="col-sm-4 col-md-4">
+					<div className="image_wrap">
+						<img src = {book.image} className="img img-responsive book_detail_image" />
+					</div>
 				</div>
-				<div className="col-sm-12 col-md-12">
-					<h3>{book.title}</h3>
+				<div className="col-sm-8 col-md-8">
+					<h3>{_.startCase(book.title)}</h3>
 					<hr/>
 					<h4>
 						<span className={"glyphicon "+((averageRating>0)?"glyphicon-star":"glyphicon-star-empty")}></span>
@@ -219,9 +225,12 @@ class Book_detail extends Component{
 						&nbsp;&nbsp;&nbsp;
 						<span style={{cursor:'pointer'}} onClick={this.open}><small><u style={{color:'#C0392B'}}>Leave Feedback</u></small></span>
 					</h4>
-					<p>Quantity Available : {book.available}</p>
-					<h4>By {book.author}</h4>
-					<br />
+					<p><strong>No. of Pages :</strong> {book.pages||100}</p>
+					<p><strong>Published on :</strong> {moment.utc(book.published_date).local().format('MM.DD.YYYY')||'N/A'}</p>
+					<p><strong>Language :</strong> {_.startCase(book.language)||'English'}</p>
+					<p><strong>Quantity Available :</strong> {book.available}</p>
+					<h4>By <strong>{_.startCase(book.author)}</strong></h4>
+					<hr />
 					<span>
 						
 						{ 	this.state.reserved
@@ -241,8 +250,9 @@ class Book_detail extends Component{
 									)
 						}
 					</span>
-					<br />
-					<br />
+				</div>
+				<br />
+				<div className="col-sm-12 col-md-12">
 					<div className="well">
 					  	<ul className="nav nav-tabs">
 						    <li className="active"><a data-toggle="tab" href="#home">Description</a></li>

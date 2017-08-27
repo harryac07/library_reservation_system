@@ -1,19 +1,22 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-
-import CategoryFrame from './Parts/CategoryFrame';
+/* actions */
 import {fetchBook,reset} from '../actions/bookActions'; // import actions here
-import {fetchUser,updateUser} from '../actions/userActions'; // import actions here
-
+import {fetchUser,updateUser,deleteUser,changePassword} from '../actions/userActions'; // import actions here
+/* child components */
+import CategoryFrame from './Parts/CategoryFrame';
 import UserProfileForm from './Parts/UserProfileForm';
+import ChangePasswordForm from './Parts/ChangePasswordForm';
 
 class UserProfile extends Component{
 	constructor(props) {
 	  	super(props);
 	  	this.state={
 	  		detailPage : true, // show landing page first
-	  		loginStatus : false
+	  		loginStatus : false,
+	  		infoUpdateStatus : false,
+	  		showPasswordForm : false // toggle for password or detail form
 	  	}
 	}
 	componentWillMount(){
@@ -43,19 +46,48 @@ class UserProfile extends Component{
 	}
 	handleViewDetailPage=(status)=>{
 		status
-			? this.setState({detailPage:true})
+			? this.setState({detailPage:true,showPasswordForm:false})
 			: this.setState({detailPage:false})
 	}
-	handleUpdateInfo=(updatedValue)=>{ // need to work on here. action and reducer not done yet
-		console.log(updatedValue);
+	handleUpdate=(updatedValue)=>{ 
 		this.props.updateUser(updatedValue,this.getCurrentUser()._id).then(()=>{
 			this.handleViewDetailPage(true);
+			this.setState({infoUpdateStatus : true});
 		}); // action
+	}
+	handlePasswordChange=(newPassword)=>{
+		console.log(newPassword);
+		this.props.changePassword(this.getCurrentUser()._id,newPassword).then(()=>{
+			this.handleViewDetailPage(true);
+			this.setState({infoUpdateStatus : true});
+		});
+	}
+	deleteProfile=(e,userId)=>{
+		const confirmDelete = confirm('You will lose all your history and reserved books.\n\nAre you sure to delete all your informations?');
+		confirmDelete
+			? 	(
+					this.props.deleteUser(userId).then(()=>{
+						localStorage.removeItem('user-token');
+						localStorage.removeItem('cartItems');
+						this.props.history.push('/');
+						window.location.reload();
+					})
+				)
+			: 	null
+	}
+	hideAlert=()=>{
+		this.setState({infoUpdateStatus : false});
 	}
 	renderUpdateForm=()=>{
 		return(
-			<UserProfileForm user={this.props.user.data} submit={this.handleUpdateInfo} viewDetailPage={this.handleViewDetailPage} />
+			<UserProfileForm user={this.props.user.data}  updateDetail={this.handleUpdate} viewDetailPage={this.handleViewDetailPage} />
 		);
+	}
+	renderChangePasswordForm=()=>{
+		this.setState({
+			showPasswordForm : true,
+			detailPage : false
+		});
 	}
 	renderDetail=()=>{
 		const user = this.props.user.data;
@@ -75,16 +107,24 @@ class UserProfile extends Component{
 				<div className="col-sm-12 col-xs-12">
 					<div className="row">
 						<div className="col-sm-3">
-							<div className="jumbotron">
+							<div className="jumbotron text-center">
 								<img src="/images/book-logo.png" className="img img-responsive"/>
-								<h3>{_.startCase(_.toLower(user.name))}</h3>
+								<h3 className="text-center">{_.startCase(_.toLower(user.name))}</h3>
 								<hr />
-								<h4><small>{user.address}</small></h4>
+								<h4 className="text-center"><small>{user.address}</small></h4>
 							</div>
+							<hr />
+							{this.state.detailPage 
+								? 
+									(<div onClick={this.renderChangePasswordForm} className="jumbotron text-center">
+										<button className="btn btn-default">Change Password</button>
+									</div>)
+								: 	null
+							}
 						</div>
 						<div className="col-sm-9">
 							<div className="jumbotron">
-								{/**/
+								{/* */
 									this.state.detailPage
 										? (
 											<div>
@@ -98,10 +138,12 @@ class UserProfile extends Component{
 												</ul>
 												<hr />
 												<a className="btn btn-primary" onClick={this.handleUpdateClick}>Update Profile</a>
-												<a className="btn btn-danger"> Delete Profile</a>
+												<a className="btn btn-danger" onClick={(e)=>this.deleteProfile(e,user._id)}> Delete Profile</a>
 											</div>
 											)
-										: this.renderUpdateForm()
+										: this.state.showPasswordForm 
+											? <ChangePasswordForm changePassword={this.handlePasswordChange} viewDetailPage={this.handleViewDetailPage} />
+											: this.renderUpdateForm()
 								}
 							</div>
 						</div>
@@ -122,6 +164,17 @@ class UserProfile extends Component{
 					{/**/
 						this.renderDetail()
 					}
+					{
+						this.state.infoUpdateStatus
+						?
+							(
+							  	<div className="alert alert-info alert-dismissable alert_message">
+							  		<a onClick={this.hideAlert} className="close" data-hide="alert" aria-label="close">&times;</a>
+							    	Your info has been updated!
+							 	</div>
+							)
+						: null
+					}
 					</div>
 				</div>
 			</div>
@@ -134,7 +187,7 @@ function mapStateToProps(state){
 		user : state.users
 	};
 }
-export default connect(mapStateToProps,{fetchBook,reset,fetchUser,updateUser})(UserProfile);
+export default connect(mapStateToProps,{fetchBook,reset,fetchUser,updateUser,deleteUser,changePassword})(UserProfile);
 
 
 

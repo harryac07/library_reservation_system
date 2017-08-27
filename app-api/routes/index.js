@@ -43,8 +43,9 @@ router.delete('/user/:id',UserCtrl.deleteUser);
 //Authentication
 router.post('/register', ctrlAuth.register);
 router.post('/login', ctrlAuth.login);
-router.post('/request-password-change',ctrlAuth.requestPasswordChange);
-router.post('/changepassword/:token',ctrlAuth.changePassword);
+router.post('/request-password-reset',ctrlAuth.requestPasswordReset);
+router.post('/resetpassword/:token',ctrlAuth.resetPassword);
+router.post('/changepassword/:userid',ctrlAuth.changePassword);
 
 //contact
 router.post('/contact',ctrlAuth.contact);

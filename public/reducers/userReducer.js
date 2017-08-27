@@ -1,6 +1,6 @@
 import {REGISTER,LOGIN,REMOVE_RESERVE_BOOKS,CONTACT,RESET}
 	from '../actions/authActions';
-import {FETCH_USER,REQUESTPASSWORDCHANGE,CHANGEPASSWORD,UPDATEUSER} from '../actions/userActions';
+import {FETCH_USER,REQUESTPASSWORDCHANGE,CHANGEPASSWORD,RESETPASSWORD, UPDATEUSER} from '../actions/userActions';
 import _ from 'lodash';
 
 export default function(state=[],action){
@@ -10,6 +10,8 @@ export default function(state=[],action){
 		case LOGIN:
 			return action.payload; // return token
 		case REQUESTPASSWORDCHANGE:
+			return action.payload;
+		case RESETPASSWORD:
 			return action.payload;
 		case CHANGEPASSWORD:
 			return action.payload;

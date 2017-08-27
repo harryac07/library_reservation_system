@@ -1,7 +1,7 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {requestPasswordChange,changePassword,reset} from '../../actions/userActions'; // import actions here
+import {requestPasswordReset,resetPassword,reset} from '../../actions/userActions'; // import actions here
 
 class Password_reset extends Component{
 	constructor(props){
@@ -27,7 +27,7 @@ class Password_reset extends Component{
 	handleSubmitRequest=(e)=>{
 		e.preventDefault();
 		this.setState({submitRequest : true,message : ''});
-		this.props.requestPasswordChange({'email':this.refs.email.value}).then(()=>{
+		this.props.requestPasswordReset({'email':this.refs.email.value}).then(()=>{
 			if(this.props.user.status==200){
 				this.setState({
 					message : 'A verification message has been sent to your email address!'
@@ -48,7 +48,7 @@ class Password_reset extends Component{
 		e.preventDefault();
 		this.setState({submitRequest : true,message : ''});
 		if(this.refs.password.value === this.refs.confirm_password.value){
-			this.props.changePassword(this.getQueryToken(), {'password' : this.refs.password.value}).then((e)=>{
+			this.props.resetPassword(this.getQueryToken(), {'password' : this.refs.password.value}).then((e)=>{
 					if(this.props.user.status==201){
 						this.props.history.push('/login')
 					}else{
@@ -134,7 +134,7 @@ function mapStateToProps(state){
 	};
 }
 
-export default connect(mapStateToProps,{requestPasswordChange,changePassword,reset})(Password_reset);
+export default connect(mapStateToProps,{requestPasswordReset,resetPassword,reset})(Password_reset);
 
 
 

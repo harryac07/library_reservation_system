@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-      "prestart": "webpack",
-      "postinstall": "webpack -p",
+      "build": "webpack",
       "start": "node app "
   },
   "engines": {

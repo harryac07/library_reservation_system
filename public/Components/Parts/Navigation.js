@@ -43,23 +43,8 @@ class Navigation extends Component {
 			this.getCurrentUser(login);
 		}
 	}
-	componentDidMount(){
-		// facebook follow button
-	    window.fbAsyncInit = function() {
-	        //SDK loaded, initialize it
-	        FB.init({
-	            appId      : '229434510832358',
-	            xfbml      : true,
-	            version    : 'v2.6'
-	        });
-	        //JS SDK initialized, now you can use it
-	        FB.XFBML.parse();
-	    };
-	}
 	componentDidUpdate(){
-		// facebook follow button
-		FB.XFBML.parse();
-
+		
 		/* update number of cartitems in every cart update in navigation */
 		if(!localStorage.getItem('cartItems') && this.state.cartItemsNumber!==0){
 			this.setState({cartItemsNumber : 0});
@@ -114,7 +99,7 @@ class Navigation extends Component {
 			     	<ul className="nav navbar-nav">
 			        	<li><Link to="/about">ABOUT</Link></li>
 			        	<li><Link to="/contact">CONTACT</Link></li>
-			       		<li><Link to="#"><i className="fa fa-facebook" aria-hidden="true"></i></Link></li>
+			       		<li><a href="https://www.facebook.com/hurriee" target="_blank"><i className="fa fa-facebook" aria-hidden="true"></i></a></li>
 			       		<li><Link to="#"><i className="fa fa-google-plus" aria-hidden="true"></i></Link></li>
 			       		<li><Link to="#"><i className="fa fa-twitter" aria-hidden="true"></i></Link></li>
 			      	</ul>
@@ -125,7 +110,7 @@ class Navigation extends Component {
 				      		<li className="dropdown">
 				      			<a className="dropdown-toggle" data-toggle="dropdown">My Account <span className="caret"></span></a>
 								    <ul className="dropdown-menu">
-								      	<li><Link to="/account" className="text-primary">My Account</Link></li>
+								      	<li><Link to="/account" className="text-primary">MY ACCOUNT</Link></li>
 								      	<li className="divider"></li>
 								      	<li><Link to="/reservation">RESERVED BOOKS</Link></li>
 								      	<li className="divider"></li>

@@ -21,6 +21,10 @@ a:visited, a:active, a:hover, a:link{
 	text-decoration: none !important;
 	color: #fff;
 }
+a {outline : none !important;}
+.btn:active:focus, .btn:focus{
+	outline: none !important;
+}
 img {
 	user-drag: none; 
 	user-select: none;
@@ -66,7 +70,7 @@ div.well{
 	-webkit-box-shadow: none !important;
 	background-color:  transparent !important;
 	border: none !important;
-	text-align: left;
+	/*text-align: left;*/
 }
 div.jumbotron{
 	padding: 15px !important;
@@ -252,7 +256,7 @@ div.book_navigation{
 	height: 400px;
 }
 div.well>div{
-	text-align: left !important;
+	/*text-align: left !important;*/
 }
 div.support-icon{
 	float:left;
@@ -315,11 +319,6 @@ div.support-links ul>li:before{
 	margin-right: 10px;	
 	color: #C0392B;
 } /* suppport ends */
-/*div.fb-share-button{
-	background: gray !important;
-	border-radius: none;
-	color: black;
-}*/
 
 /* carousel */
 
@@ -473,26 +472,26 @@ div.content_wrap{
 	white-space: pre-line;
 }
 div.image_wrap{
-	height:70vh !important;
-	width:100%;
+	max-height:60vh !important;
+	height: auto !important;
+	width:100% !important;
 	overflow:hidden;
-	padding: 15px 15px;
 }
+
 .book_detail_image{
-    min-width:100%;
+    min-width:100% !important;
+    min-height: 50vh !important;
 }
 .alert_message{
     position: fixed;
     left: 50%;
     top: 77px;
-    width: 40%;
+    width: 50%;
     transform: translate(-50%, -50%);
 	margin : 0 auto !important;
 	font-size: 18px;
 	font-family: sans-serif;
-	/*color: #fff !important;*/
-	border: 1px solid #C0392B !important;
-	/*background-color: #2C3E50 !important; /*2C3E50*/
+	box-shadow: 0 0 10px #2C3E50;
 	z-index: 999 !important;
 	opacity: 1;
 }
@@ -532,6 +531,33 @@ div.image_wrap{
 form.review_form textarea{
 	resize:none;
 }
+
+div.review_profile_image{
+	float: left;
+	margin-top: 5px;
+	margin-right: 10px !important;
+    width:45px;
+    height:45px;
+    border-radius:250px;
+    font-size:20px;
+    line-height:45px;
+    color:#fff;
+    text-align:center !important;
+    background:#C0392B;
+    margin: 0 auto;
+}
+.each_review>div{
+	overflow: hidden;
+}
+.each_review>div>span{
+	font-size: 18px;
+}
+span.review_date{
+	float: right;
+}
+.each_review>div>small{
+	font-size: 14px;
+}
 /*review rating*/
 .glyphicon-star-empty,.glyphicon-star{
 	color: #C0392B;
@@ -549,7 +575,6 @@ form.review_form textarea{
 .rating span:hover, .rating span:hover ~ span{
     color: #C0392B !important;
 }
-
 
 /* Cart */
 div.cartItem>div{
@@ -618,7 +643,6 @@ div>.well.wrapLoginForm,div>.well.wrapRegisterForm{
 	top: 100px;
 	width: 50%;
 	padding: 10px;
-	height: auto !important;
 	/*margin: 0;*/
 	background-color: #2C3E50 !important;
 }
@@ -654,6 +678,7 @@ div.hr:after {
 }
 .common-form{
 	padding: 30px;
+	height: auto !important;
 }
 .common-form>div>input,.common-form>div>textarea{
 	width: 90%;
@@ -726,10 +751,6 @@ div.category_nav.container.ContactForm{
 	float: right;
 }
 
-/*div.content_wrap{
-	position: relative ;
-	width: 100%;
-}*/
 /*contact form ends*/
 
 /* about */
@@ -753,7 +774,7 @@ div.category_nav.container.ContactForm{
 	color: #fff !important;
 	font-family: arial,sans-serif;
 	font-weight: normal;
-	text-align: 
+	text-align:  center !important;
 }
 div.row.reserved_lists{
 	overflow-y:scroll;
@@ -803,8 +824,25 @@ div.category_nav.container.Add_NewBook{
 
 /*media*/
 @media (max-width: 768px) {
-	.btn{
-		/*width: 100% !important;*/
+	.navbar-fixed-bottom, .navbar-fixed-top {
+	    position: fixed;
+	    right: 0;
+	    left: 0;
+	    z-index: 1030;
+	    /*height: 100vh !important;*/
+	}
+	.navbar-fixed-bottom .navbar-collapse, .navbar-fixed-top .navbar-collapse {
+	    max-height: 10000px !important;
+	    height: 10000px !important;
+	    overflow-y: auto !important;
+	}
+	ul.dropdown-menu{
+
+	}
+	.nav.navbar-nav li,.dropdown.open{
+		font-size: 20px;
+		text-align: center !important;
+		margin: 10px auto !important;
 	}
     div> .btn.btn-danger.remove{
 	    padding: 8px 20px;
@@ -862,15 +900,9 @@ div.category_nav.container.Add_NewBook{
 	    transform: translate(-50%, -50%);
 		margin : 0 auto !important;
 		z-index: 999 !important;
-
-		width: 100%;
-	    position: fixed;
-	    left: 50%;
-	    top: 75px;
-	    text-align: center;
-	    transform: translate(-50%, -50%);
-		margin : 0 auto !important;
-		z-index: 999 !important;
+	}
+	span.review_date{
+		float: none;
 	}
 	/*reservation page*/
 	.reservation_notice{

@@ -13,11 +13,10 @@ class Add_NewBook extends Component{
 	}
 	setHeightOfParent=()=>{
 		const parentHeight =document.querySelector('.container').clientHeight;
-		const first_child_div =document.querySelector('.first_child_div').clientHeight;
-		const wrapLoginForm = document.querySelector('.wrapLoginForm').clientHeight;
-		// const elementHeight = this.state.formHeight;
-		console.log(parentHeight,first_child_div+wrapLoginForm+25);
-		this.setState({ parentHeight:  first_child_div+wrapLoginForm+25});		
+		const first_child_div =document.querySelector('section').clientHeight;
+		const wrapLoginForm = document.querySelector('.login-logo-image').clientHeight;
+		const formHeight = document.querySelector('.common-form').clientHeight;
+		this.setState({ parentHeight:  first_child_div+wrapLoginForm+formHeight+70});		
 	}
 	componentDidMount(){
 		this.setHeightOfParent();
