@@ -1,4 +1,3 @@
-var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var Dotenv = require('dotenv-webpack');
 var HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
@@ -18,8 +17,8 @@ module.exports={
 	},
 	module : {
 		loaders : [
-			{test:/\.js$/,exclude: /node_modules(?!\/react-js-pagination)/,loader:'babel-loader'},
-			{ test: /\.jsx$/, loader: 'babel-loader', exclude: /node_modules(?!\/react-js-pagination)/}
+			{test:/\.js$/,exclude:/node_modules/,loader:'babel-loader'},
+			{ test: /\.jsx$/, loader: 'babel-loader', exclude: /node_modules/ }
 		]
 	},
 	devServer: {
@@ -29,6 +28,9 @@ module.exports={
 	  contentBase: "dist/"
 	},
 	plugins:[
-		HtmlWebpackPluginConfig
+		HtmlWebpackPluginConfig,
+		new Dotenv({
+	      path: '.env'
+	    })
 	]
 };
